@@ -201,7 +201,8 @@ function unlockCheck(get: () => GameState, set: (p: Partial<GameState>) => void)
 export const useGameStore = create<GameState>()(
   persist(
     (set, get) => ({
-      lang: "fa",
+      /* default language is baked at build time (NEXT_PUBLIC_DEFAULT_LANG=fa|en) */
+      lang: (process.env.NEXT_PUBLIC_DEFAULT_LANG === "en" ? "en" : "fa") as Lang,
       soundOn: true,
       musicOn: true,
       vibrationOn: true,

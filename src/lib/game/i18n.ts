@@ -111,6 +111,7 @@ export const STR = {
   wrongStuck: { fa: "جا نمی‌خورد!", en: "It won't budge!" },
   wrongPick: { fa: "اشتباه شد! دوباره فکر کن", en: "Wrong! Think again" },
   itWorked: { fa: "ایول! درست بود", en: "Nice! That works" },
+  presents: { fa: "ارائه از", en: "PRESENTS" },
   tapToStart: { fa: "برای شروع لمس کن", en: "Tap to start" },
   loading: { fa: "در حال آماده‌سازی مغز...", en: "Warming up the brain..." },
   brainTitle: { fa: "چالش مغز", en: "Brain Challenge" },
