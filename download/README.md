@@ -4,8 +4,8 @@
 
 | نسخه / Version | فایل / File | زبان / Language |
 |---|---|---|
-| v1.3 (FA) | `مغزتو به چالش بکش - Brain Challenge v1.3 (FA).apk` | فارسی (starts in Persian) |
-| v1.3 (EN) | `Brain Challenge v1.3 (EN).apk` | English (starts in English) |
+| v1.3 (FA) | `Brain-Challenge-v1.3-FA.apk` | فارسی (starts in Persian) |
+| v1.3 (EN) | `Brain-Challenge-v1.3-EN.apk` | English (starts in English) |
 
 همچنین در صفحهٔ [Releases](https://github.com/leonscat113300/brain-challenge-game/releases/tag/v1.3) موجود است.
 Also available on the [Releases](https://github.com/leonscat113300/brain-challenge-game/releases/tag/v1.3) page.
