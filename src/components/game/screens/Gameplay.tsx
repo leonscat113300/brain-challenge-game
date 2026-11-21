@@ -111,18 +111,16 @@ function GameplaySession({ levelId }: { levelId: number }) {
     setTimeout(() => setVictory(true), 750);
   }, [hints.length, mistakes, levelId, completeLevel, setVictory]);
 
-  const onMistake = useCallback(
-    (msg?: { fa: string; en: string }) => {
+  const onMistake = useCallback(() => {
       /* no penalty after the level is solved or the player is out of lives,
-         and one single wrong answer can never cost more than one life */
+         and one single wrong answer can never cost more than one life.
+         NOTE: no red helper toast is shown on mistakes anymore (removed by design). */
       if (solvedRef.current || deadRef.current) return;
       const now = Date.now();
       const fresh = now - lastMistakeRef.current > 1500;
       lastMistakeRef.current = now;
       sfx.fail();
       vibrate(60, useGameStore.getState().vibrationOn);
-      const text = msg ? bi(msg, lang) : tr(lang, "wrongTry");
-      showToast(text, "#FF9FB2");
       madeMistakeStat();
       if (fresh) {
         setMistakes((m) => Math.min(m + 1, 2));
@@ -137,7 +135,7 @@ function GameplaySession({ levelId }: { levelId: number }) {
         }
       }
     },
-    [lang, showToast, madeMistakeStat]
+    [madeMistakeStat]
   );
 
   const onProgress = useCallback((p: number) => {

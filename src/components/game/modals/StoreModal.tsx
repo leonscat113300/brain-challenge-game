@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { Clapperboard, Lightbulb } from "lucide-react";
 import { useGameStore } from "@/lib/game/store";
 import { tr } from "@/lib/game/i18n";
 import { num } from "@/lib/game/utils";
 import { GameModal, CoinChip } from "../ui";
-import { sfx } from "@/lib/game/audio";
 
 const PACKS = [
   { n: 100, price: "$0.99" },
@@ -28,25 +26,6 @@ export default function StoreModal() {
   const lang = useGameStore((s) => s.lang);
   const open = useGameStore((s) => s.modal === "store");
   const setModal = useGameStore((s) => s.setModal);
-  const setAdOpen = useGameStore((s) => s.setAdOpen);
-  const addCoins = useGameStore((s) => s.addCoins);
-  const [flash, setFlash] = useState<number | null>(null);
-  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(
-    () => () => {
-      if (flashTimer.current) clearTimeout(flashTimer.current);
-    },
-    []
-  );
-
-  const buyPack = (n: number) => {
-    addCoins(n);
-    sfx.coin();
-    setFlash(n);
-    if (flashTimer.current) clearTimeout(flashTimer.current);
-    flashTimer.current = setTimeout(() => setFlash(null), 1200);
-  };
 
   return (
     <GameModal open={open} onClose={() => setModal(null)} title={tr(lang, "storeTitle")} accent="#E8A81C" lang={lang}>
@@ -56,53 +35,42 @@ export default function StoreModal() {
           <CoinChip />
         </div>
 
-        {/* free coins: fake rewarded ad */}
+        {/* disabled: watch-video button does nothing in this build */}
         <button
-          onClick={() => {
-            sfx.click();
-            setAdOpen(true);
-            setModal(null);
-          }}
-          className="btn-chunky flex w-full items-center justify-center gap-2 border-[3px] border-[#3B2E5A] bg-[#4CAF50] px-4 py-3 text-white"
+          disabled
+          aria-disabled
+          className="btn-chunky flex w-full cursor-not-allowed items-center justify-center gap-2 border-[3px] border-[#3B2E5A] bg-[#4CAF50]/50 px-4 py-3 text-white/85"
         >
           <Clapperboard size={20} strokeWidth={2.6} aria-hidden />
           <span>{tr(lang, "watchForCoins")}</span>
-          <span className="rounded-full border-2 border-[#3B2E5A] bg-[#FFD154] px-2 py-0.5 text-sm font-black text-[#3B2E5A]" dir="ltr">
+          <span className="rounded-full border-2 border-[#3B2E5A] bg-[#FFD154]/60 px-2 py-0.5 text-sm font-black text-[#3B2E5A]" dir="ltr">
             +{num(25, lang)}
           </span>
         </button>
 
-        {/* coin packs (clearly demo) */}
+        {/* coin packs: fully disabled — pressing them does nothing */}
         <div>
           <div className="grid grid-cols-3 gap-2">
             {PACKS.map((p) => (
               <button
                 key={p.n}
-                onClick={() => buyPack(p.n)}
-                className="btn-chunky relative overflow-hidden rounded-2xl border-[3px] border-[#3B2E5A] bg-white px-2 py-3 text-center"
+                disabled
+                aria-disabled
+                className="btn-chunky relative cursor-not-allowed overflow-hidden rounded-2xl border-[3px] border-[#3B2E5A] bg-white/60 px-2 py-3 text-center"
                 aria-label={`${p.n} ${tr(lang, "coins")} ${p.price}`}
               >
-                <CoinIcon className="mx-auto h-8 w-8" />
-                <div className="mt-1 text-base font-black text-[#3B2E5A]">{num(p.n, lang)}</div>
-                <div className="mx-auto mt-1 w-fit rounded-full border-2 border-[#3B2E5A] bg-[#FFD154] px-2 text-[11px] font-black text-[#3B2E5A]" dir="ltr">
+                <CoinIcon className="mx-auto h-8 w-8 opacity-70" />
+                <div className="mt-1 text-base font-black text-[#3B2E5A]/70">{num(p.n, lang)}</div>
+                <div className="mx-auto mt-1 w-fit rounded-full border-2 border-[#3B2E5A] bg-[#FFD154]/60 px-2 text-[11px] font-black text-[#3B2E5A]/70" dir="ltr">
                   {p.price}
                 </div>
-                {flash === p.n && (
-                  <div
-                    className="absolute inset-0 grid place-items-center rounded-xl bg-[#4CAF50]/95 px-1 text-center text-xs font-black leading-4 text-white"
-                    style={{ animation: "pop-in 0.25s both" }}
-                    role="status"
-                  >
-                    {tr(lang, "coinsAdded")}
-                  </div>
-                )}
               </button>
             ))}
           </div>
           <p className="mt-1.5 text-center text-[11px] font-bold text-[#8B84A3]">{tr(lang, "demoBuy")}</p>
         </div>
 
-        {/* hint pricing info */}
+        {/* hint pricing info (static, non-interactive) */}
         <div className="rounded-2xl border-[3px] border-[#3B2E5A] bg-[#F3F0FA] p-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 font-black text-[#3B2E5A]">

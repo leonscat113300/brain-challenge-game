@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { LevelProps } from "@/lib/game/types";
 import { Pulse, Scene, sfx, useDragMove } from "./shared";
@@ -8,7 +8,8 @@ import { Pulse, Scene, sfx, useDragMove } from "./shared";
 /* ------------------------------------------------------------------ */
 /* Level 27 — Apple shake: pull the branch DOWN and let it spring back */
 /* three times; the apple drops and lands in the wicker basket.        */
-/* Tree canopy, branch and basket are hand-drawn for a richer look.    */
+/* Redrawn: lush layered canopy, tapered trunk with root flare, and an */
+/* organic leafy branch that genuinely grows out of the trunk.         */
 /* ------------------------------------------------------------------ */
 
 function AppleSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
@@ -30,44 +31,110 @@ function AppleSvg({ className, style }: { className?: string; style?: React.CSSP
   );
 }
 
+/* Organic branch: grows out of the trunk (its left cut face is hidden
+   inside the trunk silhouette — fill body + open top/bottom outlines). */
 function BranchSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 340 100" className={className} style={style} aria-hidden>
-      {/* leafy sprigs: small natural leaves instead of blobs */}
-      <g fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3">
-        <path d="M34 52 Q22 34 42 26 Q58 34 46 52 Z" />
-        <path d="M64 44 Q58 22 80 20 Q92 34 76 46 Z" />
-        <path d="M120 40 Q112 20 134 18 Q146 32 130 42 Z" />
-        <path d="M172 38 Q168 16 190 18 Q200 32 184 42 Z" />
-        <path d="M226 42 Q224 22 246 24 Q254 38 238 46 Z" />
-        <path d="M272 50 Q274 32 292 36 Q298 50 284 56 Z" />
-      </g>
-      <g fill="#5DBB63" stroke="#3B2E5A" strokeWidth="3">
-        <path d="M50 34 Q44 14 66 12 Q76 26 60 36 Z" />
-        <path d="M96 30 Q94 12 114 12 Q124 26 108 34 Z" />
-        <path d="M150 30 Q150 12 170 14 Q178 28 162 36 Z" />
-        <path d="M204 32 Q206 14 224 18 Q230 32 214 38 Z" />
-        <path d="M252 40 Q258 24 274 30 Q278 44 262 48 Z" />
-      </g>
-      {/* leaf veins */}
-      <path d="M44 40 q6 -6 14 -8 M70 34 q4 -8 12 -12 M128 32 q6 -6 14 -8 M180 30 q4 -8 12 -10 M234 34 q6 -4 12 -6 M280 44 q6 -2 10 -4" stroke="#2E6B31" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-      {/* main woody branch as a tapered filled shape */}
+    <svg viewBox="0 0 460 130" className={className} style={style} aria-hidden>
+      {/* main woody branch — tapered, gentle S-curve, thick at the trunk side */}
       <path
-        d="M0 56 Q80 42 180 42 Q262 42 302 52 L302 68 Q262 60 180 62 Q80 64 0 76 Z"
+        d="M0 40 Q70 30 140 38 Q220 46 300 54 Q360 60 402 66 L404 80 Q356 72 298 68 Q218 62 138 62 Q66 60 0 74 Z"
+        fill="#8B5E3C"
+      />
+      {/* open outlines (top + bottom) so the root end melts into the trunk */}
+      <path d="M0 40 Q70 30 140 38 Q220 46 300 54 Q360 60 402 66" fill="none" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" />
+      <path d="M404 80 Q356 72 298 68 Q218 62 138 62 Q66 60 0 74" fill="none" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" />
+      {/* bark lines + knot */}
+      <path d="M50 52 L104 48 M130 52 L188 53 M226 58 L278 60 M314 62 L354 65" stroke="#6E4526" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <ellipse cx="150" cy="55" rx="8" ry="4.5" fill="#6E4526" stroke="#3B2E5A" strokeWidth="2.4" />
+
+      {/* small upward twig near the root */}
+      <path d="M116 40 Q110 26 96 18" stroke="#3B2E5A" strokeWidth="8" fill="none" strokeLinecap="round" />
+      <path d="M116 40 Q110 26 96 18" stroke="#8B5E3C" strokeWidth="4" fill="none" strokeLinecap="round" />
+      <path d="M96 20 Q82 12 88 0 Q102 4 100 18 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M100 22 Q116 10 126 22 Q114 32 100 26 Z" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+
+      {/* leaf cluster A sitting on the branch (x ~ 110-170) */}
+      <path d="M120 36 Q116 14 138 12 Q152 24 136 38 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M142 32 Q146 12 168 16 Q176 32 156 38 Z" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M108 42 Q94 32 100 18 Q116 22 118 38 Z" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+
+      {/* upward sub-twig with leaf fan (x ~ 230-260) */}
+      <path d="M232 46 Q244 30 260 22" stroke="#3B2E5A" strokeWidth="9" fill="none" strokeLinecap="round" />
+      <path d="M232 46 Q244 30 260 22" stroke="#8B5E3C" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+      <path d="M258 24 Q254 4 276 2 Q290 14 274 28 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M250 22 Q242 2 222 6 Q216 20 238 26 Z" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M262 26 Q284 20 288 36 Q274 44 260 34 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+
+      {/* hanging leaf pair (x ~ 330) */}
+      <path d="M330 64 Q326 80 338 88 Q348 80 342 64 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M348 66 Q354 82 368 84 Q370 70 354 62 Z" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+
+      {/* leaf veins */}
+      <path d="M126 32 q6 -8 16 -14 M150 28 q8 -8 20 -8 M240 18 q8 -6 20 -8 M334 72 q2 8 10 14" stroke="#2E6B31" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+
+      {/* hanging twig that holds the apple — tip reaches down to the stem */}
+      <path d="M396 66 Q412 82 406 106" stroke="#3B2E5A" strokeWidth="11" fill="none" strokeLinecap="round" />
+      <path d="M396 66 Q412 82 406 106" stroke="#8B5E3C" strokeWidth="5.5" fill="none" strokeLinecap="round" />
+      <path d="M410 80 Q428 72 434 86 Q422 96 408 88 Z" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M402 92 Q388 92 384 104 Q396 110 404 100 Z" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/* Tall tapered trunk with root flare and bark texture. */
+function TrunkSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 100 320" preserveAspectRatio="none" className={className} style={style} aria-hidden>
+      <path
+        d="M24 320 Q22 302 8 292 Q0 286 12 281 Q26 275 33 252 Q29 160 37 64 Q42 22 50 16 Q59 22 64 66 Q72 160 68 252 Q75 275 89 281 Q101 286 93 292 Q79 302 77 320 Z"
         fill="#8B5E3C"
         stroke="#3B2E5A"
         strokeWidth="5"
         strokeLinejoin="round"
       />
-      {/* bark lines + a knot */}
-      <path d="M36 58 L82 54 M108 52 L152 50 M188 50 L232 50 M258 52 L286 54" stroke="#6E4526" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
-      <ellipse cx="132" cy="55" rx="7" ry="4" fill="#6E4526" stroke="#3B2E5A" strokeWidth="2.4" />
-      {/* twig that holds the apple — tip reaches down to the apple's stem */}
-      <path d="M298 56 Q310 64 306 84" stroke="#3B2E5A" strokeWidth="12" fill="none" strokeLinecap="round" />
-      <path d="M298 56 Q310 64 306 84" stroke="#8B5E3C" strokeWidth="6.5" fill="none" strokeLinecap="round" />
-      {/* small leaves on the twig */}
-      <path d="M308 68 Q322 60 326 72 Q316 80 307 74 Z" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
-      <path d="M303 78 Q291 80 290 92 Q300 94 306 86 Z" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M40 90 Q38 150 41 210 M56 100 Q58 160 55 225 M47 130 Q46 180 48 245" stroke="#6E4526" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.8" />
+      <ellipse cx="52" cy="190" rx="5" ry="8" fill="#6E4526" opacity="0.65" />
+    </svg>
+  );
+}
+
+/* Lush layered canopy: dark back layer, mid-green mass, highlights, dots. */
+function CanopySvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 460 300" className={className} style={style} aria-hidden>
+      {/* back layer */}
+      <path
+        d="M60 190 Q8 150 40 96 Q30 40 110 34 Q150 -6 226 14 Q300 -4 340 48 Q416 44 434 108 Q466 160 420 200 Q436 252 366 258 Q318 296 250 272 Q180 300 128 264 Q66 268 60 190 Z"
+        fill="#3E8E41"
+        stroke="#3B2E5A"
+        strokeWidth="6"
+        strokeLinejoin="round"
+      />
+      {/* main layer */}
+      <path
+        d="M84 176 Q44 140 72 96 Q66 52 132 50 Q170 16 234 30 Q296 14 328 58 Q392 58 404 112 Q432 152 396 186 Q404 232 344 238 Q302 270 244 250 Q182 276 136 246 Q90 246 84 176 Z"
+        fill="#4CAF50"
+        stroke="#3B2E5A"
+        strokeWidth="6"
+        strokeLinejoin="round"
+      />
+      {/* highlight clusters */}
+      <path d="M150 92 Q160 68 190 74 Q206 84 196 102 Q178 114 150 92 Z" fill="#5DBB63" />
+      <path d="M240 70 Q256 52 282 62 Q296 76 280 92 Q256 98 240 70 Z" fill="#5DBB63" />
+      <path d="M310 120 Q330 106 348 122 Q352 138 334 142 Q314 140 310 120 Z" fill="#5DBB63" />
+      <path d="M120 150 Q134 136 152 146 Q156 160 140 164 Q124 162 120 150 Z" fill="#5DBB63" />
+      {/* texture dots */}
+      <g fill="#2E6B31" opacity="0.55">
+        <circle cx="200" cy="120" r="5" />
+        <circle cx="256" cy="150" r="5" />
+        <circle cx="170" cy="180" r="5" />
+        <circle cx="300" cy="90" r="5" />
+        <circle cx="350" cy="180" r="5" />
+        <circle cx="230" cy="210" r="5" />
+        <circle cx="130" cy="110" r="4.5" />
+        <circle cx="380" cy="140" r="4.5" />
+      </g>
     </svg>
   );
 }
@@ -109,7 +176,7 @@ function MissHandSvg({ className, style }: { className?: string; style?: React.C
     <svg viewBox="0 0 90 110" className={className} style={style} aria-hidden>
       <path d="M30 64 L30 24 Q30 16 37 16 Q44 16 44 24 L44 54" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
       <path d="M44 54 L44 12 Q44 4 51 4 Q58 4 58 12 L58 54" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
-      <path d="M58 54 L58 20 Q58 12 65 12 Q72 12 72 20 L72 58" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      <path d="M58 54 L58 20 Q58 12 65 12 Q72 12 72 58" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
       <path d="M26 60 Q22 72 30 82 L66 82 Q74 72 72 60 Z" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
       <path d="M30 82 Q26 96 38 100 L60 100 Q70 96 66 84" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
     </svg>
@@ -130,8 +197,42 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
   const [landed, setLanded] = useState(false);
   const [done, setDone] = useState(false);
   const [miss, setMiss] = useState(0);
+  const [hang, setHang] = useState<{ x: number; top: number } | null>(null);
   const shakesRef = useRef(0);
   const finishRef = useRef(false);
+  const sceneRef = useRef<HTMLDivElement | null>(null);
+  const twigTipRef = useRef<HTMLDivElement | null>(null);
+
+  /* measure the twig tip inside the scene so the apple always hangs
+     exactly from the branch — on any screen size / aspect ratio */
+  useLayoutEffect(() => {
+    const measure = () => {
+      const scene = sceneRef.current;
+      const tip = twigTipRef.current;
+      if (!scene || !tip) return;
+      const s = scene.getBoundingClientRect();
+      const t = tip.getBoundingClientRect();
+      if (s.width === 0 || s.height === 0) return;
+      const x = ((t.left + t.width / 2 - s.left) / s.width) * 100;
+      const tipY = ((t.top + t.height / 2 - s.top) / s.height) * 100;
+      /* apple height = 13% of scene width * (120/110); put the twig tip
+         right on the apple stem (11% below the apple's top edge) */
+      const appleH = s.width * 0.13 * (120 / 110);
+      const top = tipY - (appleH * 0.11 / s.height) * 100;
+      setHang({ x, top });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (sceneRef.current) ro.observe(sceneRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  const hangTop = hang ? `${hang.top}%` : "28%";
+  const hangLeft = hang ? `${hang.x - 6.5}%` : "58.5%";
 
   const branchDrag = useDragMove(
     useCallback(
@@ -174,129 +275,129 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
 
   return (
     <Scene bg="linear-gradient(180deg,#DFF3FA 0%,#EEF8E8 62%,#E3F2DC 100%)">
-      {/* sun + tree trunk + rich scalloped canopy */}
-      <div className="absolute end-[5%] top-[6%] h-12 w-12 rounded-full border-4 border-[#3B2E5A] bg-[#FFD154]" style={{ animation: "breathe 3.4s ease-in-out infinite" }} aria-hidden />
-      {/* trunk */}
-      <svg viewBox="0 0 70 200" preserveAspectRatio="none" className="absolute bottom-0 left-[2.5%] top-[21%] w-[8%]" aria-hidden>
-        <path d="M18 200 Q22 120 14 40 Q30 52 34 44 Q40 54 46 44 Q44 130 52 200 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-        <path d="M26 60 Q24 120 28 180 M40 70 Q42 130 40 190" stroke="#6E4526" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.8" />
-      </svg>
-      {/* canopy */}
-      <svg viewBox="0 0 420 250" className="absolute -left-[7%] -top-[13%] w-[62%]" aria-hidden>
-        <path
-          d="M30 150 Q-6 96 52 66 Q58 8 138 24 Q196 -14 246 28 Q318 8 336 70 Q392 96 358 142 Q380 196 314 204 Q266 244 202 216 Q136 248 88 206 Q20 210 30 150 Z"
-          fill="#4CAF50"
-          stroke="#3B2E5A"
-          strokeWidth="6"
-          strokeLinejoin="round"
-        />
-        <path d="M96 96 Q150 60 224 84 M64 140 Q120 110 176 128" stroke="#3E8E41" strokeWidth="7" fill="none" strokeLinecap="round" opacity="0.6" />
-        <path d="M150 70 Q160 56 178 58 M232 52 Q246 46 258 58" stroke="#2E6B31" strokeWidth="4" fill="none" strokeLinecap="round" />
-      </svg>
-      {/* grass */}
-      <div className="absolute inset-x-0 bottom-0 h-[16%] border-t-4 border-[#3B2E5A]" style={{ background: "linear-gradient(180deg,#5DBB63,#4CAF50)" }} aria-hidden />
+      <div ref={sceneRef} className="absolute inset-0">
+        {/* sun */}
+        <div className="absolute end-[5%] top-[6%] h-12 w-12 rounded-full border-4 border-[#3B2E5A] bg-[#FFD154]" style={{ animation: "breathe 3.4s ease-in-out infinite" }} aria-hidden />
 
-      {/* shake meter */}
-      <div className="absolute end-[4%] top-[3%] z-40 flex gap-2" aria-hidden>
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            className="h-4 w-4 rounded-full border-[3px] border-[#3B2E5A]"
-            style={{
-              background: i < shakes ? "#FFD154" : "rgba(250,250,250,0.65)",
-              animation: i === shakes - 1 ? "pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1) both" : undefined,
-            }}
-          />
-        ))}
-      </div>
+        {/* trunk with root flare */}
+        <TrunkSvg className="absolute bottom-0 left-[3%] top-[14%] w-[14%]" />
 
-      {/* basket (back rim, then apple, then front wall) */}
-      <div className="absolute bottom-[9%] left-[50%] w-[28%]" aria-hidden>
-        <div className="relative">
-          <div className="z-[10]">
-            <BasketBackSvg className="h-auto w-full" />
-          </div>
-          <div className="absolute left-0 top-[38%] z-[30] w-full">
-            <BasketFrontSvg className="h-auto w-full" />
+        {/* layered scalloped canopy */}
+        <CanopySvg className="absolute -left-[10%] -top-[13%] w-[60%]" />
+
+        {/* grass */}
+        <div className="absolute inset-x-0 bottom-0 h-[16%] border-t-4 border-[#3B2E5A]" style={{ background: "linear-gradient(180deg,#5DBB63,#4CAF50)" }} aria-hidden />
+
+        {/* little bush at the trunk base */}
+        <svg viewBox="0 0 150 70" className="absolute bottom-[12%] left-[-2%] w-[24%]" aria-hidden>
+          <path d="M12 66 Q-2 42 28 34 Q42 12 76 20 Q114 8 124 36 Q150 46 132 62 Q72 74 12 66 Z" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+        </svg>
+
+        {/* shake meter */}
+        <div className="absolute end-[4%] top-[3%] z-40 flex gap-2" aria-hidden>
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="h-4 w-4 rounded-full border-[3px] border-[#3B2E5A]"
+              style={{
+                background: i < shakes ? "#FFD154" : "rgba(250,250,250,0.65)",
+                animation: i === shakes - 1 ? "pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1) both" : undefined,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* basket (back rim, then apple, then front wall) */}
+        <div className="absolute bottom-[9%] left-[52%] w-[28%]" aria-hidden>
+          <div className="relative">
+            <div className="z-[10]">
+              <BasketBackSvg className="h-auto w-full" />
+            </div>
+            <div className="absolute left-0 top-[38%] z-[30] w-full">
+              <BasketFrontSvg className="h-auto w-full" />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* draggable branch: pull DOWN, release, repeat */}
-      <div
-        className="absolute left-0 top-[6%] z-[16] w-[72%]"
-        style={{
-          transform: `translate(0px, ${branchDrag.y}px)`,
-          transition: branchDrag.dragging ? "none" : "transform 0.45s cubic-bezier(0.34,1.56,0.64,1)",
-        }}
-      >
-        <Pulse active={hintPulse > 0 && !done && !falling}>
-          <motion.div key={`rustle-${shakes}`} animate={shakes > 0 ? { rotate: [0, -2.5, 2.5, 0] } : { rotate: 0 }} transition={{ duration: 0.5 }}>
-            <div
-              {...(falling || done ? {} : branchDrag.bind)}
-              role="button"
-              aria-label={lang === "fa" ? "شاخه درخت" : "tree branch"}
-              className={falling || done ? "" : "cursor-grab active:cursor-grabbing"}
-            >
-              <BranchSvg className="h-auto w-full" />
-            </div>
-          </motion.div>
-        </Pulse>
-      </div>
-
-      {/* the apple follows the branch, then drops into the basket */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[18]"
-        style={{
-          transform: `translate(0px, ${falling ? 0 : branchDrag.y}px)`,
-          transition: branchDrag.dragging && !falling ? "none" : "transform 0.45s cubic-bezier(0.34,1.56,0.64,1)",
-        }}
-      >
-        <motion.div
-          className="absolute left-[57%] w-[13%]"
-          style={{ top: "17%" }}
-          animate={
-            falling
-              ? landed
-                ? { top: "71.5%", rotate: 0 }
-                : { top: ["17%", "72%", "63%", "71.5%"], rotate: [0, 24, -12, 0] }
-              : { top: "17%", rotate: 0 }
-          }
-          transition={falling ? { duration: 1.2, times: [0, 0.5, 0.76, 1], ease: ["easeIn", "easeOut", "easeInOut"] } : { duration: 0.3 }}
-          onAnimationComplete={falling ? appleLanded : undefined}
+        {/* draggable branch: pull DOWN, release, repeat */}
+        <div
+          className="absolute left-[9.5%] top-[21%] z-[16] w-[64%]"
+          style={{
+            transform: `translate(0px, ${branchDrag.y}px)`,
+            transition: branchDrag.dragging ? "none" : "transform 0.45s cubic-bezier(0.34,1.56,0.64,1)",
+          }}
         >
-          <motion.div key={`wiggle-${shakes}`} animate={shakes > 0 ? { rotate: [0, 3 + shakes * 5, -(3 + shakes * 5), 0] } : { rotate: 0 }} transition={{ duration: 0.55 }}>
-            <div onClick={tapApple} role="button" aria-label={lang === "fa" ? "سیب" : "apple"} className={`pointer-events-auto ${falling ? "" : "cursor-pointer"}`}>
-              <AppleSvg className="h-auto w-full drop-shadow-[0_3px_2px_rgba(59,46,90,0.25)]" />
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
+          <Pulse active={hintPulse > 0 && !done && !falling}>
+            <motion.div key={`rustle-${shakes}`} animate={shakes > 0 ? { rotate: [0, -2.5, 2.5, 0] } : { rotate: 0 }} transition={{ duration: 0.5 }}>
+              <div
+                {...(falling || done ? {} : branchDrag.bind)}
+                role="button"
+                aria-label={lang === "fa" ? "شاخه درخت" : "tree branch"}
+                className={falling || done ? "" : "cursor-grab active:cursor-grabbing"}
+              >
+                <BranchSvg className="h-auto w-full" />
+              </div>
+            </motion.div>
+          </Pulse>
+          {/* invisible marker at the twig tip — used to align the hanging apple */}
+          <div ref={twigTipRef} className="pointer-events-none absolute h-1 w-1" style={{ left: "88.26%", top: "81.5%" }} aria-hidden />
+        </div>
 
-      {/* failed hand reach after tapping the apple */}
-      {miss > 0 && (
-        <motion.div
-          key={`miss-${miss}`}
-          className="pointer-events-none absolute left-[56%] top-0 z-40 w-[11%]"
-          initial={{ top: "100%", opacity: 0 }}
-          animate={{ top: ["100%", "46%", "100%", "100%"], opacity: [0, 1, 1, 0] }}
-          transition={{ duration: 1.1, times: [0, 0.45, 0.9, 1] }}
+        {/* the apple follows the branch, then drops into the basket */}
+        <div
+          className="pointer-events-none absolute inset-0 z-[18]"
+          style={{
+            transform: `translate(0px, ${falling ? 0 : branchDrag.y}px)`,
+            transition: branchDrag.dragging && !falling ? "none" : "transform 0.45s cubic-bezier(0.34,1.56,0.64,1)",
+          }}
         >
-          <MissHandSvg className="h-auto w-full" />
-        </motion.div>
-      )}
+          <motion.div
+            className="absolute w-[13%]"
+            style={{ left: hangLeft, top: hangTop }}
+            animate={
+              falling
+                ? landed
+                  ? { top: "71%", rotate: 0 }
+                  : { top: [hangTop, "72%", "63%", "71%"], rotate: [0, 24, -12, 0] }
+                : { top: hangTop, rotate: 0 }
+            }
+            transition={falling ? { duration: 1.2, times: [0, 0.5, 0.76, 1], ease: ["easeIn", "easeOut", "easeInOut"] } : { duration: 0.3 }}
+            onAnimationComplete={falling ? appleLanded : undefined}
+          >
+            <motion.div key={`wiggle-${shakes}`} animate={shakes > 0 ? { rotate: [0, 3 + shakes * 5, -(3 + shakes * 5), 0] } : { rotate: 0 }} transition={{ duration: 0.55 }}>
+              <div onClick={tapApple} role="button" aria-label={lang === "fa" ? "سیب" : "apple"} className={`pointer-events-auto ${falling ? "" : "cursor-pointer"}`}>
+                <AppleSvg className="h-auto w-full drop-shadow-[0_3px_2px_rgba(59,46,90,0.25)]" />
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
 
-      {/* sparkles when the apple lands */}
-      {landed &&
-        [
-          { l: "54%", t: "58%", d: "0s" },
-          { l: "72%", t: "55%", d: "0.14s" },
-          { l: "63%", t: "50%", d: "0.28s" },
-        ].map((s, i) => (
-          <span key={i} className="pointer-events-none absolute z-40" style={{ left: s.l, top: s.t, animation: `star-pop 0.8s ease ${s.d} both` }}>
-            <Star className="h-7 w-7" />
-          </span>
-        ))}
+        {/* failed hand reach after tapping the apple */}
+        {miss > 0 && (
+          <motion.div
+            key={`miss-${miss}`}
+            className="pointer-events-none absolute top-0 z-40 w-[11%]"
+            style={{ left: hang ? `${hang.x - 5.5}%` : "58%" }}
+            initial={{ top: "100%", opacity: 0 }}
+            animate={{ top: ["100%", "46%", "100%", "100%"], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1.1, times: [0, 0.45, 0.9, 1] }}
+          >
+            <MissHandSvg className="h-auto w-full" />
+          </motion.div>
+        )}
+
+        {/* sparkles when the apple lands */}
+        {landed &&
+          [
+            { l: "54%", t: "58%", d: "0s" },
+            { l: "72%", t: "55%", d: "0.14s" },
+            { l: "63%", t: "50%", d: "0.28s" },
+          ].map((s, i) => (
+            <span key={i} className="pointer-events-none absolute z-40" style={{ left: s.l, top: s.t, animation: `star-pop 0.8s ease ${s.d} both` }}>
+              <Star className="h-7 w-7" />
+            </span>
+          ))}
+      </div>
     </Scene>
   );
 }

@@ -208,8 +208,8 @@ export const useGameStore = create<GameState>()(
       playerName: "",
       coins: 100,
       progress: {},
-      /* review build: every implemented level is open so all designs can be played; release builds revert to 1 */
-      unlocked: TOTAL_LEVELS,
+      /* progressive unlock: every level starts locked; winning a level opens the next one */
+      unlocked: 1,
       stats: { ...DEFAULT_STATS },
       daily: { lastClaim: null, streak: 0, lastDailyDone: null },
       achievements: {},
@@ -330,7 +330,7 @@ export const useGameStore = create<GameState>()(
         set({
           coins: 100,
           progress: {},
-          unlocked: TOTAL_LEVELS,
+          unlocked: 1,
           playerName: "",
           stats: { ...DEFAULT_STATS },
           daily: { lastClaim: null, streak: 0, lastDailyDone: null },
@@ -350,13 +350,19 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: "brain-challenge-save-r2",
-      /* v4: player name + extended performance stats for achievements (old saves keep progress) */
-      version: 4,
+      /* v5: strict progressive unlock — unlocked is re-derived from real progress,
+         so no level beyond (highest solved + 1) can be open */
+      version: 5,
       migrate: (persisted) => {
         const p = (persisted ?? {}) as Partial<GameState>;
+        const prog = (p.progress ?? {}) as Record<number, number>;
+        const solvedMax = Object.keys(prog).reduce(
+          (mx, k) => ((prog[Number(k)] ?? 0) > 0 ? Math.max(mx, Number(k)) : mx),
+          0
+        );
         return {
           ...(p as GameState),
-          unlocked: Math.max(p.unlocked ?? 0, TOTAL_LEVELS),
+          unlocked: Math.max(1, Math.min(TOTAL_LEVELS, solvedMax + 1)),
           playerName: typeof p.playerName === "string" ? p.playerName : "",
           stats: { ...DEFAULT_STATS, ...(p.stats ?? {}) },
         };

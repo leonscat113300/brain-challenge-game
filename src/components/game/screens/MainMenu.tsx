@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Settings, Store, Grid3X3, Gift, Trophy, UserRound, Languages, Play } from "lucide-react";
 import { useGameStore, TOTAL_LEVELS } from "@/lib/game/store";
 import { tr } from "@/lib/game/i18n";
-import { num, bi } from "@/lib/game/utils";
+import { num } from "@/lib/game/utils";
 import { sfx } from "@/lib/game/audio";
 import { Brain } from "../Brain";
 import { IconBtn, CoinChip } from "../ui";
@@ -134,9 +134,6 @@ export default function MainMenu() {
             {dailyClaimedToday ? tr(lang, "dailyClaimed") : tr(lang, "dailyClaim")}
           </div>
         </button>
-        <div className="mt-2 text-center text-[10px] text-white/40 font-bold" dir="ltr">
-          {bi({ fa: "Brain Challenge — نسخه نمایشی", en: "Brain Challenge — Demo Build" }, lang)}
-        </div>
       </div>
     </div>
   );

@@ -93,6 +93,8 @@ export const STR = {
     en: "Your privacy matters. All game data is stored locally on your device only and never sent to a server. The game works fully offline.",
   },
   close: { fa: "بستن", en: "Close" },
+  emailUs: { fa: "ایمیل ما", en: "Email Us" },
+  contactUs: { fa: "ارتباط با ما", en: "Contact Us" },
   back: { fa: "بازگشت", en: "Back" },
   restart: { fa: "شروع دوباره", en: "Restart" },
   shakeBtn: { fa: "تکان بده!", en: "Shake!" },
