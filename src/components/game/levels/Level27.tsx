@@ -7,9 +7,9 @@ import { Pulse, Scene, sfx, useDragMove } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 27 — Apple shake: pull the branch DOWN and let it spring back */
-/* three times; the apple drops and lands in the wicker basket.        */
-/* Redrawn: lush layered canopy, tapered trunk with root flare, and an */
-/* organic leafy branch that genuinely grows out of the trunk.         */
+/* three times; the apple drops and lands on the grass.                */
+/* The trunk is planted in the ground: it is drawn ABOVE the grass so  */
+/* its root flare visibly grips the lawn, with grass tufts around it.  */
 /* ------------------------------------------------------------------ */
 
 function AppleSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
@@ -139,34 +139,17 @@ function CanopySvg({ className, style }: { className?: string; style?: React.CSS
   );
 }
 
-function BasketBackSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+/* Grass tufts that wrap around the trunk base so it visibly grows
+   out of the lawn. */
+function TuftSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 180 80" className={className} style={style} aria-hidden>
-      {/* dark inside of the basket */}
-      <path d="M16 38 L164 38 L158 58 Q90 66 22 58 Z" fill="#5C3A22" />
-      {/* back wall with faint weave */}
-      <path d="M14 38 Q90 12 166 38 Q170 52 158 58 L22 58 Q10 52 14 38 Z" fill="#B47A3F" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-      <path d="M30 40 Q90 22 150 40 M26 46 Q90 30 154 46" stroke="#8B5E3C" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.7" />
-    </svg>
-  );
-}
-
-function BasketFrontSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <svg viewBox="0 0 180 92" className={className} style={style} aria-hidden>
-      {/* woven front wall */}
-      <path d="M14 44 L166 44 Q162 92 90 92 Q18 92 14 44 Z" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-      {/* horizontal weave bands */}
-      <path d="M19 58 Q90 70 161 58" stroke="#8B5E3C" strokeWidth="5" fill="none" strokeLinecap="round" />
-      <path d="M24 72 Q90 84 156 72" stroke="#8B5E3C" strokeWidth="5" fill="none" strokeLinecap="round" />
-      <path d="M33 84 Q90 92 147 84" stroke="#8B5E3C" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-      {/* vertical stakes */}
-      <path d="M40 46 L43 88 M66 48 L68 91 M92 48 L92 91 M118 48 L117 90 M142 46 L140 86" stroke="#A96F35" strokeWidth="4" opacity="0.95" />
-      {/* diagonal weave highlights */}
-      <path d="M48 62 l8 6 M74 64 l8 6 M100 64 l8 6 M126 62 l8 6 M54 76 l8 6 M82 78 l8 6 M108 77 l8 6" stroke="#E0A860" strokeWidth="3" strokeLinecap="round" opacity="0.85" />
-      {/* chunky rim band with highlight */}
-      <path d="M12 36 Q90 14 168 36 L166 47 Q90 27 14 47 Z" fill="#E0A860" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
-      <path d="M24 38 Q90 21 156 38" stroke="#F2C98A" strokeWidth="3.5" fill="none" strokeLinecap="round" opacity="0.9" />
+    <svg viewBox="0 0 220 60" className={className} style={style} aria-hidden>
+      <path d="M6 58 Q4 34 18 28 Q14 44 20 58 Z" fill="#3E8E41" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M34 58 Q30 22 48 18 Q44 38 52 58 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M62 58 Q60 30 76 24 Q72 44 80 58 Z" fill="#3E8E41" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M140 58 Q142 28 158 22 Q154 42 162 58 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M172 58 Q174 20 192 16 Q188 38 196 58 Z" fill="#3E8E41" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M200 58 Q202 34 214 28 Q212 44 216 58 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -197,7 +180,9 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
   const [landed, setLanded] = useState(false);
   const [done, setDone] = useState(false);
   const [miss, setMiss] = useState(0);
-  const [hang, setHang] = useState<{ x: number; top: number } | null>(null);
+  /* hang.x = twig tip x (scene %), hang.top = apple rest top while swinging,
+     land = apple top when resting on the grass (computed, aspect-aware) */
+  const [hang, setHang] = useState<{ x: number; top: number; land: number } | null>(null);
   const shakesRef = useRef(0);
   const finishRef = useRef(false);
   const sceneRef = useRef<HTMLDivElement | null>(null);
@@ -219,7 +204,11 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
          right on the apple stem (11% below the apple's top edge) */
       const appleH = s.width * 0.13 * (120 / 110);
       const top = tipY - (appleH * 0.11 / s.height) * 100;
-      setHang({ x, top });
+      /* grass strip is the bottom 16% of the scene (its top edge at 84%).
+         Rest the apple so its bottom sits 2% into the lawn. */
+      const appleHpct = (appleH / s.height) * 100;
+      const land = 86 - appleHpct;
+      setHang({ x, top, land });
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -233,6 +222,8 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
 
   const hangTop = hang ? `${hang.top}%` : "28%";
   const hangLeft = hang ? `${hang.x - 6.5}%` : "58.5%";
+  const landTop = hang ? `${hang.land}%` : "76%";
+  const landBounceTop = hang ? `${hang.land - 6}%` : "70%";
 
   const branchDrag = useDragMove(
     useCallback(
@@ -277,16 +268,21 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
     <Scene bg="linear-gradient(180deg,#DFF3FA 0%,#EEF8E8 62%,#E3F2DC 100%)">
       <div ref={sceneRef} className="absolute inset-0">
         {/* sun */}
-        <div className="absolute end-[5%] top-[6%] h-12 w-12 rounded-full border-4 border-[#3B2E5A] bg-[#FFD154]" style={{ animation: "breathe 3.4s ease-in-out infinite" }} aria-hidden />
+        <div className="absolute right-[6%] top-[6%] h-12 w-12 rounded-full border-4 border-[#3B2E5A] bg-[#FFD154]" style={{ animation: "breathe 3.4s ease-in-out infinite" }} aria-hidden />
 
-        {/* trunk with root flare */}
-        <TrunkSvg className="absolute bottom-0 left-[3%] top-[14%] w-[14%]" />
-
-        {/* layered scalloped canopy */}
-        <CanopySvg className="absolute -left-[10%] -top-[13%] w-[60%]" />
-
-        {/* grass */}
+        {/* grass drawn first — the trunk stands ON TOP of it */}
         <div className="absolute inset-x-0 bottom-0 h-[16%] border-t-4 border-[#3B2E5A]" style={{ background: "linear-gradient(180deg,#5DBB63,#4CAF50)" }} aria-hidden />
+
+        {/* trunk planted in the lawn: root flare grips the ground.
+            NOTE: <svg> is a replaced element — top/bottom alone do NOT
+            stretch it, so an explicit height is required. */}
+        <TrunkSvg className="absolute bottom-0 left-[2%] top-[25%] h-[75%] w-[18%]" />
+
+        {/* grass tufts hugging the trunk base */}
+        <TuftSvg className="absolute bottom-[2%] left-[-2%] w-[22%]" />
+
+        {/* big lush canopy — caps the trunk and shades the branch root */}
+        <CanopySvg className="absolute -left-[18%] -top-[7%] z-[17] w-[86%]" />
 
         {/* little bush at the trunk base */}
         <svg viewBox="0 0 150 70" className="absolute bottom-[12%] left-[-2%] w-[24%]" aria-hidden>
@@ -294,7 +290,7 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
         </svg>
 
         {/* shake meter */}
-        <div className="absolute end-[4%] top-[3%] z-40 flex gap-2" aria-hidden>
+        <div className="absolute right-[4%] top-[3%] z-40 flex gap-2" aria-hidden>
           {[0, 1, 2].map((i) => (
             <span
               key={i}
@@ -307,21 +303,9 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
           ))}
         </div>
 
-        {/* basket (back rim, then apple, then front wall) */}
-        <div className="absolute bottom-[9%] left-[52%] w-[28%]" aria-hidden>
-          <div className="relative">
-            <div className="z-[10]">
-              <BasketBackSvg className="h-auto w-full" />
-            </div>
-            <div className="absolute left-0 top-[38%] z-[30] w-full">
-              <BasketFrontSvg className="h-auto w-full" />
-            </div>
-          </div>
-        </div>
-
         {/* draggable branch: pull DOWN, release, repeat */}
         <div
-          className="absolute left-[9.5%] top-[21%] z-[16] w-[64%]"
+          className="absolute left-[9.5%] top-[27%] z-[16] w-[64%]"
           style={{
             transform: `translate(0px, ${branchDrag.y}px)`,
             transition: branchDrag.dragging ? "none" : "transform 0.45s cubic-bezier(0.34,1.56,0.64,1)",
@@ -343,7 +327,7 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
           <div ref={twigTipRef} className="pointer-events-none absolute h-1 w-1" style={{ left: "88.26%", top: "81.5%" }} aria-hidden />
         </div>
 
-        {/* the apple follows the branch, then drops into the basket */}
+        {/* the apple follows the branch, then drops and lands on the grass */}
         <div
           className="pointer-events-none absolute inset-0 z-[18]"
           style={{
@@ -357,8 +341,8 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
             animate={
               falling
                 ? landed
-                  ? { top: "71%", rotate: 0 }
-                  : { top: [hangTop, "72%", "63%", "71%"], rotate: [0, 24, -12, 0] }
+                  ? { top: landTop, rotate: 0 }
+                  : { top: [hangTop, landTop, landBounceTop, landTop], rotate: [0, 24, -12, 0] }
                 : { top: hangTop, rotate: 0 }
             }
             transition={falling ? { duration: 1.2, times: [0, 0.5, 0.76, 1], ease: ["easeIn", "easeOut", "easeInOut"] } : { duration: 0.3 }}
@@ -386,14 +370,15 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
           </motion.div>
         )}
 
-        {/* sparkles when the apple lands */}
+        {/* sparkles when the apple lands on the lawn */}
         {landed &&
+          hang &&
           [
-            { l: "54%", t: "58%", d: "0s" },
-            { l: "72%", t: "55%", d: "0.14s" },
-            { l: "63%", t: "50%", d: "0.28s" },
+            { l: hang.x - 10, t: hang.land + 5, d: "0s" },
+            { l: hang.x + 5, t: hang.land + 3, d: "0.14s" },
+            { l: hang.x - 3, t: hang.land - 2, d: "0.28s" },
           ].map((s, i) => (
-            <span key={i} className="pointer-events-none absolute z-40" style={{ left: s.l, top: s.t, animation: `star-pop 0.8s ease ${s.d} both` }}>
+            <span key={i} className="pointer-events-none absolute z-40" style={{ left: `${s.l}%`, top: `${s.t}%`, animation: `star-pop 0.8s ease ${s.d} both` }}>
               <Star className="h-7 w-7" />
             </span>
           ))}
