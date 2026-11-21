@@ -119,21 +119,21 @@ export default function GameApp() {
             <motion.div
               key="splash"
               className="absolute inset-0 z-[100] grid place-items-center cursor-pointer"
-              style={{ background: "#7E2FAE" }}
+              style={{ background: "#030206" }}
               onClick={advanceSplash}
               initial={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.45, ease: "easeOut" } }}
               role="button"
               aria-label="Candy Team Game Studio"
             >
-              <div className="flex flex-col items-center gap-5 px-8">
+              <div className="flex flex-col items-center gap-6 px-6">
                 <motion.img
                   src="/candy-team-logo.webp"
                   alt="Candy Team Game Studio"
-                  className="w-full max-w-[300px] h-auto"
+                  className="w-full max-w-[340px] h-auto"
                   draggable={false}
-                  initial={{ opacity: 0, scale: 0.7, rotate: -4 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.65, ease: "easeOut" }}
                 />
                 <motion.div
