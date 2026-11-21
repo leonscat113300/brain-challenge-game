@@ -5,8 +5,9 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 90 — A thief hides behind one of the curtains. The odd shadow */
-/* (a fedora!) gives it away — touch it to pull the curtain aside.     */
+/* Level 90 — A thief hides behind one of THREE curtained windows. The */
+/* odd shadow (a fedora!) gives it away — touch it to pull the curtain */
+/* aside. The plant and cat shadows are normal — decoys.               */
 /* ------------------------------------------------------------------ */
 
 function CurtainSvg({ shifted }: { shifted: boolean }) {
@@ -97,6 +98,15 @@ export default function Level90({ lang, solved, onSolved, onMistake, onProgress,
     });
   }, [solved, revealed, onMistake]);
 
+  const tapCatShadow = useCallback(() => {
+    if (solved || revealed) return;
+    sfx.fail();
+    onMistake({
+      fa: "این سایه فقط گربهٔ خانگی است؛ سایهٔ کلاه‌دار را پیدا کن!",
+      en: "That shadow is just the house cat; find the hat-shaped one!",
+    });
+  }, [solved, revealed, onMistake]);
+
   const tapGlass = useCallback(() => {
     if (solved || revealed) return;
     sfx.fail();
@@ -140,9 +150,9 @@ export default function Level90({ lang, solved, onSolved, onMistake, onProgress,
         aria-hidden
       />
 
-      {/* two windows with curtains */}
+      {/* three windows with curtains */}
       {/* LEFT window (plant shadow trap) */}
-      <div className="absolute bottom-[20%] left-[6%] w-[36%]">
+      <div className="absolute bottom-[20%] left-[3%] w-[29%]">
         <div className="relative rounded-xl border-4 border-[#A96F35] bg-[#BFE7F5]/90">
           {/* plant silhouette behind glass */}
           <svg viewBox="0 0 140 110" className="block h-auto w-full opacity-45" aria-hidden>
@@ -166,8 +176,31 @@ export default function Level90({ lang, solved, onSolved, onMistake, onProgress,
         </div>
       </div>
 
+      {/* MIDDLE window (cat shadow trap) */}
+      <div className="absolute bottom-[20%] left-[35%] w-[29%]">
+        <div className="relative rounded-xl border-4 border-[#A96F35] bg-[#BFE7F5]/90">
+          <svg viewBox="0 0 140 110" className="block h-auto w-full opacity-45" aria-hidden>
+            {/* sitting cat silhouette */}
+            <path d="M84 104 Q84 62 70 48 Q60 38 62 30 Q64 20 72 26 L74 18 L80 26 L88 24 Q98 26 96 40 Q110 58 108 104 Z" fill="#2A1D50" />
+            <path d="M96 58 Q104 70 102 84" stroke="#2A1D50" strokeWidth="7" fill="none" strokeLinecap="round" />
+          </svg>
+          <button
+            type="button"
+            onClick={tapCatShadow}
+            aria-label={lang === "fa" ? "سایهٔ گربه" : "cat shadow"}
+            className="absolute inset-0 cursor-pointer"
+          >
+            <span className="sr-only">{lang === "fa" ? "سایهٔ گربه" : "cat shadow"}</span>
+          </button>
+          {/* curtain on rail */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-[46%]">
+            <CurtainSvg shifted={false} />
+          </div>
+        </div>
+      </div>
+
       {/* RIGHT window (thief!) */}
-      <div className="absolute bottom-[20%] right-[6%] w-[36%]">
+      <div className="absolute bottom-[20%] left-[68%] w-[29%]">
         <div className="relative rounded-xl border-4 border-[#A96F35] bg-[#BFE7F5]/90">
           {/* revealed thief */}
           {revealed ? (
@@ -203,7 +236,7 @@ export default function Level90({ lang, solved, onSolved, onMistake, onProgress,
               type="button"
               onClick={tapOddShadow}
               aria-label={lang === "fa" ? "سایهٔ مشکوک" : "suspicious shadow"}
-              className="absolute left-[26%] top-[8%] h-[52%] w-[48%] cursor-pointer"
+              className="absolute left-[32%] top-[10%] h-[46%] w-[38%] cursor-pointer"
             >
               <span className="sr-only">{lang === "fa" ? "سایهٔ مشکوک" : "suspicious shadow"}</span>
             </button>
@@ -223,14 +256,14 @@ export default function Level90({ lang, solved, onSolved, onMistake, onProgress,
         type="button"
         onClick={tapCoatStand}
         aria-label={lang === "fa" ? "رخت‌آویز" : "coat stand"}
-        className="absolute bottom-[1%] left-[32%] z-10 w-[10%] cursor-pointer transition-transform active:scale-90"
+        className="absolute bottom-[1%] left-[15%] z-10 w-[9%] cursor-pointer transition-transform active:scale-90"
         aria-hidden={revealed}
       >
         <CoatStandSvg />
       </button>
 
       {/* floor lamp */}
-      <div className="absolute bottom-[16%] left-[44%] w-[13%]" aria-hidden>
+      <div className="absolute bottom-[3%] left-[44%] w-[10%]" aria-hidden>
         <svg viewBox="0 0 70 110">
           <path d="M14 26 L56 26 L46 4 L24 4 Z" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" />
           <path d="M35 26 L35 92" stroke="#3B2E5A" strokeWidth="6" strokeLinecap="round" />

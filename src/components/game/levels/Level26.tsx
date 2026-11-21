@@ -6,7 +6,7 @@ import type { LevelProps } from "@/lib/game/types";
 import { Pulse, Scene, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 26 — Let go!: BOTH of the child's hands grip the string —      */
+/* Level 26 — Let go!: THREE of the child's hands grip the string —    */
 /* open them one by one so the helium balloon floats up and sticks      */
 /* to the ceiling.                                                      */
 /* ------------------------------------------------------------------ */
@@ -85,31 +85,39 @@ function BirdSvg({ className, style }: { className?: string; style?: React.CSSPr
 
 export default function Level26({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [openTop, setOpenTop] = useState(false);
+  const [openMid, setOpenMid] = useState(false);
   const [openBottom, setOpenBottom] = useState(false);
   const [stuck, setStuck] = useState(false);
   const [done, setDone] = useState(false);
   const finishRef = useRef(false);
 
-  /* the balloon only flies once BOTH hands have let go of the string */
-  const flying = openTop && openBottom;
+  /* the balloon only flies once ALL THREE hands have let go of the string */
+  const flying = openTop && openMid && openBottom;
 
   const openUpperHand = () => {
     if (solved || done || openTop) return;
     setOpenTop(true);
     sfx.pop();
-    if (!openBottom) onProgress(0.5);
+    if (!openMid || !openBottom) onProgress(0.33);
+  };
+
+  const openMiddleHand = () => {
+    if (solved || done || openMid) return;
+    setOpenMid(true);
+    sfx.pop();
+    if (!openTop || !openBottom) onProgress(0.33);
   };
 
   const release = () => {
     if (solved || done || openBottom) return;
     setOpenBottom(true);
     sfx.pop();
-    if (!openTop) onProgress(0.5);
+    if (!openTop || !openMid) onProgress(0.34);
   };
 
   useEffect(() => {
-    if (openTop && openBottom && !done && !solved) sfx.whoosh();
-  }, [openTop, openBottom, done, solved]);
+    if (openTop && openMid && openBottom && !done && !solved) sfx.whoosh();
+  }, [openTop, openMid, openBottom, done, solved]);
 
   const tapBalloon = () => {
     if (solved || done || flying) return;
@@ -193,11 +201,20 @@ export default function Level26({ lang, solved, onSolved, onMistake, onProgress,
         </div>
       </motion.div>
 
-      {/* the child's upper hand also gripping the string — both must open */}
-      <div className="absolute bottom-[21%] right-[13%] z-30 w-[21%] rotate-[7deg]">
+      {/* the child's upper hand also gripping the string — all three must open */}
+      <div className="absolute bottom-[26%] right-[13%] z-30 w-[20%] rotate-[7deg]">
         <Pulse active={hintPulse > 0 && !openTop && !done}>
-          <button type="button" aria-label={lang === "fa" ? "دست دیگر" : "other hand"} onClick={openUpperHand} className="w-full cursor-pointer">
+          <button type="button" aria-label={lang === "fa" ? "دست بالا" : "upper hand"} onClick={openUpperHand} className="w-full cursor-pointer">
             <HandSvg open={openTop} className="h-auto w-full" />
+          </button>
+        </Pulse>
+      </div>
+
+      {/* the child's middle hand gripping the string */}
+      <div className="absolute bottom-[17%] right-[13.5%] z-30 w-[21%] rotate-[-6deg]">
+        <Pulse active={hintPulse > 0 && !openMid && !done}>
+          <button type="button" aria-label={lang === "fa" ? "دست میانی" : "middle hand"} onClick={openMiddleHand} className="w-full cursor-pointer">
+            <HandSvg open={openMid} className="h-auto w-full" />
           </button>
         </Pulse>
       </div>

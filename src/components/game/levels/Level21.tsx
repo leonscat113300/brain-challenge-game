@@ -8,8 +8,8 @@ import { num } from "@/lib/game/utils";
 
 /* ------------------------------------------------------------------ */
 /* Level 21 — Which ice cream melts first? The one in direct "sun".    */
-/* A dead gray lamp hangs over the fridge-cooled cone as a decoy, and  */
-/* both the dead lamp and the fridge are tap-traps.                    */
+/* FOUR cones now: sun lamp over A (answer), umbrella over B, dead     */
+/* lamp over C, and a COLD BLUE lamp over D — plus the fridge decoy.   */
 /* ------------------------------------------------------------------ */
 
 const DRIPS = [
@@ -53,15 +53,23 @@ function ConeSvg({ melted, scoop, className }: { melted: boolean; scoop: string;
   );
 }
 
-function SunLampSvg({ className, off = false }: { className?: string; off?: boolean }) {
+function SunLampSvg({ className, off = false, cool = false }: { className?: string; off?: boolean; cool?: boolean }) {
+  const ray = cool ? "#7FDFE5" : off ? "#C7C2D8" : "#E8A81C";
+  const dome = cool ? "#BFE7F5" : off ? "#E8E4F2" : "#FFD154";
+  const lip = cool ? "#DFF7FA" : off ? "#FAFAFA" : "#FFE99A";
   return (
     <svg viewBox="0 0 140 100" className={className} aria-hidden>
-      <g stroke={off ? "#C7C2D8" : "#E8A81C"} strokeWidth="6" strokeLinecap="round">
+      <g stroke={ray} strokeWidth="6" strokeLinecap="round">
         <path d="M70 4 v12 M30 14 l8 10 M110 14 l-8 10 M12 44 h12 M116 44 h12" />
       </g>
-      <path d="M30 66 Q30 34 70 34 Q110 34 110 66 Z" fill={off ? "#E8E4F2" : "#FFD154"} stroke="#3B2E5A" strokeWidth="5" />
-      <ellipse cx="70" cy="66" rx="40" ry="8" fill={off ? "#FAFAFA" : "#FFE99A"} stroke="#3B2E5A" strokeWidth="5" />
+      <path d="M30 66 Q30 34 70 34 Q110 34 110 66 Z" fill={dome} stroke="#3B2E5A" strokeWidth="5" />
+      <ellipse cx="70" cy="66" rx="40" ry="8" fill={lip} stroke="#3B2E5A" strokeWidth="5" />
       {off && <path d="M60 46 q8 6 0 14 M76 44 q8 6 0 14" stroke="#C7C2D8" strokeWidth="3.5" fill="none" strokeLinecap="round" />}
+      {cool && (
+        <g stroke="#4FB8C4" strokeWidth="3.5" strokeLinecap="round">
+          <path d="M62 74 l-5 5 M62 79 l-5 -5 M78 74 l5 5 M78 79 l5 -5" opacity="0.9" />
+        </g>
+      )}
     </svg>
   );
 }
@@ -126,6 +134,7 @@ export default function Level21({ lang, solved, onSolved, onMistake, onProgress,
   const [badge, setBadge] = useState(false);
   const [shakeIdx, setShakeIdx] = useState(-1);
   const [lampWob, setLampWob] = useState(false);
+  const [coolWob, setCoolWob] = useState(false);
   const [fridgeWob, setFridgeWob] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -156,6 +165,14 @@ export default function Level21({ lang, solved, onSolved, onMistake, onProgress,
     onMistake({ fa: "این چراغ خاموشه!", en: "This lamp is switched off!" });
   };
 
+  const tapCoolLamp = () => {
+    if (solved || done || melting) return;
+    setCoolWob(true);
+    window.setTimeout(() => setCoolWob(false), 560);
+    sfx.pop();
+    onMistake({ fa: "نور آبی گرما نمی‌ده!", en: "Blue light gives no heat!" });
+  };
+
   const tapFridge = () => {
     if (solved || done || melting) return;
     setFridgeWob(true);
@@ -166,61 +183,73 @@ export default function Level21({ lang, solved, onSolved, onMistake, onProgress,
 
   const cones = [
     { scoop: "#FF8FAB", left: "4%" },
-    { scoop: "#FFF3D6", left: "27%" },
-    { scoop: "#A8E6CF", left: "50%" },
+    { scoop: "#FFF3D6", left: "24%" },
+    { scoop: "#A8E6CF", left: "44%" },
+    { scoop: "#C9B6F2", left: "64%" },
   ];
 
   return (
     <Scene bg="linear-gradient(180deg,#FFF7EA 0%,#FFEFD6 86%,#E7C9A0 87%,#DBBB92 100%)">
       {/* sun lamp above cone A */}
-      <div className="absolute top-[4%] left-[1%] w-[24%]" aria-hidden>
+      <div className="absolute top-[4%] left-[1%] w-[22%]" aria-hidden>
         <div
           className="absolute inset-[-35%]"
           style={{ background: "radial-gradient(circle, rgba(255,209,84,0.5), transparent 68%)", animation: "glow 1.8s ease-in-out infinite" }}
         />
         <SunLampSvg className="relative w-full h-auto" />
       </div>
-      <div className="absolute top-[24%] bottom-[4%] left-[11.5%] w-[1.6%] bg-[#8B5E3C] border-x-[3px] border-[#3B2E5A]" aria-hidden />
+      <div className="absolute top-[24%] bottom-[4%] left-[11%] w-[1.6%] bg-[#8B5E3C] border-x-[3px] border-[#3B2E5A]" aria-hidden />
       {/* heat shimmer over cone A */}
       <ShimmerSvg className="absolute top-[29%] left-[6%] w-[13%]" delay="0s" />
       <ShimmerSvg className="absolute top-[30%] left-[13%] w-[10%]" delay="0.4s" />
 
       {/* patio umbrella shading cone B */}
-      <UmbrellaSvg className="absolute top-[5%] left-[19%] w-[32%]" />
-      <div className="absolute top-[27%] bottom-[4%] left-[34.4%] w-[1.6%] bg-[#3B2E5A] rounded-full" aria-hidden />
+      <UmbrellaSvg className="absolute top-[5%] left-[16%] w-[31%]" />
+      <div className="absolute top-[27%] bottom-[4%] left-[30.7%] w-[1.6%] bg-[#3B2E5A] rounded-full" aria-hidden />
 
-      {/* decoy: second sun lamp over the fridge-cooled cone, switched off */}
+      {/* decoy: dead lamp over cone C, switched off */}
       <button
         type="button"
         onClick={tapLamp}
-        className="absolute top-[5%] left-[50%] w-[22%]"
+        className="absolute top-[5%] left-[41%] w-[22%]"
         style={{ animation: lampWob ? "shake-hard 0.5s ease-in-out" : undefined }}
         aria-label={lang === "fa" ? "چراغ خاموش" : "switched-off lamp"}
       >
         <SunLampSvg off className="relative w-full h-auto" />
       </button>
 
-      {/* decoy: mini fridge with open door beside cone C */}
+      {/* decoy: cold BLUE lamp over cone D — light without warmth */}
+      <button
+        type="button"
+        onClick={tapCoolLamp}
+        className="absolute top-[5%] left-[61%] w-[22%]"
+        style={{ animation: coolWob ? "shake-hard 0.5s ease-in-out" : undefined }}
+        aria-label={lang === "fa" ? "چراغ آبی سرد" : "cold blue lamp"}
+      >
+        <SunLampSvg cool className="relative w-full h-auto" />
+      </button>
+      <MistSvg className="absolute top-[28%] left-[63%] w-[13%]" delay="0s" />
+      <MistSvg className="absolute top-[29%] left-[69%] w-[10%]" delay="0.5s" />
+
+      {/* decoy: mini fridge with open door beside cone D */}
       <button
         type="button"
         onClick={tapFridge}
-        className="absolute bottom-[5%] left-[70%] w-[22%]"
+        className="absolute bottom-[5%] left-[76%] w-[20%]"
         style={{ animation: fridgeWob ? "shake-hard 0.5s ease-in-out" : undefined }}
         aria-label={lang === "fa" ? "یخچال" : "fridge"}
       >
         <FridgeSvg className="w-full h-auto" />
       </button>
-      <MistSvg className="absolute bottom-[30%] left-[66%] w-[15%]" delay="0s" />
-      <MistSvg className="absolute bottom-[28%] left-[73%] w-[12%]" delay="0.5s" />
 
       {/* wooden stand */}
-      <div className="absolute bottom-[22%] left-[2%] w-[66%] h-[4.5%] rounded-lg bg-[#8B5E3C] border-4 border-[#3B2E5A]" aria-hidden />
-      <div className="absolute bottom-0 left-[6%] w-[3%] h-[22%] bg-[#8B5E3C] border-x-4 border-[#3B2E5A]" aria-hidden />
-      <div className="absolute bottom-0 left-[60%] w-[3%] h-[22%] bg-[#8B5E3C] border-x-4 border-[#3B2E5A]" aria-hidden />
+      <div className="absolute bottom-[22%] left-[1%] w-[86%] h-[4.5%] rounded-lg bg-[#8B5E3C] border-4 border-[#3B2E5A]" aria-hidden />
+      <div className="absolute bottom-0 left-[5%] w-[3%] h-[22%] bg-[#8B5E3C] border-x-4 border-[#3B2E5A]" aria-hidden />
+      <div className="absolute bottom-0 left-[80%] w-[3%] h-[22%] bg-[#8B5E3C] border-x-4 border-[#3B2E5A]" aria-hidden />
 
-      {/* the three cones */}
+      {/* the four cones */}
       {cones.map((c, i) => (
-        <div key={c.scoop} className="absolute bottom-[26%] w-[17%]" style={{ left: c.left }}>
+        <div key={c.scoop} className="absolute bottom-[26%] w-[15%]" style={{ left: c.left }}>
           <Pulse active={hintPulse > 0 && i === 0 && !done}>
             <button
               type="button"
@@ -246,7 +275,7 @@ export default function Level21({ lang, solved, onSolved, onMistake, onProgress,
 
       {/* sun badge pops over the melting cone */}
       <motion.div
-        className="absolute top-[34%] left-[7%] w-[14%] z-[20] pointer-events-none"
+        className="absolute top-[34%] left-[5%] w-[14%] z-[20] pointer-events-none"
         initial={false}
         animate={badge ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -40 }}
         transition={{ type: "spring", stiffness: 260, damping: 15 }}

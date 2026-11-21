@@ -7,7 +7,8 @@ import type { DragState } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 85 — The plant is thirsty: drag the pitcher and pour water    */
-/* onto the SOIL (not the leaves).                                     */
+/* onto the SOIL (not the leaves). The soil patch is a tight target,   */
+/* and a soda can plus a "sad plant" poster are decoys.                */
 /* ------------------------------------------------------------------ */
 
 function PlantSvg({ happy }: { happy: boolean }) {
@@ -134,7 +135,7 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
           sfx.click();
           return;
         }
-        if (overElement(pitcherRef, soilRef, 8)) {
+        if (overElement(pitcherRef, soilRef, 5)) {
           api.reset();
           setPouring(true);
           sfx.whoosh();
@@ -151,7 +152,7 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
           );
           return;
         }
-        if (overElement(pitcherRef, leafRef, 8)) {
+        if (overElement(pitcherRef, leafRef, 5)) {
           api.reset();
           sfx.fail();
           onMistake({
@@ -184,6 +185,24 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
     });
   }, [solved, happy, onMistake]);
 
+  const tapSoda = useCallback(() => {
+    if (solved || happy) return;
+    sfx.boing();
+    onMistake({
+      fa: "نوشابه به درد گیاه نمی‌خوره؛ پارچ آب را بیاور!",
+      en: "Soda is no good for plants; bring the water pitcher!",
+    });
+  }, [solved, happy, onMistake]);
+
+  const tapPoster = useCallback(() => {
+    if (solved || happy) return;
+    sfx.pop();
+    onMistake({
+      fa: "این فقط یه عکسه؛ گلدان واقعی روی طاقچه‌ست!",
+      en: "That's just a picture; the real plant is on the sill!",
+    });
+  }, [solved, happy, onMistake]);
+
   return (
     <Scene bg="linear-gradient(180deg,#BFE7F5 0%,#DFF2E1 52%,#F2E3C2 62%,#E3CFA4 64%,#D9BE8F 100%)">
       {/* window behind */}
@@ -203,7 +222,7 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
       <div className="absolute bottom-[34%] left-[22%] w-[24%]">
         <div ref={leafRef} className="pointer-events-none absolute left-[-12%] right-[-12%] top-[-6%] h-[46%]" aria-hidden />
         {/* tighter drop zone: only the soil patch, aligned with the soil ellipse */}
-        <div ref={soilRef} className="pointer-events-none absolute bottom-[24%] left-[18%] right-[18%] h-[16%]" aria-hidden />
+        <div ref={soilRef} className="pointer-events-none absolute bottom-[26%] left-[22%] right-[22%] h-[10%]" aria-hidden />
         <div style={{ transformOrigin: "bottom center", animation: happy ? "breathe 1.6s ease-in-out infinite" : "wobble 3s ease-in-out infinite" }}>
           <Pulse active={hintPulse > 0 && !happy}>
             <PlantSvg happy={happy} />
@@ -235,6 +254,41 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
         <div style={{ animation: "bob 1.6s ease-in-out infinite" }}>
           <ButterflySvg />
         </div>
+      </button>
+
+      {/* decoy: a soda can — wrong drink for a plant */}
+      <button
+        type="button"
+        onClick={tapSoda}
+        aria-label={lang === "fa" ? "قوطی نوشابه" : "soda can"}
+        className="absolute bottom-[9%] left-[38%] w-[9%] cursor-pointer transition-transform active:scale-90"
+        aria-hidden={happy}
+      >
+        <div style={{ animation: "breathe 2.8s ease-in-out infinite" }}>
+          <svg viewBox="0 0 60 100" className="h-auto w-full">
+            <rect x="14" y="10" width="32" height="80" rx="9" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" />
+            <ellipse cx="30" cy="12" rx="14" ry="5" fill="#FF9FB2" stroke="#3B2E5A" strokeWidth="3" />
+            <rect x="18" y="38" width="24" height="22" rx="4" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="2.6" />
+            <path d="M24 46 h12 M24 52 h12" stroke="#FF6B81" strokeWidth="2.6" strokeLinecap="round" />
+          </svg>
+        </div>
+      </button>
+
+      {/* decoy: framed poster of a wilted plant on the wall */}
+      <button
+        type="button"
+        onClick={tapPoster}
+        aria-label={lang === "fa" ? "پوستر گلدان" : "plant poster"}
+        className="absolute top-[10%] right-[6%] w-[16%] cursor-pointer transition-transform active:scale-95"
+        aria-hidden={happy}
+      >
+        <svg viewBox="0 0 120 140" className="h-auto w-full">
+          <rect x="6" y="6" width="108" height="128" rx="10" fill="#FAFAFA" stroke="#8B5E3C" strokeWidth="6" />
+          <path d="M60 108 Q58 84 60 66" stroke="#4CAF50" strokeWidth="6" fill="none" strokeLinecap="round" />
+          <path d="M60 84 Q44 82 40 66 Q52 60 60 74 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3.4" />
+          <path d="M60 78 Q76 76 80 62 Q68 56 60 70 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3.4" />
+          <path d="M48 108 L72 108 L68 122 L52 122 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3.4" />
+        </svg>
       </button>
 
       {/* pitcher (draggable) */}

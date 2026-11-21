@@ -7,12 +7,13 @@ import type { DragState } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 54 — Color sorting: drag each ball into the basket of the     */
-/* same color. Baskets are shuffled, hit pads are tight, and a purple  */
-/* decoy basket has no matching ball. All three = solved.              */
+/* same color. FOUR balls now, baskets are shuffled, hit pads are      */
+/* tight, and a purple decoy basket has no matching ball. All four =   */
+/* solved.                                                             */
 /* ------------------------------------------------------------------ */
 
 interface BallDef {
-  key: "pink" | "yellow" | "cyan";
+  key: "pink" | "yellow" | "cyan" | "green";
   color: string;
   light: string;
   left: string;
@@ -20,19 +21,21 @@ interface BallDef {
 }
 
 const BALLS: BallDef[] = [
-  { key: "pink", color: "#FF6B81", light: "#FF9FB2", left: "9%", top: "13%" },
-  { key: "yellow", color: "#FFD154", light: "#FFE59A", left: "45%", top: "9%" },
-  { key: "cyan", color: "#1EC8CF", light: "#9FEBEE", left: "74%", top: "13%" },
+  { key: "pink", color: "#FF6B81", light: "#FF9FB2", left: "6%", top: "13%" },
+  { key: "yellow", color: "#FFD154", light: "#FFE59A", left: "31%", top: "9%" },
+  { key: "cyan", color: "#1EC8CF", light: "#9FEBEE", left: "56%", top: "13%" },
+  { key: "green", color: "#4CAF50", light: "#A5D6A7", left: "80%", top: "10%" },
 ];
 
 const BASKETS: Array<{ key: BallDef["key"]; color: string; left: string }> = [
-  { key: "cyan", color: "#1EC8CF", left: "1%" },
-  { key: "yellow", color: "#FFD154", left: "26%" },
-  { key: "pink", color: "#FF6B81", left: "76%" },
+  { key: "yellow", color: "#FFD154", left: "1%" },
+  { key: "green", color: "#4CAF50", left: "20.5%" },
+  { key: "pink", color: "#FF6B81", left: "40%" },
+  { key: "cyan", color: "#1EC8CF", left: "79%" },
 ];
 
-/* decoy: a fourth basket with no matching ball */
-const DECOY_BASKET: { color: string; left: string } = { color: "#6C4AB6", left: "51%" };
+/* decoy: a fifth basket with no matching ball */
+const DECOY_BASKET: { color: string; left: string } = { color: "#6C4AB6", left: "59.5%" };
 
 function BallSvg({ color, light }: { color: string; light: string }) {
   return (
@@ -129,7 +132,7 @@ function Ball({
 export default function Level54({ lang, solved, onSolved, onMistake, onProgress }: LevelProps) {
   const [inBasket, setInBasket] = useState(0);
   const [done, setDone] = useState(false);
-  const basketRefs = useRef<Array<HTMLDivElement | null>>([null, null, null]);
+  const basketRefs = useRef<Array<HTMLDivElement | null>>([null, null, null, null]);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
   const doneRef = useRef(false);
   const countRef = useRef(0);
@@ -137,7 +140,7 @@ export default function Level54({ lang, solved, onSolved, onMistake, onProgress 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   useEffect(() => {
-    if (inBasket >= 3 && !doneRef.current) {
+    if (inBasket >= 4 && !doneRef.current) {
       doneRef.current = true;
       setDone(true);
       onProgress(1);
@@ -147,9 +150,9 @@ export default function Level54({ lang, solved, onSolved, onMistake, onProgress 
   }, [inBasket, onProgress, onSolved]);
 
   const scoreOne = useCallback(() => {
-    countRef.current = Math.min(3, countRef.current + 1);
+    countRef.current = Math.min(4, countRef.current + 1);
     setInBasket(countRef.current);
-    onProgress(countRef.current / 3);
+    onProgress(countRef.current / 4);
   }, [onProgress]);
 
   const wrongDrop = useCallback(
@@ -184,7 +187,7 @@ export default function Level54({ lang, solved, onSolved, onMistake, onProgress 
           ref={(el) => {
             basketRefs.current[i] = el;
           }}
-          className="absolute bottom-[8%] w-[23%]"
+          className="absolute bottom-[8%] w-[18.5%]"
           style={{ left: b.left, zIndex: 10 }}
         >
           <BasketSvg color={b.color} />
@@ -192,7 +195,7 @@ export default function Level54({ lang, solved, onSolved, onMistake, onProgress 
       ))}
 
       {/* decoy purple basket: dropping any ball here just bounces it back */}
-      <div className="absolute bottom-[8%] w-[23%]" style={{ left: DECOY_BASKET.left, zIndex: 10 }} aria-hidden>
+      <div className="absolute bottom-[8%] w-[18.5%]" style={{ left: DECOY_BASKET.left, zIndex: 10 }} aria-hidden>
         <BasketSvg color={DECOY_BASKET.color} />
       </div>
 
@@ -209,19 +212,19 @@ export default function Level54({ lang, solved, onSolved, onMistake, onProgress 
           }}
           onScored={scoreOne}
           onWrong={wrongDrop}
-          label={lang === "fa" ? `توپ ${def.key === "pink" ? "صورتی" : def.key === "yellow" ? "زرد" : "آبی"}` : `${def.key} ball`}
+          label={lang === "fa" ? `توپ ${def.key === "pink" ? "صورتی" : def.key === "yellow" ? "زرد" : def.key === "cyan" ? "آبی" : "سبز"}` : `${def.key} ball`}
         />
       ))}
 
       {/* celebration confetti dots */}
       {done &&
-        [0, 1, 2, 3, 4, 5].map((i) => (
+        [0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
           <span
             key={`c-${i}`}
             className="absolute top-[30%] w-3 h-3 rounded-full"
             style={{
-              left: `${14 + i * 13}%`,
-              background: BALLS[i % 3].color,
+              left: `${10 + i * 11}%`,
+              background: BALLS[i % 4].color,
               animation: `confetti-fall 1.4s ${i * 0.12}s ease-in both`,
             }}
             aria-hidden

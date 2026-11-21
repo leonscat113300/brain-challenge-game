@@ -12,58 +12,79 @@ import { Pulse, Scene, sfx, useDragMove } from "./shared";
 
 function DogSvg({ happy, className, style }: { happy: boolean; className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 210 160" className={className} style={style} aria-hidden>
-      {/* wagging tail */}
+    <svg viewBox="0 0 230 175" className={className} style={style} aria-hidden>
+      {/* wagging curled tail */}
       <motion.g
-        animate={happy ? { rotate: 0 } : { rotate: [-10, 10] }}
+        animate={happy ? { rotate: 0 } : { rotate: [-9, 9] }}
         transition={happy ? { duration: 0.2 } : { duration: 0.4, repeat: Infinity, repeatType: "mirror" }}
-        style={{ transformOrigin: "48px 92px" }}
+        style={{ transformOrigin: "44px 88px" }}
       >
-        <path d="M52 96 Q22 84 28 52" stroke="#3B2E5A" strokeWidth="13" fill="none" strokeLinecap="round" />
-        <path d="M52 96 Q24 85 30 56" stroke="#C98A4B" strokeWidth="7" fill="none" strokeLinecap="round" />
+        <path d="M46 92 Q16 84 22 50 Q26 34 44 38" stroke="#3B2E5A" strokeWidth="14" fill="none" strokeLinecap="round" />
+        <path d="M46 92 Q19 85 25 53 Q29 40 43 43" stroke="#C98A4B" strokeWidth="8" fill="none" strokeLinecap="round" />
+        <path d="M40 42 Q46 36 50 42" stroke="#E3B57E" strokeWidth="6" fill="none" strokeLinecap="round" />
       </motion.g>
-      {/* back leg */}
-      <rect x="58" y="118" width="15" height="34" rx="7" fill="#B87B3F" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="66" cy="152" rx="13" ry="6" fill="#B87B3F" stroke="#3B2E5A" strokeWidth="3.4" />
-      {/* body */}
-      <ellipse cx="102" cy="102" rx="52" ry="34" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" />
-      {/* belly patch */}
-      <ellipse cx="106" cy="114" rx="34" ry="17" fill="#E3B57E" />
-      {/* front legs */}
-      <rect x="116" y="122" width="15" height="30" rx="7" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="4" />
-      <rect x="140" y="120" width="15" height="32" rx="7" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="124" cy="152" rx="13" ry="6" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="3.4" />
-      <ellipse cx="148" cy="152" rx="13" ry="6" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="3.4" />
+
+      {/* back haunch + back leg */}
+      <ellipse cx="74" cy="116" rx="26" ry="22" fill="#B87B3F" stroke="#3B2E5A" strokeWidth="4.5" />
+      <rect x="62" y="124" width="16" height="30" rx="8" fill="#B87B3F" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="70" cy="156" rx="14" ry="7" fill="#E3B57E" stroke="#3B2E5A" strokeWidth="3.4" />
+      <path d="M64 154 l2 3 M70 155 l2 3" stroke="#3B2E5A" strokeWidth="1.6" strokeLinecap="round" />
+
+      {/* body with chest */}
+      <path d="M62 100 Q60 72 96 66 Q136 60 158 76 Q172 88 168 108 Q164 130 132 134 Q92 138 70 126 Q62 118 62 100 Z" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+      {/* cream chest + belly */}
+      <path d="M132 78 Q152 86 152 104 Q152 122 128 128 Q112 130 104 122 Q112 96 132 78 Z" fill="#E3B57E" />
+      {/* body spot */}
+      <ellipse cx="92" cy="92" rx="12" ry="9" fill="#8B5E3C" opacity="0.55" />
+
+      {/* front legs with paws */}
+      <rect x="128" y="122" width="15" height="30" rx="7.5" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="4" />
+      <rect x="152" y="118" width="15" height="34" rx="7.5" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="136" cy="154" rx="13" ry="6.5" fill="#E3B57E" stroke="#3B2E5A" strokeWidth="3.4" />
+      <ellipse cx="160" cy="154" rx="13" ry="6.5" fill="#E3B57E" stroke="#3B2E5A" strokeWidth="3.4" />
+      <path d="M130 152 l2 3 M136 153 l2 3 M142 152 l2 3 M154 152 l2 3 M160 153 l2 3 M166 152 l2 3" stroke="#3B2E5A" strokeWidth="1.6" strokeLinecap="round" />
+
       {/* head */}
-      <circle cx="160" cy="60" r="36" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" />
-      {/* floppy ear */}
-      <path d="M148 28 Q128 32 132 64 Q140 84 156 74 Q162 52 156 30 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
-      {/* snout */}
-      <ellipse cx="184" cy="72" rx="19" ry="13" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="196" cy="66" rx="6" ry="4.6" fill="#3B2E5A" />
+      <circle cx="172" cy="62" r="38" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" />
+      {/* head top fur tuft */}
+      <path d="M162 26 Q172 18 182 26 Q176 30 172 29 Q168 30 162 26 Z" fill="#8B5E3C" />
+      {/* left floppy ear (behind) */}
+      <path d="M138 34 Q120 40 126 70 Q132 90 150 80 Q156 56 148 36 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      {/* right floppy ear (front, slightly lifted) */}
+      <path d="M196 30 Q216 34 212 66 Q208 86 190 78 Q182 52 190 32 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      <path d="M199 40 Q206 48 202 62" stroke="#6E4526" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+
+      {/* muzzle */}
+      <ellipse cx="188" cy="76" rx="22" ry="15" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="199" cy="68" rx="8.5" ry="6.5" fill="#3B2E5A" />
+      <circle cx="196.5" cy="65.5" r="2" fill="#FAFAFA" />
+      <path d="M188 82 Q188 88 182 88 M188 82 Q188 88 194 88" stroke="#3B2E5A" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+
       {/* face */}
       {happy ? (
         <>
-          <path d="M144 50 Q150 44 156 50" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
-          <path d="M164 50 Q170 44 176 50" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
-          <path d="M176 76 Q184 82 192 75" stroke="#3B2E5A" strokeWidth="3.4" fill="none" strokeLinecap="round" />
+          <path d="M150 52 Q156 44 163 51" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          <path d="M169 52 Q175 44 182 51" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          <path d="M178 80 Q188 88 198 79" stroke="#3B2E5A" strokeWidth="3.6" fill="none" strokeLinecap="round" />
         </>
       ) : (
         <>
-          <circle cx="148" cy="52" r="7" fill="#3B2E5A" />
-          <circle cx="170" cy="52" r="7" fill="#3B2E5A" />
-          <circle cx="150.5" cy="49.5" r="2.4" fill="#FAFAFA" />
-          <circle cx="172.5" cy="49.5" r="2.4" fill="#FAFAFA" />
-          <path d="M178 76 Q184 80 190 76" stroke="#3B2E5A" strokeWidth="3.4" fill="none" strokeLinecap="round" />
+          <circle cx="156" cy="52" r="7.5" fill="#3B2E5A" />
+          <circle cx="176" cy="52" r="7.5" fill="#3B2E5A" />
+          <circle cx="158.8" cy="49.2" r="2.6" fill="#FAFAFA" />
+          <circle cx="178.8" cy="49.2" r="2.6" fill="#FAFAFA" />
+          <path d="M146 42 Q152 38 158 41 M170 41 Q176 38 182 42" stroke="#3B2E5A" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <path d="M180 80 Q188 86 196 79" stroke="#3B2E5A" strokeWidth="3.6" fill="none" strokeLinecap="round" />
           {/* panting tongue */}
-          <path d="M180 82 Q180 100 187 100 Q194 100 193 82 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
-          <path d="M186 88 L186 96" stroke="#E14B60" strokeWidth="2.4" strokeLinecap="round" />
+          <path d="M184 86 Q184 104 191 104 Q198 104 197 86 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+          <path d="M190 92 L190 99" stroke="#E14B60" strokeWidth="2.4" strokeLinecap="round" />
         </>
       )}
       {/* blush + collar with tag */}
-      <ellipse cx="146" cy="66" rx="6" ry="4" fill="#FF9FB2" opacity="0.85" />
-      <path d="M134 86 Q158 100 180 88" stroke="#FF6B81" strokeWidth="7" fill="none" strokeLinecap="round" />
-      <circle cx="157" cy="96" r="5.5" fill="#FFD154" stroke="#3B2E5A" strokeWidth="2.5" />
+      <ellipse cx="150" cy="68" rx="6.5" ry="4.5" fill="#FF9FB2" opacity="0.85" />
+      <path d="M142 90 Q168 102 194 90" stroke="#FF6B81" strokeWidth="7" fill="none" strokeLinecap="round" />
+      <circle cx="168" cy="99" r="6" fill="#FFD154" stroke="#3B2E5A" strokeWidth="2.6" />
+      <circle cx="168" cy="98.4" r="1.8" fill="#FAFAFA" />
     </svg>
   );
 }

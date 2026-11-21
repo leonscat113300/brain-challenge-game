@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { LevelProps } from "@/lib/game/types";
 import { useDragMove, Scene, Pulse, sfx } from "./shared";
@@ -8,15 +8,18 @@ import { num } from "@/lib/game/utils";
 
 /* ------------------------------------------------------------------ */
 /* Level 28 — Hidden hedgehog: sweep the magnifying glass over the     */
-/* bush to reveal the camouflaged hedgehog, then tap it to pop out.    */
+/* bush and HOLD it over the camouflaged hedgehog to reveal it, then   */
+/* tap it before it ducks back under the leaves.                       */
 /* ------------------------------------------------------------------ */
 
 function HedgehogSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 200 150" className={className} style={style} aria-hidden>
-      {/* back spike coat — two staggered rows of spikes */}
+    <svg viewBox="0 0 210 160" className={className} style={style} aria-hidden>
+      {/* soft round body under the coat */}
+      <ellipse cx="105" cy="106" rx="72" ry="40" fill="#D9A968" />
+      {/* spike coat: staggered zigzag with varied spike lengths */}
       <path
-        d="M28 108 L16 84 L34 90 L30 62 L50 74 L56 46 L74 64 L86 38 L98 60 L112 38 L122 62 L140 46 L144 70 L162 60 L158 86 L180 82 L170 108 Z"
+        d="M56 116 L40 98 L58 94 L48 68 L68 78 L70 46 L88 64 L100 32 L112 60 L130 38 L134 66 L154 50 L152 78 L174 68 L166 92 L186 92 L172 108 L184 116 Z"
         fill="#7A8B5A"
         stroke="#4A5D33"
         strokeWidth="5"
@@ -24,31 +27,44 @@ function HedgehogSvg({ className, style }: { className?: string; style?: React.C
       />
       {/* lighter inner coat */}
       <path
-        d="M48 96 L44 78 L58 86 L62 66 L76 78 L86 58 L98 76 L112 58 L120 78 L134 66 L136 88 L152 82 L144 100 Z"
+        d="M74 108 L66 92 L80 96 L78 74 L92 86 L98 62 L108 84 L122 66 L126 90 L142 78 L138 98 L154 94 L142 110 Z"
         fill="#8FA06A"
-        opacity="0.85"
+        opacity="0.9"
       />
-      {/* spike tip strokes */}
-      <path d="M62 66 L66 74 M86 58 L90 68 M112 58 L116 68 M136 66 L140 76" stroke="#5C6E3C" strokeWidth="3.4" strokeLinecap="round" />
+      {/* individual spike strokes */}
+      <path
+        d="M70 52 L72 70 M100 40 L102 62 M130 46 L132 70 M152 58 L152 80 M168 76 L162 94 M58 74 L64 88 M46 100 L56 106"
+        stroke="#5C6E3C"
+        strokeWidth="3.4"
+        strokeLinecap="round"
+      />
+      {/* coat rim shadow on the body */}
+      <path d="M62 110 Q104 96 168 108" stroke="#B98F55" strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.8" />
+
       {/* pointed face with snout */}
-      <path d="M52 88 Q26 92 16 108 Q28 124 56 122 Z" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+      <path d="M66 92 Q36 94 24 112 Q36 130 68 128 Z" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
       {/* little round ear */}
-      <circle cx="54" cy="92" r="7" fill="#D9A968" stroke="#3B2E5A" strokeWidth="3" />
+      <circle cx="68" cy="94" r="8" fill="#D9A968" stroke="#3B2E5A" strokeWidth="3.4" />
+      <circle cx="68" cy="94" r="3.5" fill="#B98F55" />
       {/* shiny black nose at the tip */}
-      <circle cx="17" cy="107" r="9" fill="#3B2E5A" />
-      <circle cx="14" cy="104" r="2.6" fill="#FAFAFA" opacity="0.8" />
-      {/* eye */}
-      <circle cx="42" cy="102" r="6" fill="#3B2E5A" />
-      <circle cx="44" cy="100" r="2" fill="#FAFAFA" />
+      <circle cx="26" cy="112" r="10" fill="#3B2E5A" />
+      <circle cx="22.5" cy="108.5" r="3" fill="#FAFAFA" opacity="0.85" />
+      {/* big cute eye with highlight */}
+      <circle cx="54" cy="106" r="7.5" fill="#3B2E5A" />
+      <circle cx="56.5" cy="103.5" r="2.6" fill="#FAFAFA" />
+      <circle cx="52" cy="109" r="1.4" fill="#FAFAFA" opacity="0.8" />
+      {/* brow */}
+      <path d="M44 94 Q54 90 64 95" stroke="#8B5E3C" strokeWidth="3" fill="none" strokeLinecap="round" />
       {/* mouth + blush */}
-      <path d="M34 114 Q40 118 46 114" stroke="#3B2E5A" strokeWidth="3.4" fill="none" strokeLinecap="round" />
-      <ellipse cx="52" cy="116" rx="5.4" ry="3.6" fill="#FF9FB2" opacity="0.85" />
+      <path d="M42 120 Q49 125 56 120" stroke="#3B2E5A" strokeWidth="3.4" fill="none" strokeLinecap="round" />
+      <ellipse cx="62" cy="121" rx="6" ry="4" fill="#FF9FB2" opacity="0.85" />
       {/* belly line */}
-      <path d="M56 122 Q96 134 138 122" stroke="#C9A468" strokeWidth="3.4" fill="none" strokeLinecap="round" opacity="0.7" />
-      {/* feet */}
-      <ellipse cx="52" cy="134" rx="11" ry="6.5" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="88" cy="136" rx="11" ry="6.5" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="124" cy="134" rx="11" ry="6.5" fill="#D9B98B" stroke="#3B2E5A" strokeWidth="4" />
+      <path d="M70 132 Q110 144 148 130" stroke="#C9A468" strokeWidth="3.4" fill="none" strokeLinecap="round" opacity="0.7" />
+      {/* tiny rounded feet with toes */}
+      <ellipse cx="62" cy="142" rx="12" ry="7" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="96" cy="145" rx="12" ry="7" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="130" cy="142" rx="12" ry="7" fill="#D9B98B" stroke="#3B2E5A" strokeWidth="4" />
+      <path d="M56 141 l2 3 M62 142 l2 3 M90 144 l2 3 M96 145 l2 3 M124 141 l2 3 M130 142 l2 3" stroke="#3B2E5A" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
@@ -87,55 +103,98 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
   const [rustle, setRustle] = useState(0);
   const lensRef = useRef<HTMLDivElement>(null);
   const hogRef = useRef<HTMLDivElement>(null);
+  const hideTimer = useRef<number | null>(null);
 
   const drag = useDragMove();
 
   /* HARDER: the lens must be held over the hedgehog for a short moment
      (not just swept past) and the reveal radius is small */
-  const REVEAL_RADIUS = 58;
+  const REVEAL_RADIUS = 56;
   const DWELL_MS = 450;
+  /** once revealed, the hedgehog ducks back under the leaves if not tapped fast */
+  const HIDE_MS = 3000;
   const enterRef = useRef(0);
 
-  /* watch the lens centre: hold it near the hidden hedgehog to reveal it */
-  const checkReveal = useCallback(
-    (e: React.PointerEvent) => {
-      if (found || done || solved) return;
-      const lens = lensRef.current?.getBoundingClientRect();
-      const hog = hogRef.current?.getBoundingClientRect();
-      if (!lens || !hog) return;
-      const dist = Math.hypot(
-        lens.left + lens.width / 2 - (hog.left + hog.width / 2),
-        lens.top + lens.height / 2 - (hog.top + hog.height / 2)
-      );
-      const now = performance.now();
-      if (dist < REVEAL_RADIUS) {
-        if (!enterRef.current) enterRef.current = now;
-        else if (now - enterRef.current >= DWELL_MS) {
-          setFound(true);
-          sfx.sparkle();
-          onProgress(0.6);
-        }
-      } else {
+  const clearHide = () => {
+    if (hideTimer.current !== null) {
+      window.clearTimeout(hideTimer.current);
+      hideTimer.current = null;
+    }
+  };
+  useEffect(() => clearHide, []);
+
+  const reveal = useCallback(() => {
+    setFound(true);
+    sfx.sparkle();
+    onProgress(0.6);
+    clearHide();
+    hideTimer.current = window.setTimeout(() => {
+      /* it ducks back — no life lost, but the player must re-reveal & tap fast */
+      setFound(false);
+      enterRef.current = 0;
+      sfx.whoosh();
+    }, HIDE_MS);
+  }, [onProgress]);
+
+  /* watch the lens centre: holding it near the hidden hedgehog reveals it.
+     A timer-based watcher makes the dwell work even while holding still. */
+  const checkReveal = useCallback(() => {
+    if (found || done || solved) return;
+    const lens = lensRef.current?.getBoundingClientRect();
+    const hog = hogRef.current?.getBoundingClientRect();
+    if (!lens || !hog) return;
+    const dist = Math.hypot(
+      lens.left + lens.width / 2 - (hog.left + hog.width / 2),
+      lens.top + lens.height / 2 - (hog.top + hog.height / 2)
+    );
+    const now = performance.now();
+    if (dist < REVEAL_RADIUS) {
+      if (!enterRef.current) enterRef.current = now;
+      else if (now - enterRef.current >= DWELL_MS) {
         enterRef.current = 0;
+        reveal();
       }
-      void e;
-    },
-    [found, done, solved, onProgress]
-  );
+    } else {
+      enterRef.current = 0;
+    }
+  }, [found, done, solved, reveal]);
+
+  const checkRevealRef = useRef(checkReveal);
+  useEffect(() => {
+    checkRevealRef.current = checkReveal;
+  });
+
+  const dwellInterval = useRef<number | null>(null);
+  const startDwell = useCallback(() => {
+    if (dwellInterval.current !== null) return;
+    checkRevealRef.current();
+    dwellInterval.current = window.setInterval(() => checkRevealRef.current(), 110);
+  }, []);
+  const stopDwell = useCallback(() => {
+    if (dwellInterval.current !== null) {
+      window.clearInterval(dwellInterval.current);
+      dwellInterval.current = null;
+    }
+    enterRef.current = 0;
+  }, []);
+  useEffect(() => stopDwell, []);
 
   const lensBind = {
-    onPointerDown: drag.bind.onPointerDown,
+    onPointerDown: (e: React.PointerEvent) => {
+      drag.bind.onPointerDown(e);
+      startDwell();
+    },
     onPointerMove: (e: React.PointerEvent) => {
       drag.bind.onPointerMove(e);
-      checkReveal(e);
+      checkReveal();
     },
     onPointerUp: () => {
       drag.bind.onPointerUp();
-      enterRef.current = 0;
+      stopDwell();
     },
     onPointerCancel: () => {
       drag.bind.onPointerCancel();
-      enterRef.current = 0;
+      stopDwell();
     },
     style: drag.bind.style,
   };
@@ -146,6 +205,7 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
       sfx.pop();
       return;
     }
+    clearHide();
     setOut(true);
     setDone(true);
     sfx.cheer();
@@ -194,10 +254,7 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
         }}
         onClick={tapHog}
       >
-        <motion.div
-          animate={out ? { y: -46 } : { y: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 12 }}
-        >
+        <motion.div animate={out ? { y: -46 } : { y: 0 }} transition={{ type: "spring", stiffness: 260, damping: 12 }}>
           <Pulse active={hintPulse > 0 && found && !done}>
             <HedgehogSvg
               className="w-full h-auto"
@@ -217,7 +274,7 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
         )}
       </div>
 
-      {/* draggable magnifying glass */}
+      {/* draggable magnifying glass — redrawn: gold rim, glassy lens, wooden handle */}
       <div
         className="absolute bottom-[10%] start-[4%] w-[38%] z-[30]"
         style={{
@@ -229,19 +286,33 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
         <Pulse active={hintPulse > 0 && !found && !done}>
           <div {...(found ? {} : lensBind)} className="relative cursor-grab active:cursor-grabbing">
             {/* wooden handle behind the lens */}
-            <div className="absolute start-[54%] top-[54%] h-[13%] w-[48%] rotate-45 rounded-full border-4 border-[#3B2E5A] bg-[#8B5E3C]" aria-hidden />
-            <div className="absolute start-[50%] top-[50%] h-[18%] w-[18%] rotate-45 rounded-md border-4 border-[#3B2E5A] bg-[#E8A81C]" aria-hidden />
+            <div
+              className="absolute start-[52%] top-[52%] h-[12%] w-[52%] rotate-45 rounded-full border-4 border-[#3B2E5A]"
+              style={{ background: "linear-gradient(180deg,#A9773F 0%,#8B5E3C 55%,#6E4526 100%)" }}
+              aria-hidden
+            />
+            <div className="absolute start-[56%] top-[58%] h-[2%] w-[40%] rotate-45 rounded-full bg-[#6E4526]/70" aria-hidden />
+            {/* brass ferrule between lens and handle */}
+            <div className="absolute start-[50%] top-[50%] h-[17%] w-[17%] rotate-45 rounded-md border-[3.5px] border-[#3B2E5A] bg-[#E8A81C]" aria-hidden />
+            <div className="absolute start-[53%] top-[47%] h-[4%] w-[7%] rotate-45 rounded-full bg-[#FAFAFA]/70" aria-hidden />
+            {/* gold outer ring */}
+            <div
+              className="absolute start-[-2%] top-[-2%] w-[66%] aspect-square rounded-full border-[5px] border-[#3B2E5A] bg-[#E8A81C]"
+              aria-hidden
+            />
             {/* glass lens */}
             <div
               ref={lensRef}
               className="relative w-[62%] aspect-square rounded-full border-[7px] border-[#3B2E5A] overflow-hidden"
-              style={{ background: "radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55), rgba(191,219,255,0.16) 45%, rgba(120,170,220,0.24) 100%)" }}
+              style={{ background: "radial-gradient(circle at 35% 28%, rgba(255,255,255,0.75), rgba(255,255,255,0.25) 38%, rgba(150,205,240,0.28) 78%, rgba(90,160,215,0.34) 100%)" }}
             >
               <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" aria-hidden>
-                <path d="M24 36 Q34 20 54 20" stroke="#FAFAFA" strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.85" />
-                <path d="M30 54 Q36 44 46 40" stroke="#FAFAFA" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.5" />
+                <path d="M22 40 Q30 20 52 18" stroke="#FAFAFA" strokeWidth="6.5" fill="none" strokeLinecap="round" opacity="0.9" />
+                <path d="M28 58 Q34 46 46 40" stroke="#FAFAFA" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.55" />
+                <circle cx="70" cy="66" r="2.5" fill="#FAFAFA" opacity="0.7" />
+                <circle cx="76" cy="58" r="1.6" fill="#FAFAFA" opacity="0.6" />
               </svg>
-              <div className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: "inset 0 0 0 3px rgba(255,255,255,0.35)" }} aria-hidden />
+              <div className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: "inset 0 0 0 4px rgba(255,255,255,0.4), inset 0 -6px 12px rgba(90,160,215,0.25)" }} aria-hidden />
             </div>
           </div>
         </Pulse>

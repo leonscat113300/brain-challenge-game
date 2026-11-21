@@ -7,9 +7,9 @@ import { useDragMove, Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 52 — Inverted drag: the bee is stuck hovering, so the player  */
-/* drags the FLOWER POT toward it. Drop within ~72px of the bee and    */
+/* drags the FLOWER POT toward it. Drop within ~60px of the bee and    */
 /* it lands on the bloom. Dragging the bee only makes it dodge, and a  */
-/* wildflower + the sun are decoys.                                    */
+/* wildflower, the sun AND a fake decoy pot are all traps.             */
 /* ------------------------------------------------------------------ */
 
 function BeeSvg({ landed, className, style }: { landed: boolean; className?: string; style?: React.CSSProperties }) {
@@ -115,7 +115,7 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
             a.left + a.width / 2 - (b.left + b.width / 2),
             a.top + a.height / 2 - (b.top + b.height / 2)
           );
-          if (dist <= 72) {
+          if (dist <= 60) {
             setLand({
               x: b.left + b.width / 2 - (a.left + a.width / 2),
               y: b.top + b.height / 2 - (a.top + a.height / 2) - 14,
@@ -156,6 +156,12 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
     if (solved || done) return;
     sfx.boing();
     onMistake({ fa: "زنبور این گل رو دوست نداره!", en: "The bee doesn't like this flower!" });
+  };
+
+  const tapDecoyPot = () => {
+    if (solved || done) return;
+    sfx.boing();
+    onMistake({ fa: "این گلدان تقلبیه؛ گلدان واقعی اون حرفه!", en: "That pot is a fake! The real one is over there." });
   };
 
   const tapBee = () => {
@@ -218,6 +224,33 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
           style={{ animation: "breathe 4s ease-in-out infinite" }}
         >
           <DecoyFlowerSvg className="h-auto w-full drop-shadow-[0_3px_0_rgba(59,46,90,0.12)]" />
+        </button>
+      </div>
+
+      {/* decoy: a fake potted daisy sitting right under the bee — bait! */}
+      <div className="absolute bottom-[16%] start-[30%] w-[19%]" style={{ zIndex: 9 }}>
+        <button
+          type="button"
+          onClick={tapDecoyPot}
+          aria-label={lang === "fa" ? "گلدان تقلبی" : "fake pot"}
+          className="block w-full cursor-pointer border-0 bg-transparent p-0"
+          style={{ animation: "breathe 3.2s ease-in-out infinite" }}
+        >
+          <svg viewBox="0 0 120 180" className="h-auto w-full drop-shadow-[0_3px_0_rgba(59,46,90,0.12)]">
+            <path d="M60 112 Q54 84 60 60" stroke="#3E8E41" strokeWidth="6" fill="none" strokeLinecap="round" />
+            <path d="M59 92 Q38 86 34 100 Q46 108 59 98 Z" fill="#3E8E41" stroke="#3B2E5A" strokeWidth="3.5" strokeLinejoin="round" />
+            <g transform="translate(60 42)">
+              {[0, 60, 120, 180, 240, 300].map((a) => (
+                <ellipse key={a} cx="0" cy="-17" rx="9.5" ry="16" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="4" transform={`rotate(${a})`} />
+              ))}
+              <circle cx="0" cy="0" r="13" fill="#1EC8CF" stroke="#3B2E5A" strokeWidth="4" />
+              <circle cx="-4" cy="-2" r="2" fill="#3B2E5A" />
+              <circle cx="4" cy="-2" r="2" fill="#3B2E5A" />
+              <path d="M-3 4 Q0 7 3 4" stroke="#3B2E5A" strokeWidth="2" fill="none" strokeLinecap="round" />
+            </g>
+            <rect x="22" y="110" width="76" height="18" rx="8" fill="#8FA6BD" stroke="#3B2E5A" strokeWidth="5" />
+            <path d="M32 128 L88 128 L80 170 L40 170 Z" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+          </svg>
         </button>
       </div>
 

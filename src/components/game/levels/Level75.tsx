@@ -5,8 +5,8 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 75 — Which photo frame belongs to the family? Compare each    */
-/* frame with the family photo lying on the table, then tap it.        */
+/* Level 75 — Which photo frame belongs to the family? FIVE frames on  */
+/* the wall — compare each with the family photo lying on the table.   */
 /* ------------------------------------------------------------------ */
 
 interface MemberSpec {
@@ -68,6 +68,7 @@ const GIRL: MemberSpec = { pigtails: true, shirt: "#4CAF50" };
 const GIRL_NO_PIGTAILS: MemberSpec = { straight: true, shirt: "#4CAF50" };
 const BOY_SWAPPED: MemberSpec = { cap: true, shirt: "#4CAF50" };
 const GIRL_SWAPPED: MemberSpec = { pigtails: true, shirt: "#FFD154" };
+const MOM_NO_BUN: MemberSpec = { straight: true, shirt: "#FF6B81" };
 
 /* reference family: dad(mustache) + mom(bun) + boy(cap) + girl(pigtails) */
 const FAMILY: MemberSpec[] = [DAD, MOM, BOY, GIRL];
@@ -100,6 +101,12 @@ const FRAMES: Array<{ members: MemberSpec[]; msg: { fa: string; en: string }; co
     /* four people, but the kids swapped shirts */
     members: [DAD, MOM, BOY_SWAPPED, GIRL_SWAPPED],
     msg: { fa: "این هم عکسِ ما نیست؛ دقیق‌تر بنگر!", en: "This isn't our photo either; look more carefully!" },
+    correct: false,
+  },
+  {
+    /* five frames: this mom lost her bun */
+    members: [DAD, MOM_NO_BUN, BOY, GIRL],
+    msg: { fa: "مامانِ این عکس گوشهٔ مو ندارد! با عکس اصلی مقایسه کن.", en: "This mom has no hair bun! Compare with the original photo." },
     correct: false,
   },
 ];
@@ -153,10 +160,11 @@ export default function Level75({ lang, solved, onSolved, onMistake, onProgress,
   }, [solved, winner, onMistake]);
 
   const framePos = [
-    { left: "6%", top: "5%" },
-    { left: "54%", top: "5%" },
-    { left: "6%", top: "34%" },
-    { left: "54%", top: "34%" },
+    { left: "2%", top: "4%" },
+    { left: "35%", top: "4%" },
+    { left: "68%", top: "4%" },
+    { left: "10%", top: "33%" },
+    { left: "52%", top: "33%" },
   ];
 
   return (
@@ -164,9 +172,9 @@ export default function Level75({ lang, solved, onSolved, onMistake, onProgress,
       {/* wall pattern dots */}
       <div className="absolute inset-x-0 top-0 h-[68%] opacity-25" style={{ backgroundImage: "radial-gradient(rgba(59,46,90,0.25) 2.5px, transparent 2.5px)", backgroundSize: "34px 34px" }} aria-hidden />
 
-      {/* four frames on the wall */}
+      {/* five frames on the wall */}
       {FRAMES.map((f, i) => (
-        <div key={i} className="absolute w-[40%]" style={{ ...framePos[i] }}>
+        <div key={i} className="absolute w-[30%]" style={{ ...framePos[i] }}>
           <button
             type="button"
             onClick={() => pick(i)}
@@ -178,11 +186,11 @@ export default function Level75({ lang, solved, onSolved, onMistake, onProgress,
               filter: winner === i ? "drop-shadow(0 0 14px rgba(76,175,80,0.8))" : undefined,
             }}
           >
-            <div className="relative h-24 sm:h-28">
+            <div className="relative h-20 sm:h-24">
               <FrameFamily members={f.members} />
               {/* tag */}
               <div className="absolute -bottom-1 left-1/2 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full border-2 border-[#3B2E5A] bg-[#FFD154] text-[10px] font-black text-[#33205E]">
-                {["الف", "ب", "پ", "ت"][i]}
+                {["الف", "ب", "پ", "ت", "ث"][i]}
               </div>
             </div>
           </button>

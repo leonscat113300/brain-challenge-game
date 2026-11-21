@@ -6,9 +6,10 @@ import type { LevelProps } from "@/lib/game/types";
 import { Pulse, Scene, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 23 — The Exit Door: three doors in a dark hallway; only the   */
-/* middle one leaks warm light. Crack it open, then push through.       */
-/* The leak is subtler now, and the lamps + cobweb are tap-traps.       */
+/* Level 23 — The Exit Door: FOUR doors in a dark hallway; only the    */
+/* second one leaks warm light — and the leak FLICKERS on and off,     */
+/* so at first glance every door looks dark. Crack it open, then push. */
+/* The lamps + cobweb are tap-traps.                                   */
 /* ------------------------------------------------------------------ */
 
 const DARK_MSG = { fa: "پشت این در تاریکه!", en: "It's dark behind this door!" };
@@ -107,16 +108,17 @@ function Door({ warm, open, peek, onTap, label }: { warm: boolean; open: boolean
         <div className="absolute left-[10%] right-[10%] top-[58%] h-[3px] rounded bg-[#4A3490]" />
         <div className="absolute right-[8%] top-[46%] aspect-square w-[13%] rounded-full border-[3px] border-[#3B2E5A] bg-[#FFD154]" />
       </div>
-      {/* light leak / shadow beneath */}
+      {/* light leak / shadow beneath — the exit's leak FLICKERS so it is
+          only visible if the player keeps watching */}
       {warm && !open && (
-        <div
-          className="pointer-events-none absolute inset-x-[16%] bottom-[-2%] h-[6px] rounded-full"
+        <motion.div
+          className="pointer-events-none absolute inset-x-[30%] bottom-[-2%] h-[5px] rounded-full"
           style={{
             background: "linear-gradient(90deg, rgba(255,209,84,0), #FFD154 25%, #FFD154 75%, rgba(255,209,84,0))",
             boxShadow: "0 0 9px 3px rgba(255,209,84,0.4)",
-            opacity: 0.8,
-            animation: "glow 2.2s ease-in-out infinite",
           }}
+          animate={{ opacity: [0.12, 0.85, 0.2, 0.85, 0.12] }}
+          transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
           aria-hidden
         />
       )}
@@ -217,8 +219,8 @@ export default function Level23({ lang, solved, onSolved, onMistake, onProgress,
       {/* tiled floor */}
       <div className="absolute inset-x-0 bottom-0 h-[7%] border-t-4 border-[#17102B]" style={{ background: "repeating-linear-gradient(90deg,#241A44 0 64px,#2B2050 64px 128px)" }} aria-hidden />
 
-      {/* the three doors */}
-      <div className="absolute inset-x-[4%] bottom-[7%] top-[13%] flex items-stretch gap-[4%]">
+      {/* the four doors */}
+      <div className="absolute inset-x-[4%] bottom-[7%] top-[13%] flex items-stretch gap-[3%]">
         {/* door 1 */}
         <div className="relative flex-1">
           {peek === 1 && (
@@ -267,6 +269,16 @@ export default function Level23({ lang, solved, onSolved, onMistake, onProgress,
             </motion.div>
           )}
           <Door warm={false} open={false} peek={peek === 3} onTap={() => tapDark(3)} label={lang === "fa" ? "در سوم" : "third door"} />
+        </div>
+
+        {/* door 4 */}
+        <div className="relative flex-1">
+          {peek === 4 && (
+            <motion.div className="pointer-events-none absolute -top-[14%] left-[8%] z-20 w-[74%]" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: -28 }} transition={{ duration: 0.8 }}>
+              <BatsSvg className="w-full" />
+            </motion.div>
+          )}
+          <Door warm={false} open={false} peek={peek === 4} onTap={() => tapDark(4)} label={lang === "fa" ? "در چهارم" : "fourth door"} />
         </div>
       </div>
     </Scene>

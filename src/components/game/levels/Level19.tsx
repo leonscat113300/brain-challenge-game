@@ -8,9 +8,9 @@ import { num } from "@/lib/game/utils";
 
 /* ------------------------------------------------------------------ */
 /* Level 19 — Odd one out: one pinned card hangs upside-down.          */
-/* Every card wears the same face now, so the tell is the flipped      */
-/* orientation (face/pin below the number), not a lone face. The other */
-/* numbers are upside-down confusables (91↔16, 18↔81).                 */
+/* SEVEN cards in two rows, all wearing the same face, and every       */
+/* number is an upside-down confusable (12↔21, 16↔91, 18↔81...).       */
+/* The only tell is the flipped orientation: pin/face below the number. */
 /* ------------------------------------------------------------------ */
 
 interface CardDef {
@@ -22,11 +22,13 @@ interface CardDef {
 }
 
 const CARDS: CardDef[] = [
-  { n: 91, rot: -7, left: "2%", top: "24%", flip: false },
-  { n: 18, rot: 6, left: "21%", top: "17%", flip: false },
-  { n: 33, rot: -4, left: "40%", top: "28%", flip: false },
-  { n: 88, rot: 9, left: "59%", top: "18%", flip: true },
-  { n: 69, rot: -8, left: "78%", top: "25%", flip: false },
+  { n: 12, rot: -6, left: "2%", top: "12%", flip: false },
+  { n: 21, rot: 5, left: "18.5%", top: "16%", flip: false },
+  { n: 33, rot: -4, left: "35%", top: "11%", flip: false },
+  { n: 88, rot: 8, left: "51.5%", top: "17%", flip: true },
+  { n: 69, rot: -7, left: "2%", top: "46%", flip: false },
+  { n: 96, rot: 6, left: "18.5%", top: "44%", flip: false },
+  { n: 16, rot: -5, left: "35%", top: "48%", flip: false },
 ];
 
 function FaceSvg({ wink, className }: { wink: boolean; className?: string }) {
@@ -128,7 +130,7 @@ export default function Level19({ lang, solved, onSolved, onMistake, onProgress,
         </svg>
 
         {CARDS.map((c, i) => (
-          <div key={c.n} className="absolute w-[16%]" style={{ left: c.left, top: c.top }}>
+          <div key={c.n} className="absolute w-[15%]" style={{ left: c.left, top: c.top }}>
             <Pulse active={hintPulse > 0 && c.flip && !upright && !done}>
               <motion.div
                 initial={false}
@@ -148,7 +150,7 @@ export default function Level19({ lang, solved, onSolved, onMistake, onProgress,
                   </span>
                   <span className="flex h-full w-full flex-col items-center justify-center gap-[6%] p-[5%]">
                     <FaceSvg wink={c.flip && upright} className="w-[70%]" />
-                    <span className="font-black leading-none text-[#6C4AB6] text-xl sm:text-2xl md:text-4xl">{num(c.n, lang)}</span>
+                    <span className="font-black leading-none text-[#6C4AB6] text-lg sm:text-xl md:text-3xl">{num(c.n, lang)}</span>
                   </span>
                   {c.flip && upright && (
                     <span className="absolute -top-4 -end-4" style={{ animation: "star-pop 0.7s ease-out both" }} aria-hidden>

@@ -6,12 +6,13 @@ import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 89 — Water leaks under the sink: turn the loose pipe nut      */
-/* three times to tighten it and stop the drips.                       */
+/* FOUR times (slowly! spam-taps slip) to tighten it and stop the      */
+/* drips. The big valve wheel and a spanner are decoys.                */
 /* ------------------------------------------------------------------ */
 
-const TURNS_NEEDED = 3;
+const TURNS_NEEDED = 4;
 /** taps faster than this make the nut slip back (no spam allowed) */
-const SLIP_MS = 280;
+const SLIP_MS = 420;
 
 function NutSvg({ turns }: { turns: number }) {
   return (
@@ -71,6 +72,16 @@ function ValveWheelSvg() {
   );
 }
 
+/* decoy: a spanner lying in the cabinet — you must turn it by hand */
+function SpannerSvg() {
+  return (
+    <svg viewBox="0 0 110 50" className="h-auto w-full" aria-hidden>
+      <path d="M14 30 Q10 14 28 12 Q40 12 42 24 L96 34 Q102 36 100 42 Q98 48 90 46 L38 36 Q28 44 18 40 Q10 36 14 30 Z" fill="#8FA6BD" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
+      <circle cx="26" cy="24" r="6" fill="#E3CFA4" stroke="#3B2E5A" strokeWidth="3" />
+    </svg>
+  );
+}
+
 export default function Level89({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [turns, setTurns] = useState(0);
   const turnsRef = useRef(0);
@@ -102,7 +113,7 @@ export default function Level89({ lang, solved, onSolved, onMistake, onProgress,
     turnsRef.current = n;
     setTurns(n);
     sfx.tick();
-    onProgress(n === 1 ? 0.34 : n === 2 ? 0.67 : 1);
+    onProgress(n / TURNS_NEEDED);
     if (n >= TURNS_NEEDED) {
       timers.current.push(setTimeout(() => sfx.unlock(), 300));
       timers.current.push(setTimeout(() => sfx.sparkle(), 650));
@@ -117,6 +128,15 @@ export default function Level89({ lang, solved, onSolved, onMistake, onProgress,
     onMistake({
       fa: "این شیر اصلی لوله است؛ مشکل از مهره است!",
       en: "That's the pipe's main valve; the problem is the nut!",
+    });
+  }, [solved, onMistake]);
+
+  const tapSpanner = useCallback(() => {
+    if (solved) return;
+    sfx.pop();
+    onMistake({
+      fa: "آچار اینجا به کار نمی‌آد؛ خودت مهره رو بچرخون!",
+      en: "No spanner needed here; turn the nut by hand!",
     });
   }, [solved, onMistake]);
 
@@ -144,6 +164,17 @@ export default function Level89({ lang, solved, onSolved, onMistake, onProgress,
         <ValveWheelSvg />
       </button>
 
+      {/* decoy: spanner on the cabinet floor */}
+      <button
+        type="button"
+        onClick={tapSpanner}
+        aria-label={lang === "fa" ? "آچار" : "spanner"}
+        className="absolute bottom-[6%] right-[12%] w-[22%] cursor-pointer transition-transform active:scale-90"
+        aria-hidden={drips === 0}
+      >
+        <SpannerSvg />
+      </button>
+
       {/* loose nut at the joint (tappable, smaller target) */}
       <div className="absolute left-[65%] top-[43%] w-[12%]">
         <Pulse active={hintPulse > 0 && drips > 0}>
@@ -158,10 +189,7 @@ export default function Level89({ lang, solved, onSolved, onMistake, onProgress,
         </Pulse>
       </div>
 
-      {/* turn counter */}
-      <div className="absolute bottom-[4%] left-1/2 -translate-x-1/2 rounded-full border-2 border-[#3B2E5A] bg-[#FAFAFA] px-3 py-1 text-[12px] font-black text-[#33205E]" aria-hidden>
-        {lang === "fa" ? `چرخش: ${turns}/${TURNS_NEEDED}` : `Turns: ${turns}/${TURNS_NEEDED}`}
-      </div>
+      {/* turn counter removed — the player must keep track themselves */}
 
       {/* fixed badge */}
       {drips === 0 && (

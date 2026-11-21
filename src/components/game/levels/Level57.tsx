@@ -9,7 +9,8 @@ import type { DragState } from "./shared";
 /* Level 57 — Fix the broken glass in two steps:                       */
 /* 1) drag the three shards onto the dashed outline (tight pads),      */
 /* 2) then drag the glue tube over the cup -> seams heal, water fills. */
-/* A band-aid on the table is a decoy.                                 */
+/* A band-aid AND a slippery ice cube are decoys — the ice is NOT a    */
+/* glass shard, no matter how much it looks like one.                  */
 /* ------------------------------------------------------------------ */
 
 type ShardId = "left" | "bottom" | "right";
@@ -62,6 +63,19 @@ function BandAidSvg({ className, style }: { className?: string; style?: React.CS
       <circle cx="53" cy="26" r="2" fill="#3B2E5A" />
       <circle cx="60" cy="31" r="2" fill="#3B2E5A" />
       <circle cx="67" cy="26" r="2" fill="#3B2E5A" />
+    </svg>
+  );
+}
+
+/** decoy: an ice cube — glossy and glass-like, but it is NOT a shard */
+function IceCubeSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 90 90" className={className} style={style} aria-hidden>
+      <path d="M18 22 L64 14 L78 52 L40 76 L12 54 Z" fill="#CFEFF6" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      <path d="M24 30 L56 24 L62 44" stroke="#FAFAFA" strokeWidth="5" fill="none" strokeLinecap="round" opacity="0.9" />
+      <path d="M30 56 L44 48" stroke="#FAFAFA" strokeWidth="3.5" strokeLinecap="round" opacity="0.6" />
+      {/* melting puddle */}
+      <ellipse cx="46" cy="80" rx="26" ry="6" fill="#CFEFF6" stroke="#3B2E5A" strokeWidth="3" opacity="0.8" />
     </svg>
   );
 }
@@ -184,6 +198,26 @@ export default function Level57({ lang, solved, onSolved, onMistake, onProgress,
     sfx.pop();
     onMistake({ fa: "چسب‌زخم آب رو نگه نمی‌داره!", en: "A band-aid won't hold water!" });
   };
+
+  /* the ice cube: dragging it over the cup or slots is always wrong */
+  const iceRef = useRef<HTMLDivElement>(null);
+  const iceDrag = useDragMove(
+    useCallback(
+      (d: DragState, api: { reset: () => void }) => {
+        if (solved || done || fixed) return;
+        if (!d.everMoved) {
+          sfx.pop();
+          onMistake({ fa: "این یخه، نه تکهٔ لیوان!", en: "That's an ice cube, not a glass shard!" });
+          return;
+        }
+        api.reset();
+        if (overElement(iceRef, cupZoneRef, 24)) {
+          onMistake({ fa: "یخ روی لیوان نمی‌چسبه؛ آب می‌شه!", en: "Ice won't stick to the cup — it just melts!" });
+        }
+      },
+      [solved, done, fixed, onMistake]
+    )
+  );
 
   /* glue step */
   const glueDrag = useDragMove(
@@ -350,6 +384,28 @@ export default function Level57({ lang, solved, onSolved, onMistake, onProgress,
         onMiss={missShard}
         label={lang === "fa" ? "تکهٔ راست لیوان" : "right glass shard"}
       />
+
+      {/* decoy: a slippery ice cube that looks like a shard but isn't */}
+      <div className="absolute left-[30%] top-[8%] w-[12%]">
+        <div
+          ref={iceRef}
+          style={{
+            transform: `translate(${iceDrag.x}px, ${iceDrag.y}px)`,
+            transition: iceDrag.dragging ? "none" : "transform 0.35s ease",
+            zIndex: iceDrag.dragging ? 45 : 22,
+          }}
+        >
+          <div
+            {...(solved || done || fixed ? {} : iceDrag.bind)}
+            role="button"
+            aria-label={lang === "fa" ? "تکه یخ" : "ice cube"}
+            className={solved || done || fixed ? "" : "cursor-grab active:cursor-grabbing"}
+            style={{ animation: "breathe 2.6s ease-in-out infinite" }}
+          >
+            <IceCubeSvg className="h-auto w-full drop-shadow-[0_3px_0_rgba(59,46,90,0.12)]" />
+          </div>
+        </div>
+      </div>
 
       {/* glue tube */}
       <div className="absolute bottom-[5%] start-[8%] w-[15%]">

@@ -6,9 +6,10 @@ import type { LevelProps } from "@/lib/game/types";
 import { overElement, useDragMove, Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 18 — The cat can't pass the door: drag the key to the lock.   */
-/* Decoys (poster, mouse hole) punish random tapping; the keyhole pad  */
-/* is tight, so the key must be dropped precisely.                     */
+/* Level 18 — The cat can't pass the door: drag the REAL key to the    */
+/* lock. A cardboard fake key + a fake keyhole sticker punish lazy    */
+/* choices, and the keyhole pad is tight, so the key must be dropped  */
+/* precisely.                                                          */
 /* ------------------------------------------------------------------ */
 
 function KeySvg({ className }: { className?: string }) {
@@ -63,6 +64,24 @@ function MouseHoleSvg({ className, squeak }: { className?: string; squeak: boole
   );
 }
 
+/** decoy: a cardboard key cut-out — looks key-ish, opens nothing */
+function PaperKeySvg({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 110 100" className={className} aria-hidden>
+      {/* tape holding it to the wall */}
+      <rect x="44" y="4" width="24" height="14" rx="4" fill="#D9C7A8" stroke="#3B2E5A" strokeWidth="3" />
+      <path d="M48 10 L72 10" stroke="#B9A582" strokeWidth="2.5" strokeLinecap="round" />
+      {/* flat cardboard bow + shaft */}
+      <circle cx="26" cy="38" r="18" fill="#E3D2AE" stroke="#3B2E5A" strokeWidth="4.5" />
+      <circle cx="26" cy="38" r="7" fill="#B9A582" />
+      <rect x="42" y="31" width="50" height="13" rx="6" fill="#E3D2AE" stroke="#3B2E5A" strokeWidth="4" />
+      <rect x="66" y="42" width="8" height="12" rx="3" fill="#E3D2AE" stroke="#3B2E5A" strokeWidth="3" />
+      {/* cardboard corrugation */}
+      <path d="M46 37 h38 M46 40 h38" stroke="#C9B48C" strokeWidth="1.6" opacity="0.8" />
+    </svg>
+  );
+}
+
 function CatSvg({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 170 150" className={className} aria-hidden>
@@ -97,6 +116,8 @@ function CatSvg({ className }: { className?: string }) {
 
 export default function Level18({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [grabbed, setGrabbed] = useState(false);
+  const [paperWob, setPaperWob] = useState(false);
+  const [stickerWob, setStickerWob] = useState(false);
   const [inserted, setInserted] = useState(false);
   const [doorOpen, setDoorOpen] = useState(false);
   const [walking, setWalking] = useState(false);
@@ -111,7 +132,7 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
     useCallback(
       (d, api) => {
         if (solved || done || inserted) return;
-        if (overElement(keyRef, keyholeRef, 12)) {
+        if (overElement(keyRef, keyholeRef, 7)) {
           api.reset();
           setInserted(true);
           sfx.unlock();
@@ -142,6 +163,32 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
       setGrabbed(true);
       onProgress(0.3);
     }
+  };
+
+  /* the cardboard fake: dragging it anywhere does nothing useful */
+  const fakeDrag = useDragMove(
+    useCallback(
+      (d, api) => {
+        if (solved || done) return;
+        if (!d.everMoved) {
+          sfx.pop();
+          return;
+        }
+        api.reset();
+        setPaperWob(true);
+        window.setTimeout(() => setPaperWob(false), 560);
+        onMistake({ fa: "این کلید مقواییه؛ باز نمی‌کنه!", en: "That's a cardboard key — it can't open anything!" });
+      },
+      [solved, done, onMistake]
+    )
+  );
+
+  const tapSticker = () => {
+    if (solved || done || inserted) return;
+    setStickerWob(true);
+    sfx.pop();
+    window.setTimeout(() => setStickerWob(false), 560);
+    onMistake({ fa: "این فقط یه برچسبه؛ کلید واقعی آویزونه!", en: "That's just a sticker! The real key hangs from the hook." });
   };
 
   const tapDoor = () => {
@@ -193,7 +240,7 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
         type="button"
         onClick={tapPoster}
         className="absolute z-[4] w-[13%]"
-        style={{ left: "31%", top: "9%", animation: posterWob ? "shake-hard 0.5s ease-in-out" : undefined }}
+        style={{ left: "31%", top: "23%", animation: posterWob ? "shake-hard 0.5s ease-in-out" : undefined }}
         aria-label={lang === "fa" ? "پوستر روی دیوار" : "wall poster"}
       >
         <PosterSvg className="w-full h-auto drop-shadow-[0_3px_2px_rgba(59,46,90,0.15)]" />
@@ -215,6 +262,28 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
         <circle cx="20" cy="15" r="11" fill="#C7C2D8" stroke="#3B2E5A" strokeWidth="4" />
         <path d="M20 15 v9 q0 7 -8 7" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
       </svg>
+
+      {/* second hook for the cardboard decoy key */}
+      <svg viewBox="0 0 40 44" className="absolute top-[2%] left-[26%] w-[4.5%]" aria-hidden>
+        <circle cx="20" cy="15" r="11" fill="#C7C2D8" stroke="#3B2E5A" strokeWidth="4" />
+        <path d="M20 15 v9 q0 7 -8 7" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+      </svg>
+
+      {/* decoy: fake keyhole sticker on the wall */}
+      <button
+        type="button"
+        onClick={tapSticker}
+        className="absolute z-[4] w-[6.5%]"
+        style={{ left: "47%", top: "13%", animation: stickerWob ? "shake-hard 0.5s ease-in-out" : undefined }}
+        aria-label={lang === "fa" ? "برچسب سوراخ قفل" : "keyhole sticker"}
+      >
+        <svg viewBox="0 0 60 80" className="w-full h-auto">
+          <rect x="4" y="4" width="52" height="72" rx="10" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" />
+          <circle cx="30" cy="30" r="9" fill="#3B2E5A" />
+          <path d="M26 36 L23 58 L37 58 L34 36 Z" fill="#3B2E5A" />
+          <path d="M12 14 l6 -3 M48 14 l-6 -3" stroke="#8B6914" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      </button>
 
       {/* the door */}
       <div className="absolute z-[6]" style={{ left: "57%", top: "10%", width: "31%", height: "70%" }}>
@@ -278,6 +347,21 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
           <CatSvg className="w-full h-auto drop-shadow-[0_3px_2px_rgba(59,46,90,0.2)]" />
         </div>
       </motion.div>
+
+      {/* the cardboard decoy key, hanging from the second hook */}
+      <div
+        className="absolute z-[18] w-[17%]"
+        style={{
+          left: "23%",
+          top: "6.5%",
+          transform: `translate(${fakeDrag.x}px, ${fakeDrag.y}px)`,
+          transition: fakeDrag.dragging ? "none" : "transform 0.35s ease",
+        }}
+      >
+        <motion.div {...fakeDrag.bind} className="cursor-grab active:cursor-grabbing" style={{ animation: paperWob ? "wobble 0.5s ease-in-out" : undefined }} aria-label={lang === "fa" ? "کلید مقوایی" : "cardboard key"}>
+          <PaperKeySvg className="w-full h-auto drop-shadow-[0_3px_2px_rgba(59,46,90,0.2)]" />
+        </motion.div>
+      </div>
 
       {/* the key with its tag, hanging from the hook */}
       <div

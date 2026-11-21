@@ -6,24 +6,27 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 40 — Pipe maze: trace the winding pipes (mind the capped       */
-/* stub) and tap the chute the ball will really exit from.              */
+/* Level 40 — Pipe maze: FOUR chutes now. Trace the winding pipes      */
+/* (mind the two capped stubs) and tap the chute the ball will really  */
+/* exit from. A: gate, B: cork, C: valve — only D is open.             */
 /* ------------------------------------------------------------------ */
 
-type Chute = "A" | "B" | "C";
+type Chute = "A" | "B" | "C" | "D";
 
-const TRUTH: Chute = "B";
+const TRUTH: Chute = "D";
 const MISTAKE_MSG = { fa: "مسیر رو دنبال کن!", en: "Follow the pipes!" };
 const PIPES = [
   "M160 96 L160 150",
-  "M160 150 C118 160 88 180 92 220 C96 258 70 262 80 300",
-  "M160 150 C160 190 138 208 150 240 C160 264 170 268 160 300",
-  "M160 150 C204 160 236 182 230 220 C224 258 250 264 240 300",
+  "M160 150 C120 160 64 180 44 220 C36 258 40 262 40 300",
+  "M160 150 C150 190 128 210 122 240 C120 268 120 268 120 300",
+  "M160 150 C172 190 194 210 200 240 C200 268 200 268 200 300",
+  "M160 150 C204 160 258 180 278 220 C284 258 280 262 280 300",
 ];
 const CHUTES: Array<{ id: Chute; left: string }> = [
-  { id: "A", left: "13%" },
-  { id: "B", left: "38%" },
-  { id: "C", left: "63%" },
+  { id: "A", left: "1%" },
+  { id: "B", left: "25.5%" },
+  { id: "C", left: "50.5%" },
+  { id: "D", left: "75.5%" },
 ];
 const CONFETTI: Array<{ l: number; d: number; c: string }> = [
   { l: 6, d: 0, c: "#FF6B81" }, { l: 18, d: 0.12, c: "#FFD154" }, { l: 30, d: 0.05, c: "#1EC8CF" },
@@ -34,24 +37,30 @@ const CONFETTI: Array<{ l: number; d: number; c: string }> = [
 
 type BallPath = { cx: number[]; cy: number[]; times: number[]; dur: number };
 
-/* Ball routes: B winds through the only open pipe; A and C slam into
-   their blockers (gate / cork) instead of revealing the real exit. */
+/* Ball routes: D winds through the only open pipe; A, B and C slam
+   into their blockers (gate / cork / valve) instead of revealing it. */
 const PATH_TRUTH: BallPath = {
-  cx: [160, 160, 160, 160, 146, 150, 163, 160, 160, 160, 160],
-  cy: [-14, 58, 128, 150, 208, 240, 268, 300, 348, 320, 344],
-  times: [0, 0.14, 0.3, 0.4, 0.55, 0.66, 0.76, 0.86, 0.93, 0.97, 1],
+  cx: [160, 160, 160, 160, 204, 258, 278, 280, 280, 280],
+  cy: [-14, 58, 128, 150, 168, 196, 220, 258, 300, 344],
+  times: [0, 0.16, 0.32, 0.37, 0.49, 0.62, 0.72, 0.81, 0.9, 1],
   dur: 2.7,
 };
 const PATH_A: BallPath = {
-  cx: [160, 160, 160, 124, 102, 92, 90],
-  cy: [-14, 58, 128, 172, 196, 220, 238],
-  times: [0, 0.2, 0.38, 0.56, 0.7, 0.84, 1],
+  cx: [160, 160, 160, 160, 120, 64, 44, 40],
+  cy: [-14, 58, 128, 150, 162, 182, 220, 238],
+  times: [0, 0.23, 0.45, 0.52, 0.63, 0.81, 0.95, 1],
+  dur: 2,
+};
+const PATH_B: BallPath = {
+  cx: [160, 160, 160, 160, 150, 128, 122, 122],
+  cy: [-14, 58, 128, 150, 190, 212, 240, 250],
+  times: [0, 0.26, 0.5, 0.58, 0.73, 0.86, 0.96, 1],
   dur: 2,
 };
 const PATH_C: BallPath = {
-  cx: [160, 160, 160, 196, 218, 230, 228],
-  cy: [-14, 58, 128, 172, 194, 220, 240],
-  times: [0, 0.2, 0.38, 0.56, 0.7, 0.84, 1],
+  cx: [160, 160, 160, 160, 172, 194, 200, 200],
+  cy: [-14, 58, 128, 150, 190, 212, 240, 250],
+  times: [0, 0.26, 0.5, 0.58, 0.73, 0.86, 0.96, 1],
   dur: 2,
 };
 
@@ -68,8 +77,8 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
   }, []);
   useEffect(() => () => timers.current.forEach((id) => window.clearTimeout(id)), []);
 
-  /* the ball follows the pipe matching the picked chute; only B is open */
-  const path = picked === "A" ? PATH_A : picked === "C" ? PATH_C : PATH_TRUTH;
+  /* the ball follows the pipe matching the picked chute; only D is open */
+  const path = picked === "A" ? PATH_A : picked === "B" ? PATH_B : picked === "C" ? PATH_C : PATH_TRUTH;
 
   const tapChute = (c: Chute) => {
     if (solved || done || picked !== null) return;
@@ -125,19 +134,26 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
             ))}
             {/* funnel */}
             <path d="M112 26 L208 26 L172 96 L148 96 Z" fill="#E9E4F6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-            {/* three exit chutes */}
-            <path d="M56 300 L104 300 L124 368 L36 368 Z" fill="#E9E4F6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-            <path d="M136 300 L184 300 L204 368 L116 368 Z" fill="#E9E4F6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-            <path d="M216 300 L264 300 L284 368 L196 368 Z" fill="#E9E4F6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+            {/* four exit chutes */}
+            <path d="M16 300 L64 300 L72 368 L8 368 Z" fill="#E9E4F6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+            <path d="M96 300 L144 300 L152 368 L88 368 Z" fill="#E9E4F6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+            <path d="M176 300 L224 300 L232 368 L168 368 Z" fill="#E9E4F6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+            <path d="M256 300 L304 300 L312 368 L248 368 Z" fill="#E9E4F6" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
             {/* closed gate blocks chute A */}
             <g onClick={tapBlocker} style={{ cursor: "pointer" }}>
-              <rect x="50" y="222" width="60" height="34" rx="7" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4.5" />
-              <path d="M60 229 L100 249 M100 229 L60 249" stroke="#FAFAFA" strokeWidth="6" strokeLinecap="round" />
+              <rect x="12" y="218" width="56" height="32" rx="7" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4.5" />
+              <path d="M22 226 L58 242 M58 226 L22 242" stroke="#FAFAFA" strokeWidth="6" strokeLinecap="round" />
             </g>
-            {/* cork plug blocks chute C */}
+            {/* cork plug blocks chute B */}
             <g onClick={tapBlocker} style={{ cursor: "pointer" }}>
-              <rect x="212" y="224" width="56" height="30" rx="12" fill="#D99A5B" stroke="#3B2E5A" strokeWidth="4.5" />
-              <path d="M224 233 H256 M224 244 H248" stroke="#A9713C" strokeWidth="3.5" strokeLinecap="round" />
+              <rect x="96" y="228" width="52" height="28" rx="12" fill="#D99A5B" stroke="#3B2E5A" strokeWidth="4.5" />
+              <path d="M106 236 H136 M106 246 H130" stroke="#A9713C" strokeWidth="3.5" strokeLinecap="round" />
+            </g>
+            {/* shut valve blocks chute C */}
+            <g onClick={tapBlocker} style={{ cursor: "pointer" }}>
+              <circle cx="200" cy="236" r="17" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="4.5" />
+              <rect x="184" y="230" width="32" height="11" rx="5.5" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3.5" transform="rotate(45 200 236)" />
+              <circle cx="200" cy="236" r="4" fill="#3B2E5A" />
             </g>
             {/* capped decoy stub branching off the trunk — a dead end */}
             <g onClick={tapStub} style={{ cursor: "pointer" }}>
@@ -145,6 +161,13 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
               <path d="M160 112 L196 112" fill="none" stroke="#3B2E5A" strokeWidth="26" strokeLinecap="round" />
               <path d="M160 112 L196 112" fill="none" stroke="#E9E4F6" strokeWidth="15" strokeLinecap="round" />
               <circle cx="202" cy="112" r="11" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="4.5" />
+            </g>
+            {/* second capped stub off chute A's pipe */}
+            <g onClick={tapStub} style={{ cursor: "pointer" }}>
+              <rect x="20" y="164" width="66" height="34" fill="transparent" />
+              <path d="M64 180 L36 180" fill="none" stroke="#3B2E5A" strokeWidth="26" strokeLinecap="round" />
+              <path d="M64 180 L36 180" fill="none" stroke="#E9E4F6" strokeWidth="15" strokeLinecap="round" />
+              <circle cx="30" cy="180" r="11" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="4.5" />
             </g>
           </svg>
           {/* idle ball waiting above the funnel */}
@@ -156,7 +179,7 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
               aria-hidden
             />
           )}
-          {/* ball travelling the real path */}
+          {/* ball travelling the picked path */}
           {running && picked !== null && (
             <motion.div
               key={runId}
@@ -185,7 +208,7 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
             onClick={() => tapChute(c.id)}
             disabled={solved || done || picked !== null}
             aria-label={lang === "fa" ? `دهانه ${c.id}` : `chute ${c.id}`}
-            className="absolute bottom-[1.5%] z-10 grid h-[13%] w-[24%] place-items-center rounded-2xl border-4 border-[#3B2E5A] text-2xl font-black text-[#3B2E5A] shadow-[0_4px_0_rgba(59,46,90,0.2)] disabled:cursor-default"
+            className="absolute bottom-[1.5%] z-10 grid h-[13%] w-[22%] place-items-center rounded-2xl border-4 border-[#3B2E5A] text-2xl font-black text-[#3B2E5A] shadow-[0_4px_0_rgba(59,46,90,0.2)] disabled:cursor-default"
             style={{ left: c.left, background: bg, transition: "background 0.25s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1)", transform: isPicked && result === "right" ? "scale(1.08)" : "scale(1)" }}
           >
             {c.id}

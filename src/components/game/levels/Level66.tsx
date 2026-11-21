@@ -5,41 +5,55 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 66 — The tap won't stop running! Turn the red MAIN VALVE      */
-/* under the sink: 3 turns and the water stops.                        */
+/* Level 66 — The tap won't stop running! The cabinet door under the   */
+/* sink is CLOSED — open it to reveal the red MAIN VALVE, then turn    */
+/* it four times to stop the water.                                    */
 /* ------------------------------------------------------------------ */
+
+const TURNS_NEEDED = 4;
 
 export default function Level66({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [turns, setTurns] = useState(0);
+  const [cabOpen, setCabOpen] = useState(false);
+  const [doorWob, setDoorWob] = useState(false);
   const [done, setDone] = useState(false);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const tapValve = useCallback(() => {
-    if (solved || done || turns >= 3) return;
+    if (solved || done || turns >= TURNS_NEEDED || !cabOpen) return;
     const next = turns + 1;
     setTurns(next);
     sfx.pop();
-    onProgress(Math.min(0.9, next / 3));
-    if (next >= 3) {
+    onProgress(Math.min(0.9, next / TURNS_NEEDED));
+    if (next >= TURNS_NEEDED) {
       setDone(true);
       timers.current.push(setTimeout(() => sfx.chime(), 350));
       onProgress(1);
       timers.current.push(setTimeout(onSolved, 1400));
     }
-  }, [solved, done, turns, onProgress, onSolved]);
+  }, [solved, done, turns, cabOpen, onProgress, onSolved]);
+
+  const tapCabinet = useCallback(() => {
+    if (solved || done || cabOpen) return;
+    setCabOpen(true);
+    sfx.whoosh();
+    onProgress(0.25);
+  }, [solved, done, cabOpen, onProgress]);
 
   const tapFaucet = useCallback(() => {
     if (done) return;
     sfx.fail();
+    setDoorWob(true);
+    timers.current.push(setTimeout(() => setDoorWob(false), 560));
     onMistake({
       fa: "شیر بالایی خراب نیست؛ شیر اصلی زیر سینک را بچرخان!",
       en: "The tap isn't broken; turn the main valve under the sink!",
     });
   }, [done, onMistake]);
 
-  const flowLeft = 3 - turns;
+  const flowLeft = TURNS_NEEDED - turns;
 
   return (
     <Scene bg="linear-gradient(180deg,#DFF3F7 0%,#CFE9F0 55%,#E8F4DA 56%,#D9EBC7 100%)">
@@ -91,13 +105,13 @@ export default function Level66({ lang, solved, onSolved, onMistake, onProgress,
         className="absolute bottom-[4%] left-1/2 h-[9%] w-[40%] -translate-x-1/2 rounded-[50%] border-4 border-[#3B2E5A] bg-[#1EC8CF]"
         style={{
           opacity: flowLeft > 0 ? 0.75 : 0,
-          transform: `translateX(-50%) scaleX(${0.55 + flowLeft * 0.15})`,
+          transform: `translateX(-50%) scaleX(${0.55 + flowLeft * 0.11})`,
           transition: "opacity 0.6s ease, transform 0.6s ease",
         }}
         aria-hidden
       />
 
-      {/* open cabinet with main valve */}
+      {/* cabinet with main valve — door CLOSED until tapped */}
       <div className="absolute bottom-[6%] start-[3%] w-[30%]">
         <svg viewBox="0 0 130 130" className="h-auto w-full" aria-hidden>
           {/* cabinet */}
@@ -108,15 +122,20 @@ export default function Level66({ lang, solved, onSolved, onMistake, onProgress,
           <path d="M65 10 L65 46 M65 84 L65 122" stroke="#3B2E5A" strokeWidth="13" strokeLinecap="round" opacity="0.2" />
         </svg>
 
-        {/* main valve wheel — tap 3 times */}
+        {/* main valve wheel — tap 4 times (hidden behind the door at first) */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <Pulse active={hintPulse > 0 && !done}>
+          <Pulse active={hintPulse > 0 && cabOpen && !done}>
             <button
               type="button"
               onClick={tapValve}
               aria-label={lang === "fa" ? "شیر اصلی آب" : "main valve"}
               className="h-16 w-16 cursor-pointer rounded-full border-0 bg-transparent p-0 transition-transform active:scale-90"
-              style={{ transform: `rotate(${turns * 120}deg)`, transition: "transform 0.35s cubic-bezier(0.34,1.3,0.64,1)" }}
+              style={{
+                transform: `rotate(${turns * 90}deg)`,
+                transition: "transform 0.35s cubic-bezier(0.34,1.3,0.64,1)",
+                pointerEvents: cabOpen ? "auto" : "none",
+                opacity: cabOpen ? 1 : 0,
+              }}
             >
               <svg viewBox="0 0 64 64" className="h-full w-full drop-shadow-[0_3px_2px_rgba(59,46,90,0.3)]" aria-hidden>
                 <circle cx="32" cy="32" r="26" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4.5" />
@@ -128,6 +147,24 @@ export default function Level66({ lang, solved, onSolved, onMistake, onProgress,
             </button>
           </Pulse>
         </div>
+
+        {/* closed cabinet door — tap to swing it open */}
+        {!cabOpen && (
+          <button
+            type="button"
+            onClick={tapCabinet}
+            aria-label={lang === "fa" ? "درب کابینت" : "cabinet door"}
+            className="absolute inset-[2%] cursor-pointer rounded-xl"
+            style={{ animation: doorWob ? "shake-hard 0.5s ease-in-out" : undefined }}
+          >
+            <svg viewBox="0 0 130 130" className="h-full w-full" aria-hidden>
+              <rect x="10" y="14" width="110" height="104" rx="10" fill="#B7ABDA" stroke="#3B2E5A" strokeWidth="5" />
+              <rect x="22" y="26" width="86" height="80" rx="8" fill="none" stroke="#8B72CC" strokeWidth="3.5" />
+              <circle cx="108" cy="66" r="7" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.5" />
+              <path d="M30 40 Q65 34 100 40" stroke="#8B72CC" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+          </button>
+        )}
 
         {/* NOTE: no label/sign here — it used to give the answer away */}
       </div>

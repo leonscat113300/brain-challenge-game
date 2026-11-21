@@ -8,6 +8,7 @@ import { Pulse, Scene, sfx, useDragMove } from "./shared";
 /* ------------------------------------------------------------------ */
 /* Level 27 — Apple shake: pull the branch DOWN and let it spring back */
 /* three times; the apple drops and lands in the wicker basket.        */
+/* Tree canopy, branch and basket are hand-drawn for a richer look.    */
 /* ------------------------------------------------------------------ */
 
 function AppleSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
@@ -32,24 +33,41 @@ function AppleSvg({ className, style }: { className?: string; style?: React.CSSP
 function BranchSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 340 100" className={className} style={style} aria-hidden>
-      {/* leafy clusters along the branch */}
-      <ellipse cx="52" cy="30" rx="34" ry="20" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="104" cy="20" rx="38" ry="22" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="158" cy="30" rx="32" ry="19" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="212" cy="22" rx="30" ry="18" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="258" cy="34" rx="26" ry="16" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="4" />
+      {/* leafy sprigs: small natural leaves instead of blobs */}
+      <g fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3">
+        <path d="M34 52 Q22 34 42 26 Q58 34 46 52 Z" />
+        <path d="M64 44 Q58 22 80 20 Q92 34 76 46 Z" />
+        <path d="M120 40 Q112 20 134 18 Q146 32 130 42 Z" />
+        <path d="M172 38 Q168 16 190 18 Q200 32 184 42 Z" />
+        <path d="M226 42 Q224 22 246 24 Q254 38 238 46 Z" />
+        <path d="M272 50 Q274 32 292 36 Q298 50 284 56 Z" />
+      </g>
+      <g fill="#5DBB63" stroke="#3B2E5A" strokeWidth="3">
+        <path d="M50 34 Q44 14 66 12 Q76 26 60 36 Z" />
+        <path d="M96 30 Q94 12 114 12 Q124 26 108 34 Z" />
+        <path d="M150 30 Q150 12 170 14 Q178 28 162 36 Z" />
+        <path d="M204 32 Q206 14 224 18 Q230 32 214 38 Z" />
+        <path d="M252 40 Q258 24 274 30 Q278 44 262 48 Z" />
+      </g>
       {/* leaf veins */}
-      <path d="M84 22 q10 6 6 16 M142 24 q10 6 6 16 M236 24 q9 5 5 14" stroke="#2E6B31" strokeWidth="3" fill="none" strokeLinecap="round" />
-      {/* main woody branch with bark lines */}
-      <path d="M0 72 Q80 60 170 56 Q260 52 300 60" stroke="#3B2E5A" strokeWidth="22" fill="none" strokeLinecap="round" />
-      <path d="M0 72 Q80 60 170 56 Q260 52 300 60" stroke="#8B5E3C" strokeWidth="14" fill="none" strokeLinecap="round" />
-      <path d="M40 68 L84 64 M120 62 L166 58 M204 57 L248 54" stroke="#6E4526" strokeWidth="3.4" strokeLinecap="round" opacity="0.8" />
+      <path d="M44 40 q6 -6 14 -8 M70 34 q4 -8 12 -12 M128 32 q6 -6 14 -8 M180 30 q4 -8 12 -10 M234 34 q6 -4 12 -6 M280 44 q6 -2 10 -4" stroke="#2E6B31" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+      {/* main woody branch as a tapered filled shape */}
+      <path
+        d="M0 56 Q80 42 180 42 Q262 42 302 52 L302 68 Q262 60 180 62 Q80 64 0 76 Z"
+        fill="#8B5E3C"
+        stroke="#3B2E5A"
+        strokeWidth="5"
+        strokeLinejoin="round"
+      />
+      {/* bark lines + a knot */}
+      <path d="M36 58 L82 54 M108 52 L152 50 M188 50 L232 50 M258 52 L286 54" stroke="#6E4526" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+      <ellipse cx="132" cy="55" rx="7" ry="4" fill="#6E4526" stroke="#3B2E5A" strokeWidth="2.4" />
       {/* twig that holds the apple — tip reaches down to the apple's stem */}
-      <path d="M298 62 Q306 72 302 86" stroke="#3B2E5A" strokeWidth="12" fill="none" strokeLinecap="round" />
-      <path d="M298 62 Q306 72 302 86" stroke="#8B5E3C" strokeWidth="6.5" fill="none" strokeLinecap="round" />
+      <path d="M298 56 Q310 64 306 84" stroke="#3B2E5A" strokeWidth="12" fill="none" strokeLinecap="round" />
+      <path d="M298 56 Q310 64 306 84" stroke="#8B5E3C" strokeWidth="6.5" fill="none" strokeLinecap="round" />
       {/* small leaves on the twig */}
-      <path d="M303 72 Q316 64 320 74 Q312 82 303 78 Z" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
-      <path d="M300 80 Q288 82 286 92 Q296 94 302 88 Z" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M308 68 Q322 60 326 72 Q316 80 307 74 Z" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M303 78 Q291 80 290 92 Q300 94 306 86 Z" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -57,9 +75,11 @@ function BranchSvg({ className, style }: { className?: string; style?: React.CSS
 function BasketBackSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 180 80" className={className} style={style} aria-hidden>
-      {/* back wall + dark inside of the basket */}
-      <path d="M14 36 Q90 10 166 36 Q170 50 158 54 L22 54 Q10 50 14 36 Z" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-      <path d="M26 40 Q90 20 154 40" stroke="#5C3A22" strokeWidth="8" fill="none" strokeLinecap="round" />
+      {/* dark inside of the basket */}
+      <path d="M16 38 L164 38 L158 58 Q90 66 22 58 Z" fill="#5C3A22" />
+      {/* back wall with faint weave */}
+      <path d="M14 38 Q90 12 166 38 Q170 52 158 58 L22 58 Q10 52 14 38 Z" fill="#B47A3F" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+      <path d="M30 40 Q90 22 150 40 M26 46 Q90 30 154 46" stroke="#8B5E3C" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.7" />
     </svg>
   );
 }
@@ -70,12 +90,16 @@ function BasketFrontSvg({ className, style }: { className?: string; style?: Reac
       {/* woven front wall */}
       <path d="M14 44 L166 44 Q162 92 90 92 Q18 92 14 44 Z" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
       {/* horizontal weave bands */}
-      <path d="M20 58 Q90 70 160 58" stroke="#8B5E3C" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-      <path d="M26 72 Q90 84 154 72" stroke="#8B5E3C" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+      <path d="M19 58 Q90 70 161 58" stroke="#8B5E3C" strokeWidth="5" fill="none" strokeLinecap="round" />
+      <path d="M24 72 Q90 84 156 72" stroke="#8B5E3C" strokeWidth="5" fill="none" strokeLinecap="round" />
+      <path d="M33 84 Q90 92 147 84" stroke="#8B5E3C" strokeWidth="4.5" fill="none" strokeLinecap="round" />
       {/* vertical stakes */}
-      <path d="M44 46 L46 88 M70 48 L71 91 M96 48 L96 91 M122 48 L121 90 M144 46 L142 84" stroke="#A96F35" strokeWidth="3.6" opacity="0.9" />
-      {/* chunky rim band */}
-      <path d="M12 36 Q90 14 168 36 L166 46 Q90 26 14 46 Z" fill="#E0A860" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      <path d="M40 46 L43 88 M66 48 L68 91 M92 48 L92 91 M118 48 L117 90 M142 46 L140 86" stroke="#A96F35" strokeWidth="4" opacity="0.95" />
+      {/* diagonal weave highlights */}
+      <path d="M48 62 l8 6 M74 64 l8 6 M100 64 l8 6 M126 62 l8 6 M54 76 l8 6 M82 78 l8 6 M108 77 l8 6" stroke="#E0A860" strokeWidth="3" strokeLinecap="round" opacity="0.85" />
+      {/* chunky rim band with highlight */}
+      <path d="M12 36 Q90 14 168 36 L166 47 Q90 27 14 47 Z" fill="#E0A860" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      <path d="M24 38 Q90 21 156 38" stroke="#F2C98A" strokeWidth="3.5" fill="none" strokeLinecap="round" opacity="0.9" />
     </svg>
   );
 }
@@ -150,10 +174,25 @@ export default function Level27({ lang, solved, onSolved, onMistake, onProgress,
 
   return (
     <Scene bg="linear-gradient(180deg,#DFF3FA 0%,#EEF8E8 62%,#E3F2DC 100%)">
-      {/* sun + tree crown */}
+      {/* sun + tree trunk + rich scalloped canopy */}
       <div className="absolute end-[5%] top-[6%] h-12 w-12 rounded-full border-4 border-[#3B2E5A] bg-[#FFD154]" style={{ animation: "breathe 3.4s ease-in-out infinite" }} aria-hidden />
-      <div className="absolute -left-[10%] -top-[16%] aspect-square w-[48%] rounded-full border-4 border-[#3B2E5A] bg-[#4CAF50]" aria-hidden />
-      <div className="absolute -top-[22%] left-[22%] aspect-square w-[40%] rounded-full border-4 border-[#3B2E5A] bg-[#5DBB63]" aria-hidden />
+      {/* trunk */}
+      <svg viewBox="0 0 70 200" preserveAspectRatio="none" className="absolute bottom-0 left-[2.5%] top-[21%] w-[8%]" aria-hidden>
+        <path d="M18 200 Q22 120 14 40 Q30 52 34 44 Q40 54 46 44 Q44 130 52 200 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+        <path d="M26 60 Q24 120 28 180 M40 70 Q42 130 40 190" stroke="#6E4526" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.8" />
+      </svg>
+      {/* canopy */}
+      <svg viewBox="0 0 420 250" className="absolute -left-[7%] -top-[13%] w-[62%]" aria-hidden>
+        <path
+          d="M30 150 Q-6 96 52 66 Q58 8 138 24 Q196 -14 246 28 Q318 8 336 70 Q392 96 358 142 Q380 196 314 204 Q266 244 202 216 Q136 248 88 206 Q20 210 30 150 Z"
+          fill="#4CAF50"
+          stroke="#3B2E5A"
+          strokeWidth="6"
+          strokeLinejoin="round"
+        />
+        <path d="M96 96 Q150 60 224 84 M64 140 Q120 110 176 128" stroke="#3E8E41" strokeWidth="7" fill="none" strokeLinecap="round" opacity="0.6" />
+        <path d="M150 70 Q160 56 178 58 M232 52 Q246 46 258 58" stroke="#2E6B31" strokeWidth="4" fill="none" strokeLinecap="round" />
+      </svg>
       {/* grass */}
       <div className="absolute inset-x-0 bottom-0 h-[16%] border-t-4 border-[#3B2E5A]" style={{ background: "linear-gradient(180deg,#5DBB63,#4CAF50)" }} aria-hidden />
 

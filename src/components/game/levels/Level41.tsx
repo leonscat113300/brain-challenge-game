@@ -6,12 +6,12 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 41 — Find the different shape: one of seven stars hangs        */
-/* point-down.                                                          */
+/* Level 41 — Find the different shape: one of NINE stars hangs        */
+/* point-down.                                                         */
 /* ------------------------------------------------------------------ */
 
-/* seven stars in the row; index 5 hangs point-down */
-const ODD = 5;
+/* nine stars in the row; index 6 hangs point-down */
+const ODD = 6;
 const MISTAKE_MSG = { fa: "این یکی مثل بقیه‌ست!", en: "This one matches the others!" };
 
 function StarSvg({ wink = false, className, style }: { wink?: boolean; className?: string; style?: React.CSSProperties }) {
@@ -124,7 +124,7 @@ export default function Level41({ lang, solved, onSolved, onMistake, onProgress,
       {/* star banner */}
       <div className="absolute left-1/2 top-[24%] w-[92%] -translate-x-1/2 rounded-[30px] border-4 border-[#3B2E5A] bg-[#FAFAFA] px-[4%] pb-[5%] pt-[7%] shadow-[0_6px_0_rgba(59,46,90,0.12)]">
         <div className="flex items-center justify-between">
-          {[0, 1, 2, 3, 4, 5, 6].map((i) => {
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
             const odd = i === ODD;
             return (
               <button
@@ -133,8 +133,8 @@ export default function Level41({ lang, solved, onSolved, onMistake, onProgress,
                 onClick={() => tapStar(i)}
                 disabled={solved || done}
                 aria-label={lang === "fa" ? "ستاره" : "star"}
-                className="relative w-[12%] max-w-[70px] disabled:cursor-default"
-                style={{ animation: `bob ${2.6 + i * 0.25}s ease-in-out infinite` }}
+                className="relative w-[9.5%] max-w-[54px] disabled:cursor-default"
+                style={{ animation: `bob ${2.2 + i * 0.21}s ease-in-out infinite` }}
               >
                 <div key={wrong === i ? bump : "calm"} style={{ animation: wrong === i ? "shake-hard 0.45s ease-in-out" : undefined }}>
                   <motion.div
