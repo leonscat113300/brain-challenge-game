@@ -25,6 +25,8 @@ const emptySubscribe = () => () => {};
 const useMounted = () => useSyncExternalStore(emptySubscribe, () => true, () => false);
 
 export default function GameApp() {
+  /* phases: studio splash -> tap-to-start -> game */
+  const [phase, setPhase] = useState<"splash" | "start">("splash");
   const [started, setStarted] = useState(false);
   const mounted = useMounted();
   const lang = useGameStore((s) => s.lang);
@@ -36,6 +38,43 @@ export default function GameApp() {
     const h = () => initAudio();
     window.addEventListener("pointerdown", h, { once: true });
     return () => window.removeEventListener("pointerdown", h);
+  }, []);
+
+  /* studio splash auto-advances (tap to skip) */
+  useEffect(() => {
+    if (phase !== "splash") return;
+    const t = setTimeout(() => setPhase("start"), 2600);
+    return () => clearTimeout(t);
+  }, [phase]);
+
+  /* Android system back button bridge — the APK WebView calls this.
+     Returns true when the press was consumed by in-game navigation,
+     false when the app is on the main menu (Android may then exit). */
+  useEffect(() => {
+    (window as unknown as { __handleAndroidBack?: () => boolean }).__handleAndroidBack = () => {
+      const st = useGameStore.getState();
+      if (st.modal) {
+        st.setModal(null);
+        sfx.click();
+        return true;
+      }
+      if (st.showVictory) {
+        st.setVictory(false);
+        sfx.click();
+        return true;
+      }
+      if (st.screen === "game") {
+        st.setScreen("menu");
+        sfx.click();
+        return true;
+      }
+      if (st.screen === "levels") {
+        st.setScreen("menu");
+        sfx.whoosh();
+        return true;
+      }
+      return false;
+    };
   }, []);
 
   /* background music follows screen */
@@ -60,6 +99,11 @@ export default function GameApp() {
     );
   }
 
+  const advanceSplash = () => {
+    sfx.chime();
+    setPhase("start");
+  };
+
   return (
     <div
       dir={lang === "fa" ? "rtl" : "ltr"}
@@ -70,6 +114,41 @@ export default function GameApp() {
         className="relative w-full max-w-[430px] h-dvh sm:h-[min(92dvh,900px)] overflow-hidden bg-[#FAFAFA] sm:rounded-[2.2rem] sm:border-[10px] sm:border-[#33205E] shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
         style={{ touchAction: "manipulation" }}
       >
+        <AnimatePresence>
+          {phase === "splash" && (
+            <motion.div
+              key="splash"
+              className="absolute inset-0 z-[100] grid place-items-center bg-[#33205E] cursor-pointer"
+              onClick={advanceSplash}
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.45, ease: "easeOut" } }}
+              role="button"
+              aria-label="Candy Team Game Studio"
+            >
+              <div className="flex flex-col items-center gap-4 px-8">
+                {/* eslint-disable-next-line @next/next/no-img-element -- static asset, no optimization needed */}
+                <motion.img
+                  src="/candy-team-logo.webp"
+                  alt="Candy Team Game Studio"
+                  className="w-full max-w-[290px] h-auto"
+                  draggable={false}
+                  initial={{ opacity: 0, scale: 0.82 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.65, ease: "easeOut" }}
+                />
+                <motion.div
+                  className="text-[11px] font-bold tracking-[0.35em] text-white/55 uppercase"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, duration: 0.5 }}
+                >
+                  {tr(lang, "presents")}
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {!started ? (
           <button
             onClick={() => {

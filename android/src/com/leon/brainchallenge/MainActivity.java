@@ -2,6 +2,7 @@ package com.leon.brainchallenge;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -11,11 +12,15 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,10 +30,15 @@ import java.util.Map;
 
 /**
  * Offline WebView host for the "Brain Challenge!" (مغزتو به چالش بکش!) web game.
- * The entire static export of the game ships in the APK assets folder and is
- * served to the WebView through shouldInterceptRequest() over a synthetic
- * https origin (https://appassets.local/) so that localStorage, WebAudio and
- * fetch() behave exactly like on a real website — fully offline.
+ *
+ * - The entire static export of the game ships in the APK assets folder and is
+ *   served to the WebView through shouldInterceptRequest() over a synthetic
+ *   https origin (https://appassets.local/) so that localStorage, WebAudio and
+ *   fetch() behave exactly like on a real website — fully offline.
+ * - A native studio splash (Candy Team logo) is shown while the game loads.
+ * - The Android system back button is forwarded to the game via
+ *   window.__handleAndroidBack(); only when the game is on its main menu does
+ *   the double-back-to-exit pattern apply.
  */
 public class MainActivity extends Activity {
 
@@ -36,6 +46,8 @@ public class MainActivity extends Activity {
     private static final String START_URL = "https://" + HOST + "/index.html";
 
     private WebView webView;
+    private View splashOverlay;
+    private long lastBackAt = 0L;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -48,7 +60,6 @@ public class MainActivity extends Activity {
         window.setNavigationBarColor(Color.parseColor("#33205E"));
 
         webView = new WebView(this);
-        setContentView(webView);
 
         WebSettings s = webView.getSettings();
         s.setJavaScriptEnabled(true);
@@ -78,10 +89,55 @@ public class MainActivity extends Activity {
                 /* never navigate away from the bundled game */
                 return !HOST.equals(request.getUrl().getHost());
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                /* the web game shows its own splash; hand over smoothly */
+                view.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideSplash();
+                    }
+                }, 450);
+            }
         });
 
         applyImmersive();
+
+        /* root = webview + studio splash on top */
+        FrameLayout root = new FrameLayout(this);
+        root.addView(webView, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+
+        ImageView splash = new ImageView(this);
+        splash.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        splash.setBackgroundColor(Color.parseColor("#33205E"));
+        int pad = (int) (48 * getResources().getDisplayMetrics().density);
+        splash.setPadding(pad, pad, pad, pad);
+        try {
+            splash.setImageBitmap(BitmapFactory.decodeStream(getAssets().open("candy-team-logo.png")));
+        } catch (IOException ignored) {
+            /* no logo asset — keep the colored splash */
+        }
+        root.addView(splash, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        splashOverlay = splash;
+
+        setContentView(root);
         webView.loadUrl(START_URL);
+    }
+
+    private void hideSplash() {
+        final View v = splashOverlay;
+        if (v == null || v.getVisibility() != View.VISIBLE) {
+            return;
+        }
+        v.animate().alpha(0f).setDuration(400).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                v.setVisibility(View.GONE);
+            }
+        }).start();
     }
 
     private void applyImmersive() {
@@ -102,7 +158,12 @@ public class MainActivity extends Activity {
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
         /* re-apply after focus changes (dialogs, keyboard, ...) */
-        decor.setOnSystemUiVisibilityChangeListener(visibility -> applyImmersive());
+        decor.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                applyImmersive();
+            }
+        });
     }
 
     @Override
@@ -110,6 +171,56 @@ public class MainActivity extends Activity {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             applyImmersive();
+        }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Back button: route into the game first, exit only on second press   */
+    /* ------------------------------------------------------------------ */
+
+    @Override
+    public void onBackPressed() {
+        if (webView == null) {
+            super.onBackPressed();
+            return;
+        }
+        webView.evaluateJavascript(
+                "(window.__handleAndroidBack && window.__handleAndroidBack()) ? '1' : '0'",
+                new android.webkit.ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        if ("\"1\"".equals(value)) {
+                            return; /* consumed by in-game navigation */
+                        }
+                        long now = System.currentTimeMillis();
+                        if (now - lastBackAt < 2200L) {
+                            finish();
+                        } else {
+                            lastBackAt = now;
+                            try {
+                                Toast.makeText(MainActivity.this,
+                                        readAssetText("exit-hint.txt"), Toast.LENGTH_SHORT).show();
+                            } catch (Throwable t) {
+                                Toast.makeText(MainActivity.this, "Back again to exit", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private String readAssetText(String name) {
+        try {
+            InputStream in = getAssets().open(name);
+            java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
+            byte[] b = new byte[2048];
+            int n;
+            while ((n = in.read(b)) > 0) {
+                buf.write(b, 0, n);
+            }
+            in.close();
+            return buf.toString("UTF-8").trim();
+        } catch (IOException e) {
+            return "";
         }
     }
 
@@ -171,19 +282,10 @@ public class MainActivity extends Activity {
             /* asset not found — serve an empty 404 */
             try {
                 return new WebResourceResponse("text/plain", "utf-8", 404, "Not Found",
-                        new HashMap<>(), new ByteArrayInputStream(new byte[0]));
+                        new HashMap<String, String>(), new ByteArrayInputStream(new byte[0]));
             } catch (Throwable t) {
                 return null;
             }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
         }
     }
 
