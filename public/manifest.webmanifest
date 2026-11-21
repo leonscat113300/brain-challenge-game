@@ -1,0 +1,23 @@
+{
+  "name": "مغزتو به چالش بکش! | Brain Challenge",
+  "short_name": "Brain Challenge",
+  "description": "بازی معما و طنز دوبعدی — با لمس، کشیدن، تکان دادن گوشی و فکر کردن خارج از کادر معماها را حل کن.",
+  "id": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#33205E",
+  "theme_color": "#6C4AB6",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": [
+    { "src": "/icons/android/ic_launcher-mdpi.png", "sizes": "48x48", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/android/ic_launcher-hdpi.png", "sizes": "72x72", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/android/ic_launcher-xhdpi.png", "sizes": "96x96", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/android/ic_launcher-xxhdpi.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
