@@ -126,7 +126,6 @@ export default function GameApp() {
               aria-label="Candy Team Game Studio"
             >
               <div className="flex flex-col items-center gap-4 px-8">
-                {/* eslint-disable-next-line @next/next/no-img-element -- static asset, no optimization needed */}
                 <motion.img
                   src="/candy-team-logo.webp"
                   alt="Candy Team Game Studio"
