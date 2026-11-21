@@ -149,17 +149,7 @@ export default function Level88({ lang, solved, onSolved, onMistake, onProgress,
 
   return (
     <Scene bg="linear-gradient(180deg,#EFE9FB 0%,#E6DDF6 55%,#DCD0EE 64%,#E3CFA4 66%,#D9BE8F 100%)">
-      {/* step checklist */}
-      <div className="absolute bottom-[2%] left-[3%] flex flex-col gap-1" aria-hidden>
-        <div className={`flex items-center gap-1 rounded-full border-2 border-[#3B2E5A] px-2 py-0.5 text-[11px] font-black ${plugged ? "bg-[#4CAF50] text-[#FAFAFA]" : "bg-[#FAFAFA] text-[#3B2E5A]"}`}>
-          <span>{plugged ? "✔" : "۱"}</span>
-          <span>{lang === "fa" ? "برق" : "power"}</span>
-        </div>
-        <div className={`flex items-center gap-1 rounded-full border-2 border-[#3B2E5A] px-2 py-0.5 text-[11px] font-black ${!bagFull ? "bg-[#4CAF50] text-[#FAFAFA]" : "bg-[#FAFAFA] text-[#3B2E5A]"}`}>
-          <span>{!bagFull ? "✔" : "۲"}</span>
-          <span>{lang === "fa" ? "خالی کردن کیسه" : "empty bag"}</span>
-        </div>
-      </div>
+      {/* NOTE: the old step-checklist sign was removed — it revealed the whole solution */}
 
       {/* socket */}
       <div ref={socketRef} className="absolute right-[3%] top-[20%] w-[14%]">

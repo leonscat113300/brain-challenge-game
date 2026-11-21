@@ -221,18 +221,18 @@ export default function Level6({ lang, solved, onSolved, onMistake, onProgress, 
         <circle cx="330" cy="86" r="6" fill="#FF6B81" />
       </svg>
 
-      {/* house wall at the side */}
-      <div className="absolute bottom-[24%] start-0 top-[18%] w-[16%] rounded-e-2xl border-y-4 border-e-4 border-[#3B2E5A] bg-[#F6E7C8]">
+      {/* house wall at the side — sits on the grass line */}
+      <div className="absolute bottom-[17%] start-0 top-[18%] w-[16%] rounded-e-2xl border-y-4 border-e-4 border-[#3B2E5A] bg-[#F6E7C8]">
         <div className="absolute left-1/2 top-[16%] h-[24%] w-[54%] -translate-x-1/2 rounded-lg border-[3px] border-[#3B2E5A] bg-[#BEE9F5]" />
         <div className="absolute left-1/2 top-[56%] h-[22%] w-[54%] -translate-x-1/2 rounded-lg border-[3px] border-[#3B2E5A] bg-[#BEE9F5]" />
       </div>
 
-      {/* puddle while raining */}
-      {!happy && <div className="absolute bottom-[24%] left-1/2 h-[3.5%] w-[30%] -translate-x-1/2 rounded-[50%] bg-[#1EC8CF] opacity-40" />}
+      {/* puddle while raining — rests on the grass */}
+      {!happy && <div className="absolute bottom-[18%] left-1/2 h-[3.5%] w-[30%] -translate-x-1/2 rounded-[50%] bg-[#1EC8CF] opacity-40" />}
 
-      {/* broken umbrella leaning against the wall (decoy) */}
+      {/* broken umbrella leaning against the wall (decoy) — planted on the grass */}
       <div
-        className="absolute bottom-[22%] start-[7%] z-10 w-[13%] min-w-[44px]"
+        className="absolute bottom-[18%] start-[7%] z-10 w-[13%] min-w-[44px]"
         style={{
           transform: `translate(${dragU.x}px, ${dragU.y}px) rotate(14deg)`,
           transition: dragU.dragging ? "none" : "transform 0.3s ease",
@@ -245,8 +245,8 @@ export default function Level6({ lang, solved, onSolved, onMistake, onProgress, 
         </div>
       </div>
 
-      {/* the character */}
-      <div className="absolute bottom-[26%] left-1/2 z-10 w-[24%] min-w-[64px] -translate-x-1/2">
+      {/* the character — feet planted on the grass */}
+      <div className="absolute bottom-[18.5%] left-1/2 z-10 w-[24%] min-w-[64px] -translate-x-1/2">
         <motion.div animate={happy ? { y: [0, -18, 0, -10, 0] } : { y: 0 }} transition={{ duration: 1, ease: "easeOut" }}>
           <PersonSvg happy={happy} wet={!happy} className="h-auto w-full" />
         </motion.div>

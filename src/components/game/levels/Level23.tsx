@@ -7,7 +7,8 @@ import { Pulse, Scene, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 23 — The Exit Door: three doors in a dark hallway; only the   */
-/* middle one leaks warm light. Tap it to escape.                      */
+/* middle one leaks warm light. Crack it open, then push through.       */
+/* The leak is subtler now, and the lamps + cobweb are tap-traps.       */
 /* ------------------------------------------------------------------ */
 
 const DARK_MSG = { fa: "پشت این در تاریکه!", en: "It's dark behind this door!" };
@@ -58,6 +59,22 @@ function WalkerSvg({ className, style }: { className?: string; style?: React.CSS
   );
 }
 
+function CobwebSvg({ className, wiggled }: { className?: string; wiggled: boolean }) {
+  return (
+    <svg viewBox="0 0 80 70" className={className} style={{ animation: wiggled ? "wobble 0.7s ease-in-out" : undefined }} aria-hidden>
+      <g stroke="#C7C2D8" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.55">
+        <path d="M2 2 L44 40 M2 22 L44 40 M2 44 L44 40 M14 2 L44 40 M30 2 L44 40" />
+        <path d="M10 10 Q26 18 22 30 M22 4 Q34 16 30 26 M4 24 Q16 26 26 34" />
+      </g>
+      <path d="M44 40 L54 52" stroke="#C7C2D8" strokeWidth="2" opacity="0.7" />
+      <path d="M49 48 L42 42 M49 55 L42 60 M59 48 L66 42 M58 55 L66 60 M51 46 L47 39 M57 46 L61 39" stroke="#3B2E5A" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="54" cy="51" r="6" fill="#33205E" stroke="#3B2E5A" strokeWidth="3" />
+      <circle cx="52" cy="49" r="1.5" fill="#FAFAFA" />
+      <circle cx="57" cy="49" r="1.5" fill="#FAFAFA" />
+    </svg>
+  );
+}
+
 function Door({ warm, open, peek, onTap, label }: { warm: boolean; open: boolean; peek: boolean; onTap: () => void; label: string }) {
   return (
     <div role="button" aria-label={label} onClick={onTap} className="relative h-full w-full cursor-pointer">
@@ -93,10 +110,11 @@ function Door({ warm, open, peek, onTap, label }: { warm: boolean; open: boolean
       {/* light leak / shadow beneath */}
       {warm && !open && (
         <div
-          className="pointer-events-none absolute inset-x-[16%] bottom-[-2%] h-[10px] rounded-full"
+          className="pointer-events-none absolute inset-x-[16%] bottom-[-2%] h-[6px] rounded-full"
           style={{
             background: "linear-gradient(90deg, rgba(255,209,84,0), #FFD154 25%, #FFD154 75%, rgba(255,209,84,0))",
-            boxShadow: "0 0 18px 6px rgba(255,209,84,0.55)",
+            boxShadow: "0 0 9px 3px rgba(255,209,84,0.4)",
+            opacity: 0.8,
             animation: "glow 2.2s ease-in-out infinite",
           }}
           aria-hidden
@@ -108,7 +126,7 @@ function Door({ warm, open, peek, onTap, label }: { warm: boolean; open: boolean
           <span
             key={i}
             className="pointer-events-none absolute rounded-full bg-[#FFD154]"
-            style={{ width: 6, height: 6, left: `${36 + i * 14}%`, bottom: "-1%", opacity: 0.9, animation: `float-up 2.6s linear ${i * 0.8}s infinite` }}
+            style={{ width: 4, height: 4, left: `${36 + i * 14}%`, bottom: "-1%", opacity: 0.5, animation: `float-up 2.6s linear ${i * 0.8}s infinite` }}
             aria-hidden
           />
         ))}
@@ -118,17 +136,42 @@ function Door({ warm, open, peek, onTap, label }: { warm: boolean; open: boolean
 
 export default function Level23({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [done, setDone] = useState(false);
+  const [cracked, setCracked] = useState(false);
   const [exitOpen, setExitOpen] = useState(false);
   const [peek, setPeek] = useState<number | null>(null);
+  const [lampSwing, setLampSwing] = useState<number | null>(null);
+  const [webWig, setWebWig] = useState(false);
 
   const tapExit = () => {
     if (solved || done || exitOpen) return;
+    if (!cracked) {
+      setCracked(true);
+      sfx.click();
+      onProgress(0.5);
+      return;
+    }
     setDone(true);
     setExitOpen(true);
     sfx.chime();
     onProgress(1);
     window.setTimeout(() => sfx.cheer(), 380);
     window.setTimeout(onSolved, 700);
+  };
+
+  const tapLamp = (i: number) => {
+    if (solved || done) return;
+    setLampSwing(i);
+    sfx.boing();
+    window.setTimeout(() => setLampSwing(null), 700);
+    onMistake({ fa: "چراغا درست کار نمی‌کنن!", en: "These lamps barely work!" });
+  };
+
+  const tapWeb = () => {
+    if (solved || done) return;
+    setWebWig(true);
+    sfx.pop();
+    window.setTimeout(() => setWebWig(false), 750);
+    onMistake({ fa: "فقط یه تار عنکبوت!", en: "Just a cobweb!" });
   };
 
   const tapDark = (n: number) => {
@@ -141,14 +184,36 @@ export default function Level23({ lang, solved, onSolved, onMistake, onProgress,
 
   return (
     <Scene bg="linear-gradient(180deg,#33205E 0%,#4A3490 55%,#6C4AB6 100%)">
-      {/* hanging lamps */}
-      {[16, 84].map((x) => (
-        <div key={x} className="absolute top-0 w-10" style={{ insetInlineStart: `${x}%` }} aria-hidden>
+      {/* decoy: hanging lamps barely work */}
+      {[16, 84].map((x, i) => (
+        <button
+          key={x}
+          type="button"
+          onClick={() => tapLamp(i)}
+          className="absolute top-0 w-10"
+          style={{
+            insetInlineStart: `${x}%`,
+            transformOrigin: "top center",
+            transform: lampSwing === i ? "rotate(-14deg)" : "rotate(0deg)",
+            transition: "transform 0.6s ease-in-out",
+          }}
+          aria-label={lang === "fa" ? "چراغ راهرو" : "hallway lamp"}
+        >
           <div className="mx-auto h-10 w-[3px] bg-[#17102B]" />
           <div className="h-7 w-10 rounded-b-full border-4 border-[#3B2E5A] bg-[#FFD154]" />
           <div className="-ml-3 mt-1 h-4 w-16 rounded-full bg-[#FFD154] opacity-40 blur-[6px]" />
-        </div>
+        </button>
       ))}
+
+      {/* decoy: cobweb in the corner */}
+      <button
+        type="button"
+        onClick={tapWeb}
+        className="absolute top-0 left-[1%] w-[11%]"
+        aria-label={lang === "fa" ? "تار عنکبوت" : "cobweb"}
+      >
+        <CobwebSvg wiggled={webWig} className="w-full h-auto" />
+      </button>
       {/* tiled floor */}
       <div className="absolute inset-x-0 bottom-0 h-[7%] border-t-4 border-[#17102B]" style={{ background: "repeating-linear-gradient(90deg,#241A44 0 64px,#2B2050 64px 128px)" }} aria-hidden />
 
@@ -166,6 +231,9 @@ export default function Level23({ lang, solved, onSolved, onMistake, onProgress,
 
         {/* door 2 — the exit */}
         <Pulse active={hintPulse > 0 && !done} className="relative flex-1">
+          {cracked && !exitOpen && (
+            <div className="pointer-events-none absolute -bottom-[3%] left-[-20%] z-[3] h-[10%] w-[140%]" style={{ background: "radial-gradient(ellipse at center, rgba(255,209,84,0.35), transparent 70%)" }} aria-hidden />
+          )}
           {exitOpen && (
             <div className="pointer-events-none absolute -bottom-[3%] left-[-30%] z-[3] h-[14%] w-[160%]" style={{ background: "radial-gradient(ellipse at center, rgba(255,209,84,0.55), transparent 70%)" }} aria-hidden />
           )}
@@ -175,7 +243,7 @@ export default function Level23({ lang, solved, onSolved, onMistake, onProgress,
             </div>
           )}
           <div className="relative z-[5] h-full">
-            <Door warm open={exitOpen} peek={false} onTap={tapExit} label={lang === "fa" ? "در روشن" : "the glowing door"} />
+            <Door warm open={exitOpen} peek={cracked} onTap={tapExit} label={lang === "fa" ? "در روشن" : "the glowing door"} />
           </div>
           {exitOpen && (
             <motion.div

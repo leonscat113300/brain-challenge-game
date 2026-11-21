@@ -32,6 +32,20 @@ function HandleSvg() {
   );
 }
 
+/* decoy: a wooden clothespin — it looks handy but never fits the handle */
+function PegSvg() {
+  return (
+    <svg viewBox="0 0 44 80" className="h-auto w-full" aria-hidden>
+      {/* two wooden legs */}
+      <rect x="8" y="6" width="12" height="58" rx="6" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="3.6" />
+      <rect x="24" y="6" width="12" height="58" rx="6" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="3.6" />
+      {/* spring band */}
+      <rect x="6" y="46" width="32" height="11" rx="5" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3" />
+      <path d="M14 6 L14 40 M30 6 L30 40" stroke="#3B2E5A" strokeWidth="2.4" opacity="0.35" />
+    </svg>
+  );
+}
+
 export default function Level86({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [fixed, setFixed] = useState(false);
 
@@ -49,7 +63,7 @@ export default function Level86({ lang, solved, onSolved, onMistake, onProgress,
           sfx.click();
           return;
         }
-        if (overElement(clipRef, handleRef, 16)) {
+        if (overElement(clipRef, handleRef, 8)) {
           api.reset();
           setFixed(true);
           sfx.unlock();
@@ -62,6 +76,22 @@ export default function Level86({ lang, solved, onSolved, onMistake, onProgress,
         api.reset();
       },
       [solved, fixed, onProgress, onSolved]
+    )
+  );
+
+  const pegDrag = useDragMove(
+    useCallback(
+      (d: DragState, api: { reset: () => void }) => {
+        if (solved || fixed) return;
+        if (d.everMoved) sfx.fail();
+        else sfx.boing();
+        onMistake({
+          fa: "این چوب‌لباسی، نه گیرهٔ پرده!",
+          en: "That's a clothespin, not the curtain clip!",
+        });
+        api.reset();
+      },
+      [solved, fixed, onMistake]
     )
   );
 
@@ -106,8 +136,8 @@ export default function Level86({ lang, solved, onSolved, onMistake, onProgress,
               </div>
             )}
           </div>
-          {/* handle drop zone (covers handle area, generous) */}
-          <div ref={handleRef} className="pointer-events-none absolute bottom-[16%] left-[12%] h-[28%] w-[16%]" aria-hidden />
+          {/* handle drop zone (small: only around the handle) */}
+          <div ref={handleRef} className="pointer-events-none absolute bottom-[19%] left-[13%] h-[18%] w-[11%]" aria-hidden />
         </div>
       </div>
 
@@ -129,6 +159,25 @@ export default function Level86({ lang, solved, onSolved, onMistake, onProgress,
             <Pulse active={hintPulse > 0 && !fixed}>
               <ClipSvg />
             </Pulse>
+          </div>
+        </div>
+      )}
+
+      {/* decoy: clothespin on the ledge (taps and drags both fail) */}
+      {!fixed && (
+        <div className="absolute bottom-[11%] left-[16%] w-[11%]">
+          <div
+            {...pegDrag.bind}
+            role="button"
+            aria-label={lang === "fa" ? "چوب‌لباسی" : "clothespin"}
+            className="cursor-grab active:cursor-grabbing"
+            style={{
+              transform: `translate(${pegDrag.x}px, ${pegDrag.y}px) rotate(-8deg)`,
+              transition: pegDrag.dragging ? "none" : "transform 0.4s cubic-bezier(0.34,1.4,0.64,1)",
+              zIndex: 20,
+            }}
+          >
+            <PegSvg />
           </div>
         </div>
       )}

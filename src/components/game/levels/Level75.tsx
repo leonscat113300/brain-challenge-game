@@ -62,16 +62,21 @@ const DAD: MemberSpec = { mustache: true, shirt: "#1EC8CF" };
 const MOM: MemberSpec = { bun: true, shirt: "#FF6B81" };
 const BOY: MemberSpec = { cap: true, shirt: "#FFD154" };
 const GIRL: MemberSpec = { pigtails: true, shirt: "#4CAF50" };
-const GRANDPA: MemberSpec = { gray: true, mustache: true, shirt: "#33205E" };
+
+/* near-match decoys: all wrong frames now show exactly four people, so
+   counting heads is not enough — every detail must be compared. */
+const GIRL_NO_PIGTAILS: MemberSpec = { straight: true, shirt: "#4CAF50" };
+const BOY_SWAPPED: MemberSpec = { cap: true, shirt: "#4CAF50" };
+const GIRL_SWAPPED: MemberSpec = { pigtails: true, shirt: "#FFD154" };
 
 /* reference family: dad(mustache) + mom(bun) + boy(cap) + girl(pigtails) */
 const FAMILY: MemberSpec[] = [DAD, MOM, BOY, GIRL];
 
 const FRAMES: Array<{ members: MemberSpec[]; msg: { fa: string; en: string }; correct: boolean }> = [
   {
-    /* missing the boy */
-    members: [DAD, MOM, GIRL],
-    msg: { fa: "این قاب یکی از اعضای خانواده را ندارد؛ برادر کوچولو کجاست؟", en: "This frame is missing a family member; where is the little boy?" },
+    /* four people, but the girl lost her pigtails */
+    members: [DAD, MOM, BOY, GIRL_NO_PIGTAILS],
+    msg: { fa: "زیرک‌تر نگاه کن! این قاب با عکس اصلی جور نیست.", en: "Look closer! This frame doesn't match the original photo." },
     correct: false,
   },
   {
@@ -88,13 +93,13 @@ const FRAMES: Array<{ members: MemberSpec[]; msg: { fa: string; en: string }; co
       BOY,
       GIRL,
     ],
-    msg: { fa: "سبیل پدر و موهای مادر با عکس اصلی فرق دارند!", en: "Dad's mustache and mom's hair don't match the original photo!" },
+    msg: { fa: "همهٔ جزئیات را با عکس روی میز مقایسه کن!", en: "Compare every little detail with the photo on the table!" },
     correct: false,
   },
   {
-    /* extra grandpa */
-    members: [DAD, MOM, BOY, GIRL, GRANDPA],
-    msg: { fa: "این قاب یک نفر اضافه دارد؛ این خانوادهٔ عکس روی میز نیست!", en: "This frame has an extra person; that's not the family in the photo!" },
+    /* four people, but the kids swapped shirts */
+    members: [DAD, MOM, BOY_SWAPPED, GIRL_SWAPPED],
+    msg: { fa: "این هم عکسِ ما نیست؛ دقیق‌تر بنگر!", en: "This isn't our photo either; look more carefully!" },
     correct: false,
   },
 ];
@@ -138,6 +143,15 @@ export default function Level75({ lang, solved, onSolved, onMistake, onProgress,
     [solved, winner, onMistake, onProgress, onSolved]
   );
 
+  const tapPhoto = useCallback(() => {
+    if (solved || winner !== null) return;
+    sfx.pop();
+    onMistake({
+      fa: "این فقط عکسِ اصلی روی میز است؛ قاب‌های دیوار را مقایسه کن!",
+      en: "That's just the original photo; compare the frames on the wall!",
+    });
+  }, [solved, winner, onMistake]);
+
   const framePos = [
     { left: "6%", top: "5%" },
     { left: "54%", top: "5%" },
@@ -175,11 +189,14 @@ export default function Level75({ lang, solved, onSolved, onMistake, onProgress,
         </div>
       ))}
 
-      {/* side table with the reference family photo */}
+      {/* side table with the reference family photo (tappable decoy) */}
       <div className="absolute bottom-[4%] left-[18%] w-[64%]">
         <Pulse active={hintPulse > 0 && winner === null}>
-          <div
-            className="mx-auto w-[62%] -rotate-3 rounded-lg border-[5px] border-[#FAFAFA] bg-[#FAFAFA] shadow-[0_5px_0_rgba(59,46,90,0.3)]"
+          <button
+            type="button"
+            onClick={tapPhoto}
+            aria-label={lang === "fa" ? "عکس اصلی خانواده" : "original family photo"}
+            className="mx-auto block w-[62%] -rotate-3 cursor-pointer rounded-lg border-[5px] border-[#FAFAFA] bg-[#FAFAFA] shadow-[0_5px_0_rgba(59,46,90,0.3)] transition-transform active:scale-95"
             style={{ outline: "3px solid #3B2E5A" }}
           >
             <div className="relative h-20 sm:h-24">
@@ -188,7 +205,7 @@ export default function Level75({ lang, solved, onSolved, onMistake, onProgress,
             <div className="pb-1 text-center text-[10px] font-bold text-[#3B2E5A]">
               {lang === "fa" ? "عکس خانوادگی ما" : "our family photo"}
             </div>
-          </div>
+          </button>
         </Pulse>
         {/* table */}
         <div className="mx-auto mt-1 h-3 w-[88%] rounded-xl border-4 border-[#3B2E5A] bg-[#C98A4B]" aria-hidden />

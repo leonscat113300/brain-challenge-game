@@ -230,17 +230,7 @@ export default function Level79({ lang, solved, onSolved, onMistake, onProgress,
         </div>
       )}
 
-      {/* step checklist chip */}
-      <div className="absolute bottom-[2%] left-[3%] flex flex-col gap-1" aria-hidden>
-        <div className={`flex items-center gap-1 rounded-full border-2 border-[#3B2E5A] px-2 py-0.5 text-[11px] font-black ${tapClosed ? "bg-[#4CAF50] text-[#FAFAFA]" : "bg-[#FAFAFA] text-[#3B2E5A]"}`}>
-          <span>{tapClosed ? "✔" : "۱"}</span>
-          <span>{lang === "fa" ? "بستن شیر" : "close tap"}</span>
-        </div>
-        <div className={`flex items-center gap-1 rounded-full border-2 border-[#3B2E5A] px-2 py-0.5 text-[11px] font-black ${towelOn ? "bg-[#4CAF50] text-[#FAFAFA]" : "bg-[#FAFAFA] text-[#3B2E5A]"}`}>
-          <span>{towelOn ? "✔" : "۲"}</span>
-          <span>{lang === "fa" ? "حوله روی آب" : "towel on water"}</span>
-        </div>
-      </div>
+      {/* NOTE: the old step-checklist sign was removed — it revealed the whole solution */}
     </Scene>
   );
 }

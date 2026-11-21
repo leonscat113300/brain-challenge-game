@@ -6,10 +6,12 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 41 — Find the different shape: one star hangs point-down.     */
+/* Level 41 — Find the different shape: one of seven stars hangs        */
+/* point-down.                                                          */
 /* ------------------------------------------------------------------ */
 
-const ODD = 2;
+/* seven stars in the row; index 5 hangs point-down */
+const ODD = 5;
 const MISTAKE_MSG = { fa: "این یکی مثل بقیه‌ست!", en: "This one matches the others!" };
 
 function StarSvg({ wink = false, className, style }: { wink?: boolean; className?: string; style?: React.CSSProperties }) {
@@ -94,6 +96,12 @@ export default function Level41({ lang, solved, onSolved, onMistake, onProgress,
     }
   };
 
+  const tapSun = () => {
+    if (solved || done) return;
+    sfx.boing();
+    onMistake({ fa: "این فقط خورشیده!", en: "That's just the sun!" });
+  };
+
   return (
     <Scene bg="linear-gradient(180deg,#FFF7E6 0%,#FFEBCB 100%)">
       {/* soft background blobs */}
@@ -101,14 +109,22 @@ export default function Level41({ lang, solved, onSolved, onMistake, onProgress,
       <div className="absolute -right-[8%] bottom-[8%] h-44 w-44 rounded-full bg-[#E3F6F7] opacity-70 blur-xl" aria-hidden />
 
       {/* sunny sky decor */}
-      <SunSvg className="absolute end-[6%] top-[4%] w-[14%]" style={{ animation: "breathe 3.4s ease-in-out infinite" }} />
+      {/* decoy: the sun is not one of the stars */}
+      <button
+        type="button"
+        onClick={tapSun}
+        aria-label={lang === "fa" ? "خورشید" : "sun"}
+        className="absolute end-[6%] top-[4%] z-10 w-[14%] cursor-pointer"
+      >
+        <SunSvg className="h-auto w-full" style={{ animation: "breathe 3.4s ease-in-out infinite" }} />
+      </button>
       <CloudSvg className="absolute start-[6%] top-[7%] w-[22%]" style={{ animation: "bob 4.2s ease-in-out infinite" }} />
       <CloudSvg className="absolute start-[38%] top-[13%] w-[16%] opacity-90" style={{ animation: "bob 5.1s ease-in-out 0.6s infinite" }} />
 
       {/* star banner */}
       <div className="absolute left-1/2 top-[24%] w-[92%] -translate-x-1/2 rounded-[30px] border-4 border-[#3B2E5A] bg-[#FAFAFA] px-[4%] pb-[5%] pt-[7%] shadow-[0_6px_0_rgba(59,46,90,0.12)]">
         <div className="flex items-center justify-between">
-          {[0, 1, 2, 3, 4].map((i) => {
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => {
             const odd = i === ODD;
             return (
               <button
@@ -117,7 +133,7 @@ export default function Level41({ lang, solved, onSolved, onMistake, onProgress,
                 onClick={() => tapStar(i)}
                 disabled={solved || done}
                 aria-label={lang === "fa" ? "ستاره" : "star"}
-                className="relative w-[17%] max-w-[96px] disabled:cursor-default"
+                className="relative w-[12%] max-w-[70px] disabled:cursor-default"
                 style={{ animation: `bob ${2.6 + i * 0.25}s ease-in-out infinite` }}
               >
                 <div key={wrong === i ? bump : "calm"} style={{ animation: wrong === i ? "shake-hard 0.45s ease-in-out" : undefined }}>

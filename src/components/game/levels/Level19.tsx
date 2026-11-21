@@ -8,6 +8,9 @@ import { num } from "@/lib/game/utils";
 
 /* ------------------------------------------------------------------ */
 /* Level 19 — Odd one out: one pinned card hangs upside-down.          */
+/* Every card wears the same face now, so the tell is the flipped      */
+/* orientation (face/pin below the number), not a lone face. The other */
+/* numbers are upside-down confusables (91↔16, 18↔81).                 */
 /* ------------------------------------------------------------------ */
 
 interface CardDef {
@@ -19,8 +22,8 @@ interface CardDef {
 }
 
 const CARDS: CardDef[] = [
-  { n: 16, rot: -7, left: "2%", top: "24%", flip: false },
-  { n: 81, rot: 6, left: "21%", top: "17%", flip: false },
+  { n: 91, rot: -7, left: "2%", top: "24%", flip: false },
+  { n: 18, rot: 6, left: "21%", top: "17%", flip: false },
   { n: 33, rot: -4, left: "40%", top: "28%", flip: false },
   { n: 88, rot: 9, left: "59%", top: "18%", flip: true },
   { n: 69, rot: -8, left: "78%", top: "25%", flip: false },
@@ -53,6 +56,7 @@ function FaceSvg({ wink, className }: { wink: boolean; className?: string }) {
 export default function Level19({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [upright, setUpright] = useState(false);
   const [shakeIdx, setShakeIdx] = useState(-1);
+  const [noteShake, setNoteShake] = useState(false);
   const [done, setDone] = useState(false);
 
   const tapCard = (c: CardDef, i: number) => {
@@ -69,6 +73,14 @@ export default function Level19({ lang, solved, onSolved, onMistake, onProgress,
       window.setTimeout(() => setShakeIdx(-1), 560);
       onMistake({ fa: "این عدد سر جاشه!", en: "This number is fine!" });
     }
+  };
+
+  const tapNote = () => {
+    if (solved || done || upright) return;
+    setNoteShake(true);
+    sfx.boing();
+    window.setTimeout(() => setNoteShake(false), 560);
+    onMistake({ fa: "روی کارت‌ها تمرکز کن!", en: "Focus on the cards!" });
   };
 
   return (
@@ -91,8 +103,14 @@ export default function Level19({ lang, solved, onSolved, onMistake, onProgress,
         <div className="absolute right-[3%] top-[6%] w-4 h-4 rounded-full bg-[#4CAF50] border-2 border-[#3B2E5A]" aria-hidden />
         <div className="absolute left-[5%] bottom-[6%] w-4 h-4 rounded-full bg-[#FFD154] border-2 border-[#3B2E5A]" aria-hidden />
 
-        {/* helper note pinned on the board */}
-        <div className="absolute right-[4%] bottom-[7%] w-[13%] rotate-3" aria-hidden>
+        {/* decoy: helper note pinned on the board */}
+        <button
+          type="button"
+          onClick={tapNote}
+          className="absolute right-[4%] bottom-[7%] w-[13%] rotate-3"
+          style={{ animation: noteShake ? "shake-hard 0.5s ease-in-out" : undefined }}
+          aria-label={lang === "fa" ? "یادداشت روی تخته" : "note on the board"}
+        >
           <div className="rounded-lg border-[3px] border-[#3B2E5A] bg-[#FFF9E8] p-[8%] shadow-[0_3px_0_rgba(59,46,90,0.2)]">
             <span className="block text-center font-black text-[#FF6B81] text-base sm:text-lg md:text-xl">؟</span>
             <div className="mt-[10%] space-y-[14%]">
@@ -101,7 +119,7 @@ export default function Level19({ lang, solved, onSolved, onMistake, onProgress,
               <div className="h-[2px] rounded bg-[#3B2E5A]/25" />
             </div>
           </div>
-        </div>
+        </button>
         {/* pencil resting on the board frame */}
         <svg viewBox="0 0 90 16" className="absolute left-[4%] bottom-[8%] w-[14%]" aria-hidden>
           <rect x="10" y="3" width="60" height="10" rx="3" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3" />
@@ -129,7 +147,7 @@ export default function Level19({ lang, solved, onSolved, onMistake, onProgress,
                     <span className="absolute left-[22%] top-[16%] w-[28%] h-[28%] rounded-full bg-white/80" />
                   </span>
                   <span className="flex h-full w-full flex-col items-center justify-center gap-[6%] p-[5%]">
-                    {c.flip && <FaceSvg wink={upright} className="w-[70%]" />}
+                    <FaceSvg wink={c.flip && upright} className="w-[70%]" />
                     <span className="font-black leading-none text-[#6C4AB6] text-xl sm:text-2xl md:text-4xl">{num(c.n, lang)}</span>
                   </span>
                   {c.flip && upright && (

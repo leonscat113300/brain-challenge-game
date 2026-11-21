@@ -14,26 +14,41 @@ import { num } from "@/lib/game/utils";
 function HedgehogSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 200 150" className={className} style={style} aria-hidden>
-      {/* spiky back */}
+      {/* back spike coat — two staggered rows of spikes */}
       <path
-        d="M30 106 L20 82 L38 88 L34 60 L54 72 L58 44 L76 62 L88 36 L100 58 L114 36 L124 60 L142 44 L146 68 L164 58 L162 84 L182 80 L172 106 Z"
+        d="M28 108 L16 84 L34 90 L30 62 L50 74 L56 46 L74 64 L86 38 L98 60 L112 38 L122 62 L140 46 L144 70 L162 60 L158 86 L180 82 L170 108 Z"
         fill="#7A8B5A"
         stroke="#4A5D33"
         strokeWidth="5"
         strokeLinejoin="round"
       />
-      <path d="M62 74 L74 62 M94 60 L104 48 M124 64 L134 54" stroke="#5C6E3C" strokeWidth="4" strokeLinecap="round" />
-      {/* face */}
-      <ellipse cx="54" cy="104" rx="30" ry="24" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="5" />
-      <circle cx="44" cy="98" r="5.5" fill="#3B2E5A" />
-      <circle cx="46" cy="96" r="1.8" fill="#FAFAFA" />
-      <path d="M62 100 Q68 105 74 100" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
-      <circle cx="30" cy="94" r="11" fill="#3B2E5A" />
-      <circle cx="26" cy="90" r="3" fill="#FAFAFA" opacity="0.8" />
-      <ellipse cx="64" cy="112" rx="6" ry="4" fill="#FF9FB2" />
+      {/* lighter inner coat */}
+      <path
+        d="M48 96 L44 78 L58 86 L62 66 L76 78 L86 58 L98 76 L112 58 L120 78 L134 66 L136 88 L152 82 L144 100 Z"
+        fill="#8FA06A"
+        opacity="0.85"
+      />
+      {/* spike tip strokes */}
+      <path d="M62 66 L66 74 M86 58 L90 68 M112 58 L116 68 M136 66 L140 76" stroke="#5C6E3C" strokeWidth="3.4" strokeLinecap="round" />
+      {/* pointed face with snout */}
+      <path d="M52 88 Q26 92 16 108 Q28 124 56 122 Z" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+      {/* little round ear */}
+      <circle cx="54" cy="92" r="7" fill="#D9A968" stroke="#3B2E5A" strokeWidth="3" />
+      {/* shiny black nose at the tip */}
+      <circle cx="17" cy="107" r="9" fill="#3B2E5A" />
+      <circle cx="14" cy="104" r="2.6" fill="#FAFAFA" opacity="0.8" />
+      {/* eye */}
+      <circle cx="42" cy="102" r="6" fill="#3B2E5A" />
+      <circle cx="44" cy="100" r="2" fill="#FAFAFA" />
+      {/* mouth + blush */}
+      <path d="M34 114 Q40 118 46 114" stroke="#3B2E5A" strokeWidth="3.4" fill="none" strokeLinecap="round" />
+      <ellipse cx="52" cy="116" rx="5.4" ry="3.6" fill="#FF9FB2" opacity="0.85" />
+      {/* belly line */}
+      <path d="M56 122 Q96 134 138 122" stroke="#C9A468" strokeWidth="3.4" fill="none" strokeLinecap="round" opacity="0.7" />
       {/* feet */}
-      <ellipse cx="48" cy="132" rx="10" ry="6" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="80" cy="132" rx="10" ry="6" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="52" cy="134" rx="11" ry="6.5" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="88" cy="136" rx="11" ry="6.5" fill="#E9C99B" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="124" cy="134" rx="11" ry="6.5" fill="#D9B98B" stroke="#3B2E5A" strokeWidth="4" />
     </svg>
   );
 }
@@ -75,31 +90,53 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
 
   const drag = useDragMove();
 
-  /* watch the lens centre: when it comes near the hidden hedgehog, reveal it */
-  const checkReveal = useCallback(() => {
-    if (found || done || solved) return;
-    const lens = lensRef.current?.getBoundingClientRect();
-    const hog = hogRef.current?.getBoundingClientRect();
-    if (!lens || !hog) return;
-    const dist = Math.hypot(
-      lens.left + lens.width / 2 - (hog.left + hog.width / 2),
-      lens.top + lens.height / 2 - (hog.top + hog.height / 2)
-    );
-    if (dist < 90) {
-      setFound(true);
-      sfx.sparkle();
-      onProgress(0.6);
-    }
-  }, [found, done, solved, onProgress]);
+  /* HARDER: the lens must be held over the hedgehog for a short moment
+     (not just swept past) and the reveal radius is small */
+  const REVEAL_RADIUS = 58;
+  const DWELL_MS = 450;
+  const enterRef = useRef(0);
+
+  /* watch the lens centre: hold it near the hidden hedgehog to reveal it */
+  const checkReveal = useCallback(
+    (e: React.PointerEvent) => {
+      if (found || done || solved) return;
+      const lens = lensRef.current?.getBoundingClientRect();
+      const hog = hogRef.current?.getBoundingClientRect();
+      if (!lens || !hog) return;
+      const dist = Math.hypot(
+        lens.left + lens.width / 2 - (hog.left + hog.width / 2),
+        lens.top + lens.height / 2 - (hog.top + hog.height / 2)
+      );
+      const now = performance.now();
+      if (dist < REVEAL_RADIUS) {
+        if (!enterRef.current) enterRef.current = now;
+        else if (now - enterRef.current >= DWELL_MS) {
+          setFound(true);
+          sfx.sparkle();
+          onProgress(0.6);
+        }
+      } else {
+        enterRef.current = 0;
+      }
+      void e;
+    },
+    [found, done, solved, onProgress]
+  );
 
   const lensBind = {
     onPointerDown: drag.bind.onPointerDown,
     onPointerMove: (e: React.PointerEvent) => {
       drag.bind.onPointerMove(e);
-      checkReveal();
+      checkReveal(e);
     },
-    onPointerUp: drag.bind.onPointerUp,
-    onPointerCancel: drag.bind.onPointerCancel,
+    onPointerUp: () => {
+      drag.bind.onPointerUp();
+      enterRef.current = 0;
+    },
+    onPointerCancel: () => {
+      drag.bind.onPointerCancel();
+      enterRef.current = 0;
+    },
     style: drag.bind.style,
   };
 
@@ -121,8 +158,8 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
     sfx.pop();
     setRustle((r) => r + 1);
     const n = leafTaps + 1;
-    setLeafTaps(n >= 3 ? 0 : n);
-    if (n >= 3) onMistake({ fa: "با ذره‌بین بگرد!", en: "Search with the magnifier!" });
+    setLeafTaps(n >= 2 ? 0 : n);
+    if (n >= 2) onMistake({ fa: "با ذره‌بین بگرد!", en: "Search with the magnifier!" });
   };
 
   return (
@@ -191,12 +228,21 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
       >
         <Pulse active={hintPulse > 0 && !found && !done}>
           <div {...(found ? {} : lensBind)} className="relative cursor-grab active:cursor-grabbing">
-            <div ref={lensRef} className="relative w-[62%] aspect-square rounded-full border-[6px] border-[#3B2E5A] bg-[#FAFAFA]/30 overflow-hidden">
+            {/* wooden handle behind the lens */}
+            <div className="absolute start-[54%] top-[54%] h-[13%] w-[48%] rotate-45 rounded-full border-4 border-[#3B2E5A] bg-[#8B5E3C]" aria-hidden />
+            <div className="absolute start-[50%] top-[50%] h-[18%] w-[18%] rotate-45 rounded-md border-4 border-[#3B2E5A] bg-[#E8A81C]" aria-hidden />
+            {/* glass lens */}
+            <div
+              ref={lensRef}
+              className="relative w-[62%] aspect-square rounded-full border-[7px] border-[#3B2E5A] overflow-hidden"
+              style={{ background: "radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55), rgba(191,219,255,0.16) 45%, rgba(120,170,220,0.24) 100%)" }}
+            >
               <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" aria-hidden>
-                <path d="M24 36 Q34 20 54 20" stroke="#FAFAFA" strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.75" />
+                <path d="M24 36 Q34 20 54 20" stroke="#FAFAFA" strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.85" />
+                <path d="M30 54 Q36 44 46 40" stroke="#FAFAFA" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.5" />
               </svg>
+              <div className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: "inset 0 0 0 3px rgba(255,255,255,0.35)" }} aria-hidden />
             </div>
-            <div className="absolute start-[52%] top-[52%] w-[38%] h-[11%] rotate-45 rounded-full bg-[#FFD154] border-4 border-[#3B2E5A]" aria-hidden />
           </div>
         </Pulse>
       </div>
@@ -204,7 +250,7 @@ export default function Level28({ lang, solved, onSolved, onMistake, onProgress,
       {/* leaf tap counter */}
       {leafTaps > 0 && (
         <div className="absolute top-[3%] start-[3%] z-[35] rounded-full border-[3px] border-[#3B2E5A] bg-[#FAFAFA]/90 px-3 py-1 text-sm font-extrabold text-[#3B2E5A]">
-          {num(leafTaps, lang)} / {num(3, lang)}
+          {num(leafTaps, lang)} / {num(2, lang)}
         </div>
       )}
     </Scene>

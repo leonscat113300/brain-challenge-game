@@ -8,6 +8,8 @@ import { num } from "@/lib/game/utils";
 
 /* ------------------------------------------------------------------ */
 /* Level 21 — Which ice cream melts first? The one in direct "sun".    */
+/* A dead gray lamp hangs over the fridge-cooled cone as a decoy, and  */
+/* both the dead lamp and the fridge are tap-traps.                    */
 /* ------------------------------------------------------------------ */
 
 const DRIPS = [
@@ -51,14 +53,15 @@ function ConeSvg({ melted, scoop, className }: { melted: boolean; scoop: string;
   );
 }
 
-function SunLampSvg({ className }: { className?: string }) {
+function SunLampSvg({ className, off = false }: { className?: string; off?: boolean }) {
   return (
     <svg viewBox="0 0 140 100" className={className} aria-hidden>
-      <g stroke="#E8A81C" strokeWidth="6" strokeLinecap="round">
+      <g stroke={off ? "#C7C2D8" : "#E8A81C"} strokeWidth="6" strokeLinecap="round">
         <path d="M70 4 v12 M30 14 l8 10 M110 14 l-8 10 M12 44 h12 M116 44 h12" />
       </g>
-      <path d="M30 66 Q30 34 70 34 Q110 34 110 66 Z" fill="#FFD154" stroke="#3B2E5A" strokeWidth="5" />
-      <ellipse cx="70" cy="66" rx="40" ry="8" fill="#FFE99A" stroke="#3B2E5A" strokeWidth="5" />
+      <path d="M30 66 Q30 34 70 34 Q110 34 110 66 Z" fill={off ? "#E8E4F2" : "#FFD154"} stroke="#3B2E5A" strokeWidth="5" />
+      <ellipse cx="70" cy="66" rx="40" ry="8" fill={off ? "#FAFAFA" : "#FFE99A"} stroke="#3B2E5A" strokeWidth="5" />
+      {off && <path d="M60 46 q8 6 0 14 M76 44 q8 6 0 14" stroke="#C7C2D8" strokeWidth="3.5" fill="none" strokeLinecap="round" />}
     </svg>
   );
 }
@@ -122,6 +125,8 @@ export default function Level21({ lang, solved, onSolved, onMistake, onProgress,
   const [melting, setMelting] = useState(false);
   const [badge, setBadge] = useState(false);
   const [shakeIdx, setShakeIdx] = useState(-1);
+  const [lampWob, setLampWob] = useState(false);
+  const [fridgeWob, setFridgeWob] = useState(false);
   const [done, setDone] = useState(false);
 
   const tapCone = (i: number) => {
@@ -141,6 +146,22 @@ export default function Level21({ lang, solved, onSolved, onMistake, onProgress,
       window.setTimeout(() => setShakeIdx(-1), 560);
       onMistake({ fa: "اون زیر نور مستقیم نیست!", en: "That one isn't in direct sun!" });
     }
+  };
+
+  const tapLamp = () => {
+    if (solved || done || melting) return;
+    setLampWob(true);
+    window.setTimeout(() => setLampWob(false), 560);
+    sfx.pop();
+    onMistake({ fa: "این چراغ خاموشه!", en: "This lamp is switched off!" });
+  };
+
+  const tapFridge = () => {
+    if (solved || done || melting) return;
+    setFridgeWob(true);
+    window.setTimeout(() => setFridgeWob(false), 560);
+    sfx.boing();
+    onMistake({ fa: "بستنی توی یخچال نیست!", en: "The ice cream isn't in the fridge!" });
   };
 
   const cones = [
@@ -168,8 +189,27 @@ export default function Level21({ lang, solved, onSolved, onMistake, onProgress,
       <UmbrellaSvg className="absolute top-[5%] left-[19%] w-[32%]" />
       <div className="absolute top-[27%] bottom-[4%] left-[34.4%] w-[1.6%] bg-[#3B2E5A] rounded-full" aria-hidden />
 
-      {/* mini fridge with open door beside cone C */}
-      <FridgeSvg className="absolute bottom-[5%] left-[70%] w-[22%]" />
+      {/* decoy: second sun lamp over the fridge-cooled cone, switched off */}
+      <button
+        type="button"
+        onClick={tapLamp}
+        className="absolute top-[5%] left-[50%] w-[22%]"
+        style={{ animation: lampWob ? "shake-hard 0.5s ease-in-out" : undefined }}
+        aria-label={lang === "fa" ? "چراغ خاموش" : "switched-off lamp"}
+      >
+        <SunLampSvg off className="relative w-full h-auto" />
+      </button>
+
+      {/* decoy: mini fridge with open door beside cone C */}
+      <button
+        type="button"
+        onClick={tapFridge}
+        className="absolute bottom-[5%] left-[70%] w-[22%]"
+        style={{ animation: fridgeWob ? "shake-hard 0.5s ease-in-out" : undefined }}
+        aria-label={lang === "fa" ? "یخچال" : "fridge"}
+      >
+        <FridgeSvg className="w-full h-auto" />
+      </button>
       <MistSvg className="absolute bottom-[30%] left-[66%] w-[15%]" delay="0s" />
       <MistSvg className="absolute bottom-[28%] left-[73%] w-[12%]" delay="0.5s" />
 

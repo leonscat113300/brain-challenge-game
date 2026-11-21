@@ -83,6 +83,38 @@ function PitcherSvg({ pouring }: { pouring: boolean }) {
   );
 }
 
+/* decoy: an EMPTY watering can — the full pitcher is the real tool */
+function EmptyCanSvg() {
+  return (
+    <svg viewBox="0 0 100 80" className="h-auto w-full" aria-hidden>
+      {/* body */}
+      <path d="M28 30 L72 30 L68 68 Q50 74 32 68 Z" fill="#8FA6BD" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      {/* spout */}
+      <path d="M28 36 L10 26 Q6 34 14 42 L28 44" fill="#8FA6BD" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      {/* rim */}
+      <ellipse cx="50" cy="30" rx="22" ry="6" fill="#A9BDD0" stroke="#3B2E5A" strokeWidth="3.6" />
+      {/* handle */}
+      <path d="M72 40 Q92 44 88 60" fill="none" stroke="#6C4AB6" strokeWidth="7" strokeLinecap="round" />
+      {/* dry window: no water inside */}
+      <path d="M38 44 L62 44 L60 62 Q50 66 40 62 Z" fill="#E3CFA4" stroke="#3B2E5A" strokeWidth="3" />
+    </svg>
+  );
+}
+
+/* decoy: a butterfly fluttering around the leaves */
+function ButterflySvg() {
+  return (
+    <svg viewBox="0 0 90 70" className="h-auto w-full" aria-hidden>
+      <ellipse cx="30" cy="28" rx="16" ry="20" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3.6" transform="rotate(-20 30 28)" />
+      <ellipse cx="60" cy="28" rx="16" ry="20" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="3.6" transform="rotate(20 60 28)" />
+      <ellipse cx="45" cy="34" rx="6" ry="18" fill="#3B2E5A" />
+      <path d="M42 18 Q38 8 32 6 M48 18 Q52 8 58 6" stroke="#3B2E5A" strokeWidth="3" fill="none" strokeLinecap="round" />
+      <circle cx="41" cy="22" r="2.4" fill="#FAFAFA" />
+      <circle cx="49" cy="22" r="2.4" fill="#FAFAFA" />
+    </svg>
+  );
+}
+
 export default function Level85({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [pouring, setPouring] = useState(false);
   const [happy, setHappy] = useState(false);
@@ -102,7 +134,7 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
           sfx.click();
           return;
         }
-        if (overElement(pitcherRef, soilRef, 14)) {
+        if (overElement(pitcherRef, soilRef, 8)) {
           api.reset();
           setPouring(true);
           sfx.whoosh();
@@ -119,7 +151,7 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
           );
           return;
         }
-        if (overElement(pitcherRef, leafRef, 10)) {
+        if (overElement(pitcherRef, leafRef, 8)) {
           api.reset();
           sfx.fail();
           onMistake({
@@ -133,6 +165,24 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
       [solved, pouring, happy, onMistake, onProgress, onSolved]
     )
   );
+
+  const tapCan = useCallback(() => {
+    if (solved || happy) return;
+    sfx.boing();
+    onMistake({
+      fa: "این قوطی خالی است؛ پارچ پر از آب است!",
+      en: "That can is empty; the pitcher is full!",
+    });
+  }, [solved, happy, onMistake]);
+
+  const tapButterfly = useCallback(() => {
+    if (solved || happy) return;
+    sfx.pop();
+    onMistake({
+      fa: "پروانه آب نمی‌دهد؛ پارچ را روی خاک ببر!",
+      en: "Butterflies don't water plants; bring the pitcher to the soil!",
+    });
+  }, [solved, happy, onMistake]);
 
   return (
     <Scene bg="linear-gradient(180deg,#BFE7F5 0%,#DFF2E1 52%,#F2E3C2 62%,#E3CFA4 64%,#D9BE8F 100%)">
@@ -152,13 +202,40 @@ export default function Level85({ lang, solved, onSolved, onMistake, onProgress,
       {/* plant on the sill */}
       <div className="absolute bottom-[34%] left-[22%] w-[24%]">
         <div ref={leafRef} className="pointer-events-none absolute left-[-12%] right-[-12%] top-[-6%] h-[46%]" aria-hidden />
-        <div ref={soilRef} className="pointer-events-none absolute bottom-[2%] left-[6%] right-[6%] h-[26%]" aria-hidden />
+        {/* tighter drop zone: only the soil patch, aligned with the soil ellipse */}
+        <div ref={soilRef} className="pointer-events-none absolute bottom-[24%] left-[18%] right-[18%] h-[16%]" aria-hidden />
         <div style={{ transformOrigin: "bottom center", animation: happy ? "breathe 1.6s ease-in-out infinite" : "wobble 3s ease-in-out infinite" }}>
           <Pulse active={hintPulse > 0 && !happy}>
             <PlantSvg happy={happy} />
           </Pulse>
         </div>
       </div>
+
+      {/* decoy: empty watering can on the floor */}
+      <button
+        type="button"
+        onClick={tapCan}
+        aria-label={lang === "fa" ? "قوطی آبیاری خالی" : "empty watering can"}
+        className="absolute bottom-[9%] left-[7%] w-[16%] cursor-pointer transition-transform active:scale-90"
+        aria-hidden={happy}
+      >
+        <div style={{ animation: "wobble 3.4s ease-in-out infinite" }}>
+          <EmptyCanSvg />
+        </div>
+      </button>
+
+      {/* decoy: butterfly near the leaves */}
+      <button
+        type="button"
+        onClick={tapButterfly}
+        aria-label={lang === "fa" ? "پروانه" : "butterfly"}
+        className="absolute bottom-[52%] left-[43%] w-[9%] cursor-pointer transition-transform active:scale-90"
+        aria-hidden={happy}
+      >
+        <div style={{ animation: "bob 1.6s ease-in-out infinite" }}>
+          <ButterflySvg />
+        </div>
+      </button>
 
       {/* pitcher (draggable) */}
       <div className="absolute bottom-[10%] right-[8%] w-[24%]">

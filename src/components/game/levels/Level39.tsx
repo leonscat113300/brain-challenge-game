@@ -7,7 +7,8 @@ import { useDragMove, overElement, Scene, Pulse, sfx } from "./shared";
 import type { DragState } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 39 — The penguin is cold: drag the blanket onto the penguin.  */
+/* Level 39 — The penguin is cold: unfold the blanket, then drag it     */
+/* precisely onto the penguin.                                          */
 /* ------------------------------------------------------------------ */
 
 const COLD_MSG = { fa: "بهش پتو بده!", en: "Give it a blanket!" };
@@ -17,6 +18,7 @@ const SNOW = [
   { l: 10, t: 26, s: 6 }, { l: 66, t: 24, s: 7 }, { l: 82, t: 30, s: 5 }, { l: 24, t: 32, s: 5 },
 ];
 const BLANKET_HOME = { left: "62%", top: "56%", width: "32%" };
+const UNFOLDED_HOME = { left: "57%", top: "53%", width: "38%" };
 
 function PenguinSvg({ warm, className, style }: { warm: boolean; className?: string; style?: React.CSSProperties }) {
   return (
@@ -49,13 +51,25 @@ function PenguinSvg({ warm, className, style }: { warm: boolean; className?: str
   );
 }
 
-function BlanketSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+function BlanketSvg({ folded = true, className, style }: { folded?: boolean; className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 160 92" className={className} style={style} aria-hidden>
-      <rect x="8" y="12" width="144" height="66" rx="14" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="5" />
+      <rect x={folded ? 8 : 3} y="12" width={folded ? 144 : 154} height="66" rx="14" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="5" />
       <rect x="20" y="24" width="120" height="12" rx="6" fill="#FFD154" />
       <rect x="20" y="54" width="120" height="12" rx="6" fill="#FFD154" />
-      <path d="M22 45 Q80 38 138 45" stroke="#C94B60" strokeWidth="4" fill="none" strokeLinecap="round" strokeDasharray="7 7" />
+      {folded && (
+        <path d="M22 45 Q80 38 138 45" stroke="#C94B60" strokeWidth="4" fill="none" strokeLinecap="round" strokeDasharray="7 7" />
+      )}
+    </svg>
+  );
+}
+
+function SnowPileSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 120 60" className={className} style={style} aria-hidden>
+      <ellipse cx="38" cy="44" rx="30" ry="14" fill="#F2FAFD" stroke="#3B2E5A" strokeWidth="4.5" />
+      <ellipse cx="78" cy="46" rx="30" ry="12" fill="#F2FAFD" stroke="#3B2E5A" strokeWidth="4.5" />
+      <ellipse cx="58" cy="32" rx="24" ry="13" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4.5" />
     </svg>
   );
 }
@@ -80,6 +94,7 @@ function HeartSvg({ className, style }: { className?: string; style?: React.CSSP
 
 export default function Level39({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [wrapped, setWrapped] = useState(false);
+  const [unfolded, setUnfolded] = useState(false);
   const [done, setDone] = useState(false);
   const [taps, setTaps] = useState(0);
   const penguinRef = useRef<HTMLDivElement>(null);
@@ -96,24 +111,38 @@ export default function Level39({ lang, solved, onSolved, onMistake, onProgress,
       (d: DragState, api) => {
         api.reset();
         if (solved || done || wrapped) return;
-        if (overElement(blanketRef, penguinRef, 30)) {
+        /* a plain tap unfolds the blanket — it must be open before it can warm anyone */
+        if (!d.everMoved) {
+          if (!unfolded) {
+            setUnfolded(true);
+            sfx.pop();
+            onProgress(0.34);
+          }
+          return;
+        }
+        if (Math.abs(d.x) <= 25 && Math.abs(d.y) <= 25) return;
+        if (overElement(blanketRef, penguinRef, 12)) {
+          if (!unfolded) {
+            onMistake({ fa: "اول پتو رو باز کن!", en: "Unfold the blanket first!" });
+            return;
+          }
           setWrapped(true);
           setDone(true);
           sfx.sparkle();
           sfx.cheer();
           onProgress(1);
           t(onSolved, 700);
-        } else if (d.everMoved && (Math.abs(d.x) > 25 || Math.abs(d.y) > 25)) {
-          onProgress(0.5);
+        } else {
+          onProgress(unfolded ? 0.67 : 0.34);
         }
       },
-      [solved, done, wrapped, onProgress, onSolved, t]
+      [solved, done, wrapped, unfolded, onProgress, onMistake, onSolved, t]
     )
   );
 
   useEffect(() => {
-    if (drag.dragging && !wrapped && !done && !solved) onProgress(0.5);
-  }, [drag.dragging, wrapped, done, solved, onProgress]);
+    if (drag.dragging && !wrapped && !done && !solved) onProgress(unfolded ? 0.67 : 0.34);
+  }, [drag.dragging, wrapped, done, solved, unfolded, onProgress]);
 
   const tapPenguin = () => {
     if (solved || done) return;
@@ -129,7 +158,14 @@ export default function Level39({ lang, solved, onSolved, onMistake, onProgress,
     }
   };
 
+  const tapSnow = () => {
+    if (solved || done || wrapped) return;
+    sfx.boing();
+    onMistake({ fa: "این که سردترش می‌کنه!", en: "That would make it colder!" });
+  };
+
   const shivering = !wrapped && !done;
+  const home = unfolded ? UNFOLDED_HOME : BLANKET_HOME;
 
   return (
     <Scene bg="linear-gradient(180deg,#DFF4FA 0%,#C9E9F5 55%,#B7DDF0 100%)">
@@ -202,17 +238,29 @@ export default function Level39({ lang, solved, onSolved, onMistake, onProgress,
         </div>
       </div>
 
+      {/* decoy: a pile of snow — piling cold on cold won't help */}
+      <button
+        type="button"
+        onClick={tapSnow}
+        aria-label={lang === "fa" ? "تپه برف" : "snow pile"}
+        className="absolute bottom-[9%] left-[48%] z-[6] w-[18%] cursor-pointer"
+      >
+        <SnowPileSvg className="h-auto w-full" />
+      </button>
+
       {/* draggable folded blanket */}
       <div
         ref={blanketRef}
         className="absolute z-20"
         style={{
-          left: BLANKET_HOME.left,
-          top: BLANKET_HOME.top,
-          width: BLANKET_HOME.width,
+          left: home.left,
+          top: home.top,
+          width: home.width,
           opacity: wrapped ? 0 : 1,
           transform: `translate(${drag.x}px, ${drag.y}px) rotate(${drag.dragging ? -4 : 0}deg) scale(${drag.dragging ? 1.12 : 1})`,
-          transition: drag.dragging ? "none" : "transform 0.45s cubic-bezier(0.34,1.3,0.64,1), opacity 0.3s ease",
+          transition: drag.dragging
+            ? "none"
+            : "transform 0.45s cubic-bezier(0.34,1.3,0.64,1), opacity 0.3s ease, left 0.35s ease, width 0.35s ease, top 0.35s ease",
         }}
       >
         <Pulse active={hintPulse > 0 && !wrapped && !done}>
@@ -223,7 +271,7 @@ export default function Level39({ lang, solved, onSolved, onMistake, onProgress,
             aria-label={lang === "fa" ? "پتو" : "blanket"}
             style={{ touchAction: "none", cursor: wrapped || done || solved ? "default" : "grab" }}
           >
-            <BlanketSvg className="h-auto w-full drop-shadow-[0_4px_3px_rgba(51,32,94,0.2)]" />
+            <BlanketSvg folded={!unfolded} className="h-auto w-full drop-shadow-[0_4px_3px_rgba(51,32,94,0.2)]" />
           </div>
         </Pulse>
       </div>

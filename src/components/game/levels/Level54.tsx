@@ -7,7 +7,8 @@ import type { DragState } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 54 — Color sorting: drag each ball into the basket of the     */
-/* same color. Wrong basket = bounce back; all three = solved.         */
+/* same color. Baskets are shuffled, hit pads are tight, and a purple  */
+/* decoy basket has no matching ball. All three = solved.              */
 /* ------------------------------------------------------------------ */
 
 interface BallDef {
@@ -20,15 +21,18 @@ interface BallDef {
 
 const BALLS: BallDef[] = [
   { key: "pink", color: "#FF6B81", light: "#FF9FB2", left: "9%", top: "13%" },
-  { key: "yellow", color: "#FFD154", light: "#FFE59A", left: "42%", top: "9%" },
+  { key: "yellow", color: "#FFD154", light: "#FFE59A", left: "45%", top: "9%" },
   { key: "cyan", color: "#1EC8CF", light: "#9FEBEE", left: "74%", top: "13%" },
 ];
 
 const BASKETS: Array<{ key: BallDef["key"]; color: string; left: string }> = [
-  { key: "pink", color: "#FF6B81", left: "7%" },
-  { key: "yellow", color: "#FFD154", left: "39%" },
-  { key: "cyan", color: "#1EC8CF", left: "71%" },
+  { key: "cyan", color: "#1EC8CF", left: "1%" },
+  { key: "yellow", color: "#FFD154", left: "26%" },
+  { key: "pink", color: "#FF6B81", left: "76%" },
 ];
+
+/* decoy: a fourth basket with no matching ball */
+const DECOY_BASKET: { color: string; left: string } = { color: "#6C4AB6", left: "51%" };
 
 function BallSvg({ color, light }: { color: string; light: string }) {
   return (
@@ -76,7 +80,7 @@ function Ball({
         if (disabled || scored) return;
         const el = ref.current;
         const basket = basketRef.current;
-        if (el && basket && overElement(ref, basketRef, 16)) {
+        if (el && basket && overElement(ref, basketRef, 10)) {
           const a = el.getBoundingClientRect();
           const b = basket.getBoundingClientRect();
           api.setPos(
@@ -173,19 +177,24 @@ export default function Level54({ lang, solved, onSolved, onMistake, onProgress 
         ))}
       </div>
 
-      {/* baskets row */}
+      {/* baskets row (shuffled — no basket sits under its own ball) */}
       {BASKETS.map((b, i) => (
         <div
           key={b.key}
           ref={(el) => {
             basketRefs.current[i] = el;
           }}
-          className="absolute bottom-[8%] w-[26%]"
+          className="absolute bottom-[8%] w-[23%]"
           style={{ left: b.left, zIndex: 10 }}
         >
           <BasketSvg color={b.color} />
         </div>
       ))}
+
+      {/* decoy purple basket: dropping any ball here just bounces it back */}
+      <div className="absolute bottom-[8%] w-[23%]" style={{ left: DECOY_BASKET.left, zIndex: 10 }} aria-hidden>
+        <BasketSvg color={DECOY_BASKET.color} />
+      </div>
 
       {/* balls */}
       {BALLS.map((def) => (

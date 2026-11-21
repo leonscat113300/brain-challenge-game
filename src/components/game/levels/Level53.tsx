@@ -5,9 +5,9 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 53 — One framed picture hangs upside-down. The player can     */
-/* rotate the whole gallery 180° to compare, then taps the flipped     */
-/* picture (the cat). Tapping a correct picture is only a mistake.     */
+/* Level 53 — One framed picture hangs upside-down. The player must    */
+/* rotate the whole gallery 180° to compare first; only then does      */
+/* tapping the flipped picture (the cat) count. A spider is a decoy.   */
 /* ------------------------------------------------------------------ */
 
 function FishArt() {
@@ -71,6 +71,19 @@ function FlowerArt() {
   );
 }
 
+function SpiderSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 60 90" className={className} style={style} aria-hidden>
+      <path d="M30 0 L30 34" stroke="#3B2E5A" strokeWidth="3" strokeLinecap="round" />
+      <path d="M30 44 L14 52 M30 44 L46 52 M30 52 L12 64 M30 52 L48 64 M30 58 L16 74 M30 58 L44 74" stroke="#3B2E5A" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="30" cy="56" r="14" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="4" />
+      <circle cx="30" cy="40" r="8" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="4" />
+      <circle cx="27" cy="39" r="2" fill="#fff" />
+      <circle cx="33" cy="39" r="2" fill="#fff" />
+    </svg>
+  );
+}
+
 function Frame({
   children,
   flipped,
@@ -127,6 +140,14 @@ export default function Level53({ lang, solved, onSolved, onMistake, onProgress,
   const pick = useCallback(
     (isCat: boolean) => {
       if (solved || done) return;
+      if (isCat && !rot) {
+        sfx.pop();
+        onMistake({
+          fa: "اول صحنه رو بچرخون تا مقایسه کنی!",
+          en: "Rotate the scene first to compare!",
+        });
+        return;
+      }
       if (isCat) {
         setDone(true);
         sfx.cheer();
@@ -140,8 +161,14 @@ export default function Level53({ lang, solved, onSolved, onMistake, onProgress,
         en: "Not this one! Find the upside-down picture.",
       });
     },
-    [solved, done, onMistake, onProgress, onSolved]
+    [solved, done, rot, onMistake, onProgress, onSolved]
   );
+
+  const tapSpider = () => {
+    if (solved || done) return;
+    sfx.pop();
+    onMistake({ fa: "عنکبوت که قاب نیست!", en: "A spider isn't a picture!" });
+  };
 
   return (
     <Scene bg="linear-gradient(180deg,#FFF3D6 0%,#FFE9BC 62%,#E8D9C3 63%,#E0CFAF 100%)">
@@ -184,6 +211,19 @@ export default function Level53({ lang, solved, onSolved, onMistake, onProgress,
             <FlowerArt />
           </Frame>
         </div>
+      </div>
+
+      {/* decoy: a spider swaying on its thread (not a picture) */}
+      <div className="absolute left-1/2 top-0 w-[8%] -translate-x-1/2" style={{ zIndex: 20 }}>
+        <button
+          type="button"
+          onClick={tapSpider}
+          aria-label={lang === "fa" ? "عنکبوت" : "spider"}
+          className="block w-full cursor-pointer border-0 bg-transparent p-0"
+          style={{ animation: "bob 3.2s ease-in-out infinite" }}
+        >
+          <SpiderSvg className="h-auto w-full" />
+        </button>
       </div>
 
       {/* rotate stage button (outside the rotating container) */}

@@ -61,23 +61,36 @@ export default function Level10({ lang, solved, onSolved, onMistake, onProgress,
     rugResetRef.current = rugDrag.reset;
   }, [rugDrag]);
 
-  /* stage 2 (tap key to pick up) + stage 3 (drop key on the lock) */
+  /* stage 2 (tap key to pick up) + stage 3 (drop key on the lock).
+     FIX: the key can also be picked up by simply starting to drag it,
+     and the lock zone is generous — so "take the key and open the door"
+     works in ONE gesture instead of silently failing. */
   const keyDrag = useDragMove(
     useCallback(
       (d: DragState) => {
         if (solved || done || keyLocked || doorOpen) return;
+        if (!rugMoved) {
+          keyResetRef.current();
+          return;
+        }
         const dist = Math.hypot(d.x, d.y);
         if (dist < 8) {
           /* barely moved: treat as a tap (pickup) */
-          if (rugMoved && !keyTaken) {
+          if (!keyTaken) {
             setKeyTaken(true);
             sfx.coin();
             onProgress(0.67);
           }
           return;
         }
-        /* real drop: check the lock */
-        if (keyTaken && overElement(keyRef, lockRef, 24)) {
+        /* any real movement of the key counts as picking it up */
+        if (!keyTaken) {
+          setKeyTaken(true);
+          sfx.coin();
+          onProgress(0.67);
+        }
+        /* real drop: check the lock (generous hit zone) */
+        if (overElement(keyRef, lockRef, 46)) {
           setKeyLocked(true);
           setDone(true);
           keyResetRef.current();
@@ -89,6 +102,7 @@ export default function Level10({ lang, solved, onSolved, onMistake, onProgress,
           }, 380);
           window.setTimeout(onSolved, 900);
         } else {
+          /* missed the lock: the key stays pocketed for the next try */
           keyResetRef.current();
         }
       },
@@ -100,7 +114,12 @@ export default function Level10({ lang, solved, onSolved, onMistake, onProgress,
   }, [keyDrag]);
 
   const tapLock = () => {
-    if (solved || done || keyTaken) return;
+    if (solved || done) return;
+    if (keyTaken && !keyLocked && !doorOpen) {
+      /* key is in the pocket — the player tapped instead of dragging; stay silent-friendly */
+      sfx.pop();
+      return;
+    }
     sfx.fail();
     onMistake({ fa: "کلید لازم داری!", en: "You need a key!" });
   };
@@ -203,7 +222,7 @@ export default function Level10({ lang, solved, onSolved, onMistake, onProgress,
         {!keyTaken && <KeySvg className="w-[62%] opacity-20" />}
       </div>
 
-      {/* patterned rug covering the key (stage 1) */}
+      {/* patterned rug covering the key (stage 1) — once moved it slides fully clear of the key */}
       <div
         className="absolute z-[15]"
         style={{
@@ -211,7 +230,9 @@ export default function Level10({ lang, solved, onSolved, onMistake, onProgress,
           top: "77%",
           width: "34%",
           height: "16%",
-          transform: `translate(${rugDrag.x}px, ${rugDrag.y}px)`,
+          transform: rugMoved
+            ? "translate(-110px, -10px) rotate(-6deg)"
+            : `translate(${rugDrag.x}px, ${rugDrag.y}px)`,
           transition: rugDrag.dragging ? "none" : "transform 0.45s cubic-bezier(0.34,1.3,0.64,1)",
         }}
       >

@@ -48,36 +48,51 @@ function MouseSvg({ caught }: { caught: boolean }) {
 }
 
 export default function Level65({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
+  const [trail, setTrail] = useState(false);
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState(false);
+  const [nudge, setNudge] = useState(false);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const openDrawer = useCallback(() => {
     if (open || done || solved) return;
+    if (!trail) {
+      /* the drawer only gives way once the crumb trail has been followed */
+      sfx.click();
+      setNudge(true);
+      timers.current.push(setTimeout(() => setNudge(false), 450));
+      onMistake({
+        fa: "اول رد پای پنیر را دنبال کن!",
+        en: "Follow the cheese trail first!",
+      });
+      return;
+    }
     setOpen(true);
-    sfx.unlock();
-    timers.current.push(setTimeout(() => sfx.sparkle(), 250));
+    sfx.whoosh();
+    timers.current.push(setTimeout(() => sfx.unlock(), 250));
+    timers.current.push(setTimeout(() => sfx.sparkle(), 550));
     onProgress(1);
     setDone(true);
     timers.current.push(setTimeout(onSolved, 1500));
-  }, [open, done, solved, onProgress, onSolved]);
+  }, [open, done, solved, trail, onMistake, onProgress, onSolved]);
 
   const drawerDrag = useDragMove(
     useCallback(
       (d: DragState, api: { reset: () => void }) => {
         if (open || done) return;
-        if (!d.everMoved || d.x <= 55) {
-          if (!d.everMoved) {
-            /* simple tap also opens (kid friendly) */
-            sfx.click();
-            openDrawer();
-          }
+        if (!d.everMoved) {
+          /* a tap only nudges the drawer — it must be pulled open */
+          openDrawer();
           api.reset();
           return;
         }
-        sfx.whoosh();
+        if (d.x <= 80) {
+          /* needs a firm, deliberate pull */
+          api.reset();
+          return;
+        }
         api.reset();
         openDrawer();
       },
@@ -86,18 +101,53 @@ export default function Level65({ lang, solved, onSolved, onMistake, onProgress,
   );
 
   const tapCrumbs = useCallback(() => {
-    if (done) return;
-    sfx.laugh();
+    if (done || solved) return;
+    if (!trail) {
+      /* step 1: follow the trail (progress 1/2) */
+      setTrail(true);
+      sfx.whoosh();
+      onProgress(0.5);
+      return;
+    }
+    sfx.pop();
+  }, [done, solved, trail, onProgress]);
+
+  const tapCheese = useCallback(() => {
+    if (done || solved) return;
+    sfx.pop();
     onMistake({
-      fa: "رد پای پنیر را دنبال کن!",
-      en: "Follow the cheese trail!",
+      fa: "این پنیر فقط طعمه است؛ موش قایم شده!",
+      en: "That cheese is just bait; the mouse is hiding!",
     });
-  }, [done, onMistake]);
+  }, [done, solved, onMistake]);
+
+  const tapHole = useCallback(() => {
+    if (done || solved) return;
+    sfx.boing();
+    onMistake({
+      fa: "این سوراخ خالی است؛ جای دیگری را بگرد!",
+      en: "This hole is empty; look somewhere else!",
+    });
+  }, [done, solved, onMistake]);
 
   return (
     <Scene bg="linear-gradient(180deg,#FDF3E3 0%,#FAE8CC 52%,#EFD6AF 53%,#E3C79B 100%)">
       {/* wall tiles */}
       <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "repeating-linear-gradient(0deg, rgba(59,46,90,0.12) 0 3px, transparent 3px 44px), repeating-linear-gradient(90deg, rgba(59,46,90,0.12) 0 3px, transparent 3px 44px)" }} aria-hidden />
+
+      {/* decoy: empty mouse hole on the skirting */}
+      <button
+        type="button"
+        onClick={tapHole}
+        aria-label={lang === "fa" ? "سوراخ موش" : "mouse hole"}
+        className="absolute bottom-[43%] start-[3%] w-[12%] cursor-pointer transition-transform active:scale-90"
+        aria-hidden={done}
+      >
+        <svg viewBox="0 0 90 64" className="h-auto w-full" aria-hidden>
+          <rect x="0" y="44" width="90" height="20" rx="5" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="3.4" />
+          <path d="M22 44 L22 30 Q45 8 68 30 L68 44 Z" fill="#33205E" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
+        </svg>
+      </button>
 
       {/* cheese crumb trail */}
       <button
@@ -143,6 +193,22 @@ export default function Level65({ lang, solved, onSolved, onMistake, onProgress,
           <rect x="44" y="52" width="152" height="46" rx="10" fill="#5E4A2E" stroke="#3B2E5A" strokeWidth="4" />
         </svg>
 
+        {/* decoy: leftover cheese wedge on the tabletop */}
+        <button
+          type="button"
+          onClick={tapCheese}
+          aria-label={lang === "fa" ? "پنیر روی میز" : "cheese on the table"}
+          className="absolute right-[5%] top-[-13%] w-[13%] cursor-pointer transition-transform active:scale-90"
+          aria-hidden={done}
+        >
+          <svg viewBox="0 0 90 62" className="h-auto w-full drop-shadow-[0_3px_2px_rgba(59,46,90,0.18)]" aria-hidden>
+            <path d="M6 54 L84 54 L84 16 Q45 -2 6 16 Z" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
+            <circle cx="52" cy="36" r="5" fill="#C98A4B" />
+            <circle cx="66" cy="44" r="3.6" fill="#C98A4B" />
+            <circle cx="38" cy="44" r="3" fill="#C98A4B" />
+          </svg>
+        </button>
+
         {/* drawer front (draggable) */}
         <div className="absolute left-[19%] top-[36%] h-[31%] w-[62%]">
           <Pulse active={hintPulse > 0 && !done} className="h-full w-full">
@@ -154,6 +220,7 @@ export default function Level65({ lang, solved, onSolved, onMistake, onProgress,
               style={{
                 transform: `translateX(${open ? "72%" : `${drawerDrag.x}px`})`,
                 transition: drawerDrag.dragging ? "none" : "transform 0.5s cubic-bezier(0.5,0,0.3,1)",
+                animation: nudge && !open ? "shake-hard 0.4s ease" : undefined,
               }}
             >
               <svg viewBox="0 0 150 46" preserveAspectRatio="none" className="h-full w-full" aria-hidden>

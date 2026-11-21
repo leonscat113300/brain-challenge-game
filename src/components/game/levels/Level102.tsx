@@ -8,57 +8,66 @@ import type { DragState } from "./shared";
 /* ------------------------------------------------------------------ */
 /* Level 102 — The giraffe can't reach the top leaf: grab the branch   */
 /* and pull it down until the leaf reaches the giraffe's mouth.        */
+/* The needed pull distance is measured from the real mouth position,  */
+/* so the leaf always lands exactly in the mouth on every screen size. */
 /* ------------------------------------------------------------------ */
 
-const PULL_MAX = 150; // px of pull needed
-
-function GiraffeSvg({ eating, mouthOpen }: { eating: boolean; mouthOpen: boolean }) {
+function GiraffeSvg({
+  eating,
+  mouthOpen,
+  mouthRef,
+}: {
+  eating: boolean;
+  mouthOpen: boolean;
+  mouthRef: React.Ref<SVGCircleElement>;
+}) {
   return (
-    <svg viewBox="0 0 140 190" className="h-auto w-full" aria-hidden>
-      {/* body */}
-      <ellipse cx="52" cy="150" rx="36" ry="26" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
-      {/* legs */}
-      <rect x="28" y="164" width="12" height="24" rx="5" fill="#FFC93C" stroke="#3B2E5A" strokeWidth="3.6" />
-      <rect x="62" y="164" width="12" height="24" rx="5" fill="#FFC93C" stroke="#3B2E5A" strokeWidth="3.6" />
-      {/* neck stretched up-left */}
-      <path d="M44 132 Q26 92 22 46" fill="none" stroke="#FFD154" strokeWidth="24" strokeLinecap="round" />
-      <path d="M44 132 Q26 92 22 46" fill="none" stroke="#3B2E5A" strokeWidth="28" strokeLinecap="round" opacity="0" />
-      {/* neck outline trick: draw two outlines */}
-      <path d="M34.5 130 Q17 90 13.5 46" fill="none" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" opacity="0.95" />
-      <path d="M53.5 134 Q36 94 30.5 46" fill="none" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" opacity="0.95" />
-      {/* spots */}
-      <circle cx="42" cy="112" r="6" fill="#E89B2E" />
-      <circle cx="32" cy="86" r="6" fill="#E89B2E" />
-      <circle cx="27" cy="62" r="5.4" fill="#E89B2E" />
-      <circle cx="56" cy="140" r="7" fill="#E89B2E" />
-      {/* head at top of neck */}
-      <g transform="translate(14,30)">
-        {/* ossicones */}
-        <path d="M6 -8 L4 -20 M16 -8 L18 -20" stroke="#3B2E5A" strokeWidth="4.4" strokeLinecap="round" />
-        <circle cx="4" cy="-22" r="4.4" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.6" />
-        <circle cx="18" cy="-22" r="4.4" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.6" />
-        {/* ears */}
-        <ellipse cx="-8" cy="-2" rx="7" ry="4.4" fill="#FFC93C" stroke="#3B2E5A" strokeWidth="2.8" transform="rotate(-30 -8 -2)" />
-        {/* head */}
-        <ellipse cx="12" cy="8" rx="15" ry="12" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
-        {/* eye */}
-        <circle cx="8" cy="5" r="4.6" fill="#3B2E5A" />
-        <circle cx="9.4" cy="3.6" r="1.5" fill="#FAFAFA" />
-        {/* mouth */}
-        {eating ? (
-          <>
-            <path d="M10 16 Q16 22 22 15" fill="none" stroke="#3B2E5A" strokeWidth="3" strokeLinecap="round" />
-            <circle cx="24" cy="14" r="4" fill="#4CAF50" style={{ animation: "breathe 0.6s ease-in-out infinite" }} />
-          </>
-        ) : mouthOpen ? (
-          <ellipse cx="17" cy="16" rx="6" ry="5" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.6" />
-        ) : (
-          <path d="M12 15 Q17 18 22 14" fill="none" stroke="#3B2E5A" strokeWidth="3" strokeLinecap="round" />
-        )}
-      </g>
+    <svg viewBox="0 0 160 200" className="h-auto w-full" aria-hidden>
       {/* tail */}
-      <path d="M88 148 Q104 144 102 128" fill="none" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" />
-      <circle cx="102" cy="126" r="4.4" fill="#E89B2E" stroke="#3B2E5A" strokeWidth="2.4" />
+      <path d="M142 148 Q158 142 154 124" fill="none" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" />
+      <circle cx="154" cy="121" r="4.5" fill="#E89B2E" stroke="#3B2E5A" strokeWidth="2.4" />
+      {/* far legs */}
+      <rect x="80" y="170" width="11" height="26" rx="5" fill="#E8B23C" stroke="#3B2E5A" strokeWidth="3.4" />
+      <rect x="122" y="170" width="11" height="26" rx="5" fill="#E8B23C" stroke="#3B2E5A" strokeWidth="3.4" />
+      {/* body */}
+      <ellipse cx="106" cy="150" rx="42" ry="30" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
+      {/* near legs */}
+      <rect x="92" y="176" width="12" height="22" rx="5" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.6" />
+      <rect x="128" y="176" width="12" height="22" rx="5" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.6" />
+      {/* neck rising up-left toward the branch */}
+      <path d="M86 132 Q62 110 56 58" fill="none" stroke="#3B2E5A" strokeWidth="30" strokeLinecap="round" />
+      <path d="M86 132 Q62 110 56 58" fill="none" stroke="#FFD154" strokeWidth="24" strokeLinecap="round" />
+      {/* mane along the back of the neck */}
+      <path d="M70 122 Q58 102 50 70" fill="none" stroke="#C98A4B" strokeWidth="6" strokeLinecap="round" opacity="0.9" />
+      {/* patches */}
+      <circle cx="80" cy="118" r="7" fill="#E89B2E" />
+      <circle cx="68" cy="96" r="6" fill="#E89B2E" />
+      <circle cx="61" cy="78" r="5" fill="#E89B2E" />
+      <circle cx="96" cy="140" r="8" fill="#E89B2E" />
+      <circle cx="118" cy="148" r="7" fill="#E89B2E" />
+      {/* head with muzzle pointing down-left */}
+      <path d="M42 26 L40 14 M56 24 L58 12" stroke="#3B2E5A" strokeWidth="4.4" strokeLinecap="round" />
+      <circle cx="40" cy="12" r="4.4" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.6" />
+      <circle cx="58" cy="10" r="4.4" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.6" />
+      <ellipse cx="66" cy="34" rx="8" ry="4.6" fill="#FFC93C" stroke="#3B2E5A" strokeWidth="2.8" transform="rotate(24 66 34)" />
+      <ellipse cx="50" cy="40" rx="18" ry="14" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
+      <ellipse cx="38" cy="48" rx="10" ry="8" fill="#FFC93C" stroke="#3B2E5A" strokeWidth="3.6" />
+      <circle cx="33" cy="46" r="1.8" fill="#3B2E5A" />
+      <circle cx="52" cy="36" r="4.6" fill="#3B2E5A" />
+      <circle cx="53.6" cy="34.4" r="1.5" fill="#FAFAFA" />
+      {/* mouth */}
+      {eating ? (
+        <>
+          <path d="M32 56 Q40 62 48 56" fill="none" stroke="#3B2E5A" strokeWidth="3" strokeLinecap="round" />
+          <circle cx="28" cy="52" r="4" fill="#4CAF50" style={{ animation: "breathe 0.6s ease-in-out infinite" }} />
+        </>
+      ) : mouthOpen ? (
+        <ellipse cx="36" cy="56" rx="6" ry="5" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.6" />
+      ) : (
+        <path d="M32 55 Q38 58 44 55" fill="none" stroke="#3B2E5A" strokeWidth="3" strokeLinecap="round" />
+      )}
+      {/* invisible exact mouth target point (measured for leaf alignment) */}
+      <circle ref={mouthRef} cx="38" cy="56" r="0.1" fill="none" />
     </svg>
   );
 }
@@ -66,12 +75,29 @@ function GiraffeSvg({ eating, mouthOpen }: { eating: boolean; mouthOpen: boolean
 export default function Level102({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [pulled, setPulled] = useState(0); // 0..1
   const [eating, setEating] = useState(false);
+  /* needed pull distance (px) — measured so the leaf lands in the mouth */
+  const [pullNeed, setPullNeed] = useState(160);
   const pulledRef = useRef(0);
   const branchRef = useRef<HTMLDivElement>(null);
-  const mouthRef = useRef<HTMLDivElement>(null);
+  const mouthRef = useRef<SVGCircleElement>(null);
+  const tipRef = useRef<SVGGElement>(null);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  /* measure how far the leaf must travel to reach the mouth */
+  useEffect(() => {
+    const measure = () => {
+      const m = mouthRef.current?.getBoundingClientRect();
+      const t = tipRef.current?.getBoundingClientRect();
+      if (!m || !t) return;
+      const need = m.top + m.height / 2 - (t.top + t.height / 2);
+      setPullNeed(Math.max(120, Math.min(240, need)));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   const branchDrag = useDragMove(
     useCallback(
@@ -85,7 +111,7 @@ export default function Level102({ lang, solved, onSolved, onMistake, onProgress
           return;
         }
         const down = Math.max(0, d.y);
-        const frac = Math.min(1, down / PULL_MAX);
+        const frac = Math.min(1, down / pullNeed);
         setPulled(frac);
         pulledRef.current = frac;
         onProgress(frac * 0.9);
@@ -111,7 +137,7 @@ export default function Level102({ lang, solved, onSolved, onMistake, onProgress
           });
         }
       },
-      [solved, eating, onProgress, onMistake, onSolved]
+      [solved, eating, pullNeed, onProgress, onMistake, onSolved]
     )
   );
 
@@ -123,7 +149,7 @@ export default function Level102({ lang, solved, onSolved, onMistake, onProgress
     });
   }, [solved, eating, onMistake]);
 
-  const dy = pulled * PULL_MAX;
+  const dy = pulled * pullNeed;
 
   return (
     <Scene bg="linear-gradient(180deg,#D8F3FA 0%,#E6F7EC 44%,#A8DF9C 46%,#8FCF84 62%,#7ABE6F 100%)">
@@ -133,22 +159,27 @@ export default function Level102({ lang, solved, onSolved, onMistake, onProgress
           <ellipse cx="45" cy="24" rx="34" ry="14" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="3" />
         </svg>
       </div>
-      <div className="pointer-events-none absolute right-[10%] top-[12%] w-[18%]" aria-hidden>
+      <div className="pointer-events-none absolute right-[10%] top-[10%] w-[18%]" aria-hidden>
         <svg viewBox="0 0 90 40">
           <ellipse cx="45" cy="24" rx="34" ry="14" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="3" />
         </svg>
       </div>
 
-      {/* tree trunk */}
-      <div className="absolute bottom-0 right-[16%] top-0 w-[30%]" aria-hidden>
-        <svg viewBox="0 0 120 300" className="h-full w-full" preserveAspectRatio="none">
-          {/* crown */}
-          <ellipse cx="60" cy="52" rx="96" ry="44" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="5" />
-          <ellipse cx="30" cy="72" rx="52" ry="30" fill="#5CB85C" stroke="#3B2E5A" strokeWidth="5" />
-          <ellipse cx="92" cy="76" rx="50" ry="28" fill="#57B257" stroke="#3B2E5A" strokeWidth="5" />
-          {/* trunk */}
-          <path d="M42 130 Q48 200 40 300 M78 130 Q72 200 80 300 L104 300 Q92 200 100 130 Q80 118 42 130 Z" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-          <path d="M60 180 Q70 210 62 250" fill="none" stroke="#A96F35" strokeWidth="4" strokeLinecap="round" />
+      {/* tree: curved trunk with bark texture + rounded layered crown */}
+      <div className="absolute bottom-0 right-[10%] top-0 w-[36%]" aria-hidden>
+        <svg viewBox="0 0 140 320" className="h-full w-full" preserveAspectRatio="none">
+          {/* rounded crown blobs — kept inside the viewBox so the silhouette stays curved */}
+          <ellipse cx="70" cy="30" rx="60" ry="25" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="5" />
+          <ellipse cx="34" cy="48" rx="30" ry="17" fill="#5CB85C" stroke="#3B2E5A" strokeWidth="4" />
+          <ellipse cx="104" cy="46" rx="32" ry="18" fill="#57B257" stroke="#3B2E5A" strokeWidth="4" />
+          <ellipse cx="66" cy="58" rx="40" ry="18" fill="#6BC36B" stroke="#3B2E5A" strokeWidth="4" />
+          {/* small lower leaves near the branch line */}
+          <ellipse cx="22" cy="76" rx="20" ry="11" fill="#5CB85C" stroke="#3B2E5A" strokeWidth="4" />
+          <ellipse cx="116" cy="74" rx="20" ry="11" fill="#5CB85C" stroke="#3B2E5A" strokeWidth="4" />
+          {/* trunk with roots */}
+          <path d="M56 78 Q62 200 50 320 L92 320 Q82 200 88 78 Q72 68 56 78 Z" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+          <path d="M64 180 Q72 210 66 250 M74 160 Q80 190 76 224" fill="none" stroke="#A96F35" strokeWidth="4" strokeLinecap="round" />
+          <ellipse cx="72" cy="150" rx="8" ry="11" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="3.4" />
         </svg>
       </div>
 
@@ -166,17 +197,18 @@ export default function Level102({ lang, solved, onSolved, onMistake, onProgress
       >
         <Pulse active={hintPulse > 0 && !eating}>
           <svg viewBox="0 0 150 80" className="h-auto w-full" aria-hidden>
-            {/* branch */}
+            {/* woody branch */}
             <path d="M8 14 Q70 22 128 44" fill="none" stroke="#3B2E5A" strokeWidth="14" strokeLinecap="round" />
             <path d="M8 14 Q70 22 128 44" fill="none" stroke="#C98A4B" strokeWidth="7" strokeLinecap="round" />
-            {/* juicy leaf at the tip */}
-            <g transform="translate(128,44)">
+            <path d="M40 19 L74 25 M88 30 L112 37" stroke="#A96F35" strokeWidth="2.6" strokeLinecap="round" />
+            {/* juicy leaf at the tip (measured for alignment) */}
+            <g ref={tipRef} transform="translate(128,44)">
               <path d="M0 0 Q-6 -22 10 -28 Q26 -22 16 -2 Q10 8 0 0 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
               <path d="M4 -4 Q12 -14 18 -24" fill="none" stroke="#3B2E5A" strokeWidth="2.6" strokeLinecap="round" />
             </g>
             {/* small twig leaves */}
-            <path d="M52 22 Q48 8 58 6 Q64 12 56 24" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" />
-            <path d="M86 30 Q84 16 94 15 Q99 22 90 32" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" />
+            <path d="M52 22 Q48 8 58 6 Q64 12 56 24" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+            <path d="M86 30 Q84 16 94 15 Q99 22 90 32" fill="#57B257" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
           </svg>
         </Pulse>
         {/* pull arrow hint */}
@@ -189,26 +221,25 @@ export default function Level102({ lang, solved, onSolved, onMistake, onProgress
         )}
       </div>
 
-      {/* giraffe */}
-      <div className="absolute bottom-[4%] right-[6%] w-[36%]">
+      {/* giraffe — faces the branch, mouth is the measured target */}
+      <div className="absolute bottom-[10%] right-0 w-[35%]">
         <button
           type="button"
           onClick={tapGiraffe}
           aria-label={lang === "fa" ? "زرافه" : "giraffe"}
           className="block w-full cursor-pointer"
-          style={{ transform: "scaleX(-1)" }}
         >
-          <div ref={mouthRef} style={{ animation: eating ? "breathe 0.9s ease-in-out infinite" : "breathe 2.6s ease-in-out infinite" }}>
-            <GiraffeSvg eating={eating} mouthOpen={!eating && pulled > 0.62} />
+          <div style={{ animation: eating ? "breathe 0.9s ease-in-out infinite" : "breathe 2.6s ease-in-out infinite" }}>
+            <GiraffeSvg eating={eating} mouthOpen={!eating && pulled > 0.62} mouthRef={mouthRef} />
           </div>
         </button>
       </div>
 
-      {/* success hearts */}
+      {/* success hearts near the mouth */}
       {eating &&
         [
-          { l: "62%", t: "34%" },
-          { l: "72%", t: "26%" },
+          { l: "64%", t: "56%" },
+          { l: "78%", t: "46%" },
         ].map((p, i) => (
           <div key={i} className="pointer-events-none absolute" style={{ left: p.l, top: p.t, animation: `float-up 1.4s ${i * 0.25}s ease-out infinite` }} aria-hidden>
             <svg viewBox="0 0 24 24" className="w-6">

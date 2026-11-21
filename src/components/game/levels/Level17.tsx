@@ -102,6 +102,8 @@ export default function Level17({ lang, solved, onSolved, onMistake, onProgress,
     if (Math.hypot(d.x, d.y) >= 60) {
       setBookMoved(true);
       sfx.whoosh();
+      /* keep the object ON the ground: keep the dragged x, drop y back to the floor */
+      api.setPos(d.x, 0);
       reportProgress(1 + [mugMoved, hatMoved, giftMoved].filter(Boolean).length);
     } else { api.reset(); }
   }, [solved, done, bookMoved, mugMoved, hatMoved, giftMoved, reportProgress]));
@@ -111,6 +113,7 @@ export default function Level17({ lang, solved, onSolved, onMistake, onProgress,
     if (Math.hypot(d.x, d.y) >= 60) {
       setMugMoved(true);
       sfx.whoosh();
+      api.setPos(d.x, 0);
       reportProgress(1 + [bookMoved, hatMoved, giftMoved].filter(Boolean).length);
     } else { api.reset(); }
   }, [solved, done, mugMoved, bookMoved, hatMoved, giftMoved, reportProgress]));
@@ -120,6 +123,7 @@ export default function Level17({ lang, solved, onSolved, onMistake, onProgress,
     if (Math.hypot(d.x, d.y) >= 60) {
       setHatMoved(true);
       sfx.whoosh();
+      api.setPos(d.x, 0);
       reportProgress(1 + [bookMoved, mugMoved, giftMoved].filter(Boolean).length);
     } else { api.reset(); }
   }, [solved, done, hatMoved, bookMoved, mugMoved, giftMoved, reportProgress]));
@@ -129,6 +133,7 @@ export default function Level17({ lang, solved, onSolved, onMistake, onProgress,
     if (Math.hypot(d.x, d.y) >= 60) {
       setGiftMoved(true);
       sfx.whoosh();
+      api.setPos(d.x, 0);
       reportProgress(1 + [bookMoved, mugMoved, hatMoved].filter(Boolean).length);
     } else { api.reset(); }
   }, [solved, done, giftMoved, bookMoved, mugMoved, hatMoved, reportProgress]));
@@ -228,14 +233,14 @@ export default function Level17({ lang, solved, onSolved, onMistake, onProgress,
           </div>
         </Pulse>
       </div>
-      <div className="absolute z-[24]" style={{ left: "57%", top: "40%", width: "19%", ...asideStyle(giftDrag) }}>
+      <div className="absolute z-[24]" style={{ left: "57%", top: "45%", width: "19%", ...asideStyle(giftDrag) }}>
         <Pulse active={hintPulse > 0 && !giftMoved && !done}>
           <div {...(giftMoved ? {} : giftDrag.bind)} className={giftMoved ? "" : "cursor-grab active:cursor-grabbing"}>
             <GiftSvg className="h-auto w-full drop-shadow-[0_5px_4px_rgba(59,46,90,0.22)]" />
           </div>
         </Pulse>
       </div>
-      <div className="absolute z-[30]" style={{ left: "34%", top: "38%", width: "30%", ...asideStyle(hatDrag) }}>
+      <div className="absolute z-[30]" style={{ left: "34%", top: "44%", width: "30%", ...asideStyle(hatDrag) }}>
         <Pulse active={hintPulse > 0 && !hatMoved && !done}>
           <div {...(hatMoved ? {} : hatDrag.bind)} className={hatMoved ? "" : "cursor-grab active:cursor-grabbing"}>
             <HatSvg className="h-auto w-full drop-shadow-[0_5px_4px_rgba(59,46,90,0.25)]" />

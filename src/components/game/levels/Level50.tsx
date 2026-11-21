@@ -6,8 +6,9 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 50 — Get the ball out of the box: flip the box over with the  */
-/* big button, or physically tilt/flip the phone (deviceorientation).  */
+/* Level 50 — Get the ball out of the box: the ball is tethered with a */
+/* string, so first tap the knot to untie it, then flip the box over   */
+/* with the big button, or physically tilt/flip the phone.             */
 /* ------------------------------------------------------------------ */
 
 type Stage = "closed" | "flipping" | "out";
@@ -46,19 +47,60 @@ function BallSvg({ className, style }: { className?: string; style?: React.CSSPr
   );
 }
 
+function RopeSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 56 84" className={className} style={style} aria-hidden>
+      <path d="M28 0 L28 72" stroke="#3B2E5A" strokeWidth="6.5" strokeLinecap="round" />
+      <path d="M28 0 L28 72" stroke="#FF6B81" strokeWidth="3" strokeLinecap="round" />
+      <path d="M28 12 L16 3 L20 20 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M28 12 L40 3 L36 20 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.5" strokeLinejoin="round" />
+      <circle cx="28" cy="12" r="4.5" fill="#FF9FB2" stroke="#3B2E5A" strokeWidth="2.5" />
+    </svg>
+  );
+}
+
+function ButterflySvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 100 80" className={className} style={style} aria-hidden>
+      <motion.g
+        animate={{ rotate: [-14, 10, -14] }}
+        transition={{ duration: 0.24, repeat: Infinity, ease: "easeInOut" }}
+        style={{ transformBox: "fill-box", transformOrigin: "50% 100%" }}
+      >
+        <ellipse cx="34" cy="26" rx="17" ry="11" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" transform="rotate(-20 34 26)" />
+        <ellipse cx="66" cy="26" rx="17" ry="11" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" transform="rotate(20 66 26)" />
+        <ellipse cx="38" cy="50" rx="13" ry="9" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" transform="rotate(16 38 50)" />
+        <ellipse cx="62" cy="50" rx="13" ry="9" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" transform="rotate(-16 62 50)" />
+      </motion.g>
+      <ellipse cx="50" cy="44" rx="6" ry="16" fill="#3B2E5A" />
+      <circle cx="50" cy="26" r="6" fill="#3B2E5A" />
+      <path d="M46 22 Q40 14 36 14 M54 22 Q60 14 64 14" stroke="#3B2E5A" strokeWidth="3" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function Level50({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [stage, setStage] = useState<Stage>("closed");
   const [wig, setWig] = useState(0);
+  const [tied, setTied] = useState(true);
+  const [fly, setFly] = useState(0);
   const flipRef = useRef<() => void>(() => {});
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
+  const untie = useCallback(() => {
+    if (solved || stage !== "closed" || !tied) return;
+    setTied(false);
+    sfx.unlock();
+    onProgress(0.34);
+  }, [solved, stage, tied, onProgress]);
+
   const flipOnce = useCallback(() => {
-    if (solved || stage !== "closed") return;
+    if (solved || stage !== "closed" || tied) return;
     setStage("flipping");
     sfx.boing();
-    onProgress(0.5);
+    onProgress(0.67);
     timers.current.push(
       setTimeout(() => {
         setStage("out");
@@ -67,7 +109,7 @@ export default function Level50({ lang, solved, onSolved, onMistake, onProgress,
         timers.current.push(setTimeout(onSolved, 1600));
       }, 950)
     );
-  }, [solved, stage, onProgress, onSolved]);
+  }, [solved, stage, tied, onProgress, onSolved]);
 
   useEffect(() => {
     flipRef.current = flipOnce;
@@ -87,7 +129,18 @@ export default function Level50({ lang, solved, onSolved, onMistake, onProgress,
   const tapBall = () => {
     if (solved || stage !== "closed") return;
     setWig((k) => k + 1);
-    onMistake({ fa: "جعبه رو وارونه کن!", en: "Flip the box over!" });
+    if (tied) {
+      onMistake({ fa: "توپ با نخ بسته شده؛ اول گره رو باز کن!", en: "The ball is tied down; untie the knot first!" });
+    } else {
+      onMistake({ fa: "جعبه رو وارونه کن!", en: "Flip the box over!" });
+    }
+  };
+
+  const tapButterfly = () => {
+    if (solved || stage !== "closed") return;
+    setFly((k) => k + 1);
+    sfx.pop();
+    onMistake({ fa: "پروانه نمی‌تونه جعبه رو جابه‌جا کنه!", en: "A butterfly can't move the box!" });
   };
 
   const flipped = stage !== "closed";
@@ -101,6 +154,21 @@ export default function Level50({ lang, solved, onSolved, onMistake, onProgress,
         style={{ background: "#D9A05B", backgroundImage: "repeating-linear-gradient(90deg, rgba(139,94,60,0.35) 0 3px, transparent 3px 52px)" }}
         aria-hidden
       />
+
+      {/* decoy: a fluttering butterfly that can't carry the box */}
+      <div className="absolute end-[5%] top-[6%] w-[14%]" style={{ zIndex: 5 }}>
+        <motion.div animate={fly % 2 === 1 ? { x: -16, y: 10 } : { x: 0, y: 0 }} transition={{ type: "spring", stiffness: 240, damping: 12 }}>
+          <button
+            type="button"
+            onClick={tapButterfly}
+            aria-label={lang === "fa" ? "پروانه" : "butterfly"}
+            className="block w-full cursor-pointer border-0 bg-transparent p-0"
+            style={{ animation: "bob 2.6s ease-in-out infinite" }}
+          >
+            <ButterflySvg className="h-auto w-full drop-shadow-[0_3px_0_rgba(59,46,90,0.15)]" />
+          </button>
+        </motion.div>
+      </div>
 
       {/* the cardboard box (rotates 180 on flip) */}
       <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: "18%", width: "44%" }}>
@@ -121,6 +189,21 @@ export default function Level50({ lang, solved, onSolved, onMistake, onProgress,
               <BallSvg className="h-auto w-full" />
             </button>
           </div>
+          {/* tether string + knot: must be untapped (untied) before flipping works */}
+          {tied && (
+            <div className="absolute" style={{ left: "43%", top: "11%", width: "14%" }}>
+              <Pulse active={hintPulse > 0 && !flipped}>
+                <button
+                  type="button"
+                  onClick={untie}
+                  aria-label={lang === "fa" ? "گرهٔ نخ" : "string knot"}
+                  className="block w-full cursor-pointer border-0 bg-transparent p-0"
+                >
+                  <RopeSvg className="h-auto w-full" />
+                </button>
+              </Pulse>
+            </div>
+          )}
         </motion.div>
       </div>
 
@@ -143,10 +226,17 @@ export default function Level50({ lang, solved, onSolved, onMistake, onProgress,
 
       {/* big chunky flip button */}
       <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: "3.5%" }}>
-        <Pulse active={hintPulse > 0 && !flipped}>
+        <Pulse active={hintPulse > 0 && !flipped && !tied}>
           <button
             type="button"
-            onClick={() => flipRef.current()}
+            onClick={() => {
+              if (tied) {
+                sfx.pop();
+                onMistake({ fa: "اول نخِ دور توپ رو باز کن!", en: "Untie the string around the ball first!" });
+                return;
+              }
+              flipRef.current();
+            }}
             disabled={solved || flipped}
             aria-label={lang === "fa" ? "وارونه کن" : "Flip it"}
             className="flex min-h-[48px] items-center gap-2 rounded-full border-4 border-[#3B2E5A] bg-[#FFD154] px-7 py-2.5 font-black text-[#3B2E5A] shadow-[0_5px_0_#3B2E5A] transition-transform active:translate-y-[3px] active:shadow-[0_2px_0_#3B2E5A] disabled:opacity-70"

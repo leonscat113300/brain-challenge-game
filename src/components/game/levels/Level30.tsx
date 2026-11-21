@@ -49,38 +49,62 @@ function CloudSvg({ happy, className, style }: { happy: boolean; className?: str
 function KidSvg({ happy, className, style }: { happy: boolean; className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 200 230" className={className} style={style} aria-hidden>
-      {/* tiny broken umbrella */}
-      <g transform="rotate(-15 62 70)">
-        <path d="M16 72 Q62 20 108 72 Q85 62 62 72 Q39 62 16 72 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
-        <path d="M104 66 L118 88" stroke="#3B2E5A" strokeWidth="4" strokeLinecap="round" />
-        <path d="M62 72 L62 118" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" />
-        <path d="M62 118 q0 12 -12 12" stroke="#3B2E5A" strokeWidth="5" fill="none" strokeLinecap="round" />
+      {/* broken umbrella: scalloped canopy with a torn hole + bent pole */}
+      <g transform="rotate(6 130 40)">
+        <path
+          d="M82 46 Q104 10 130 10 Q158 10 180 46 Q170 40 162 46 Q154 52 146 46 Q138 40 130 46 Q122 52 114 46 Q106 40 98 46 Q90 52 82 46 Z"
+          fill="#FF6B81"
+          stroke="#3B2E5A"
+          strokeWidth="4.5"
+          strokeLinejoin="round"
+        />
+        {/* torn hole in the canopy */}
+        <path d="M146 30 L152 40 L158 28" fill="#DCEBF5" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+        {/* ribs */}
+        <path d="M130 12 L130 44 M106 18 L116 44 M154 18 L146 44" stroke="#C94A5E" strokeWidth="2.6" strokeLinecap="round" opacity="0.85" />
+        {/* bent pole down to the hand */}
+        <path d="M130 46 L128 96 Q127 108 116 108" stroke="#3B2E5A" strokeWidth="5.5" fill="none" strokeLinecap="round" />
       </g>
       {/* head */}
-      <circle cx="104" cy="92" r="32" fill="#F7CFA0" stroke="#3B2E5A" strokeWidth="5" />
-      <path d="M76 80 Q104 56 132 80 Q118 70 104 72 Q90 70 76 80 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
+      <circle cx="92" cy="92" r="30" fill="#F7CFA0" stroke="#3B2E5A" strokeWidth="5" />
+      {/* hair */}
+      <path d="M66 84 Q70 60 92 60 Q114 60 118 84 Q104 72 92 74 Q78 72 66 84 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
       {happy ? (
         <>
-          <path d="M86 88 q7 7 14 0 M108 88 q7 7 14 0" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-          <path d="M94 104 q10 10 20 0" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          <path d="M76 88 q7 7 14 0 M96 88 q7 7 14 0" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          <path d="M84 102 q9 9 18 0" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
         </>
       ) : (
         <>
-          <circle cx="93" cy="88" r="5" fill="#3B2E5A" />
-          <circle cx="95" cy="86" r="1.7" fill="#FAFAFA" />
-          <circle cx="115" cy="88" r="5" fill="#3B2E5A" />
-          <circle cx="117" cy="86" r="1.7" fill="#FAFAFA" />
-          <path d="M98 108 q6 -6 12 0" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          <circle cx="83" cy="88" r="5" fill="#3B2E5A" />
+          <circle cx="85" cy="86" r="1.7" fill="#FAFAFA" />
+          <circle cx="101" cy="88" r="5" fill="#3B2E5A" />
+          <circle cx="103" cy="86" r="1.7" fill="#FAFAFA" />
+          <path d="M86 104 q6 -6 12 0" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          {/* raindrops on the face */}
+          <path d="M70 76 q3 5 0 8 M116 78 q3 5 0 8" stroke="#1EC8CF" strokeWidth="3" fill="none" strokeLinecap="round" />
         </>
       )}
-      <ellipse cx="86" cy="100" rx="5" ry="3.5" fill="#FF9FB2" />
-      <ellipse cx="122" cy="100" rx="5" ry="3.5" fill="#FF9FB2" />
-      {/* body + limbs */}
-      <rect x="84" y="126" width="40" height="54" rx="14" fill="#FFD154" stroke="#3B2E5A" strokeWidth="5" />
-      <path d="M84 140 L66 158 M124 140 L142 156" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" />
-      <path d="M92 180 L92 200 M112 180 L112 200" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" />
-      <ellipse cx="95" cy="206" rx="12" ry="7" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="113" cy="206" rx="12" ry="7" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="74" cy="98" rx="5" ry="3.5" fill="#FF9FB2" />
+      <ellipse cx="110" cy="98" rx="5" ry="3.5" fill="#FF9FB2" />
+      {/* yellow raincoat with zipper + buttons */}
+      <path d="M70 124 Q92 116 114 124 L120 176 Q92 186 64 176 Z" fill="#FFD154" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+      <path d="M92 122 L92 178" stroke="#E8A81C" strokeWidth="3.4" strokeLinecap="round" />
+      <circle cx="92" cy="138" r="3" fill="#E8A81C" />
+      <circle cx="92" cy="154" r="3" fill="#E8A81C" />
+      {/* arm down */}
+      <path d="M74 130 Q62 142 64 156" stroke="#3B2E5A" strokeWidth="12" fill="none" strokeLinecap="round" />
+      <path d="M74 130 Q62 142 64 156" stroke="#FFD154" strokeWidth="6" fill="none" strokeLinecap="round" />
+      <circle cx="64" cy="160" r="6" fill="#F7CFA0" stroke="#3B2E5A" strokeWidth="3" />
+      {/* arm up holding the umbrella handle */}
+      <path d="M106 130 Q120 124 117 112" stroke="#3B2E5A" strokeWidth="12" fill="none" strokeLinecap="round" />
+      <path d="M106 130 Q120 124 117 112" stroke="#FFD154" strokeWidth="6" fill="none" strokeLinecap="round" />
+      <circle cx="117" cy="108" r="6" fill="#F7CFA0" stroke="#3B2E5A" strokeWidth="3" />
+      {/* legs + rain boots */}
+      <path d="M82 176 L82 196 M102 176 L102 196" stroke="#3B2E5A" strokeWidth="9" strokeLinecap="round" />
+      <path d="M82 176 L82 196 M102 176 L102 196" stroke="#33205E" strokeWidth="5" strokeLinecap="round" />
+      <ellipse cx="80" cy="204" rx="13" ry="8" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="104" cy="204" rx="13" ry="8" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" />
     </svg>
   );
 }

@@ -13,7 +13,7 @@ interface Pt { x: number; y: number }
 
 type Phase = "idle" | "draw" | "bad" | "fade" | "walking" | "arrived";
 
-const ANT = { x: 0.13, y: 0.7 };
+const ANT = { x: 0.22, y: 0.7 };
 const COOKIE = { x: 0.83, y: 0.17 };
 const OBSTACLES: Array<{ x: number; y: number; kind: "stone" | "apple" | "puddle" }> = [
   { x: 0.37, y: 0.5, kind: "stone" }, { x: 0.55, y: 0.33, kind: "apple" }, { x: 0.42, y: 0.79, kind: "puddle" },

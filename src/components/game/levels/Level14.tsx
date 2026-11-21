@@ -14,44 +14,69 @@ const BLOCKED_MSG = { fa: "راه بسته است! مانع‌ها را کنار
 function RabbitSvg({ fed, className, style }: { fed: boolean; className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 190 210" className={className} style={style} aria-hidden>
-      <ellipse cx="66" cy="38" rx="13" ry="34" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="5" transform="rotate(-8 66 38)" />
-      <ellipse cx="114" cy="38" rx="13" ry="34" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="5" transform="rotate(8 114 38)" />
-      <ellipse cx="66" cy="42" rx="6" ry="22" fill="#FF9FB2" transform="rotate(-8 66 42)" />
-      <ellipse cx="114" cy="42" rx="6" ry="22" fill="#FF9FB2" transform="rotate(8 114 42)" />
-      <ellipse cx="95" cy="152" rx="52" ry="44" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="5" />
-      <ellipse cx="95" cy="162" rx="32" ry="26" fill="#F3EEF9" />
+      {/* ears — long, upright, soft pink inside */}
+      <ellipse cx="70" cy="34" rx="14" ry="36" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="5" transform="rotate(-9 70 34)" />
+      <ellipse cx="70" cy="38" rx="6" ry="23" fill="#FF9FB2" transform="rotate(-9 70 38)" />
+      <ellipse cx="114" cy="30" rx="14" ry="38" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="5" transform="rotate(9 114 30)" />
+      <ellipse cx="114" cy="34" rx="6" ry="25" fill="#FF9FB2" transform="rotate(9 114 34)" />
+      {/* fluffy tail peeking behind */}
+      <circle cx="158" cy="180" r="13" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
+      {/* body */}
+      <ellipse cx="95" cy="152" rx="55" ry="46" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="5" />
+      {/* haunches */}
+      <circle cx="52" cy="168" r="24" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4.5" />
+      <circle cx="138" cy="168" r="24" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4.5" />
+      {/* belly */}
+      <ellipse cx="95" cy="166" rx="32" ry="26" fill="#F3EEF9" />
+      {/* head */}
       <circle cx="95" cy="86" r="42" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="5" />
-      <ellipse cx="66" cy="100" rx="8" ry="5" fill="#FF9FB2" opacity="0.8" />
-      <ellipse cx="124" cy="100" rx="8" ry="5" fill="#FF9FB2" opacity="0.8" />
-      <path d="M90 92 L100 92 L95 99 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.5" strokeLinejoin="round" />
+      {/* whiskers */}
+      <path d="M50 96 L30 92 M50 102 L31 104 M140 96 L160 92 M140 102 L159 104" stroke="#3B2E5A" strokeWidth="2.4" strokeLinecap="round" />
       {fed ? (
         <>
-          <path d="M70 78 Q77 70 84 78" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-          <path d="M106 78 Q113 70 120 78" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-          <path d="M84 104 Q95 114 106 104" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
-          <path d="M88 132 L102 132 L95 158 Z" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
-          <path d="M90 130 L95 122 L100 130" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+          {/* happy closed eyes */}
+          <path d="M64 78 Q72 70 80 78" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          <path d="M110 78 Q118 70 126 78" stroke="#3B2E5A" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+          {/* nose + big smile */}
+          <path d="M90 92 L100 92 L95 99 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M78 106 Q95 120 112 106" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
+          {/* carrot held between the paws */}
+          <g transform="translate(88 112) rotate(-12)">
+            <path d="M0 0 L14 42 Q16 50 7 52 Q-2 50 0 42 Z" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="3.4" strokeLinejoin="round" />
+            <path d="M5 -2 L8 -12 M12 0 L18 -9" stroke="#4CAF50" strokeWidth="5" strokeLinecap="round" />
+          </g>
+          {/* paws holding it */}
+          <ellipse cx="76" cy="132" rx="12" ry="9" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
+          <ellipse cx="114" cy="132" rx="12" ry="9" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
+          {/* blush */}
+          <ellipse cx="58" cy="94" rx="8" ry="5" fill="#FF9FB2" opacity="0.8" />
+          <ellipse cx="132" cy="94" rx="8" ry="5" fill="#FF9FB2" opacity="0.8" />
         </>
       ) : (
         <>
-          <path d="M68 68 Q76 62 84 68" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
-          <path d="M106 68 Q114 62 122 68" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
-          <circle cx="78" cy="80" r="6" fill="#3B2E5A" />
-          <circle cx="112" cy="80" r="6" fill="#3B2E5A" />
-          <circle cx="80" cy="78" r="2" fill="#FAFAFA" />
-          <circle cx="114" cy="78" r="2" fill="#FAFAFA" />
-          <path d="M84 104 Q89 100 94 104 Q99 108 104 104" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
-          <path d="M104 108 Q107 116 103 120" stroke="#9EDBF5" strokeWidth="4" fill="none" strokeLinecap="round" />
+          {/* big shiny hungry eyes */}
+          <circle cx="74" cy="78" r="8" fill="#3B2E5A" />
+          <circle cx="116" cy="78" r="8" fill="#3B2E5A" />
+          <circle cx="76.5" cy="75.5" r="2.6" fill="#FAFAFA" />
+          <circle cx="118.5" cy="75.5" r="2.6" fill="#FAFAFA" />
+          {/* nose */}
+          <path d="M90 92 L100 92 L95 99 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2.5" strokeLinejoin="round" />
+          {/* wiggly hungry mouth */}
+          <path d="M84 106 Q89 102 95 106 Q101 110 106 106" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
+          {/* blush */}
+          <ellipse cx="60" cy="94" rx="8" ry="5" fill="#FF9FB2" opacity="0.8" />
+          <ellipse cx="130" cy="94" rx="8" ry="5" fill="#FF9FB2" opacity="0.8" />
+          {/* dreaming of a carrot */}
           <g opacity="0.9">
-            <circle cx="138" cy="44" r="4" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="2" />
-            <circle cx="152" cy="30" r="7" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="2" />
-            <path d="M148 24 L158 40 L142 40 Z" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="2.5" strokeLinejoin="round" />
+            <circle cx="146" cy="40" r="4" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="2" />
+            <circle cx="158" cy="26" r="7" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="2" />
+            <path d="M154 20 L164 36 L148 36 Z" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="2.5" strokeLinejoin="round" />
           </g>
         </>
       )}
-      <ellipse cx="70" cy="196" rx="15" ry="9" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="120" cy="196" rx="15" ry="9" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
-      <circle cx="152" cy="168" r="12" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
+      {/* front feet */}
+      <ellipse cx="72" cy="196" rx="14" ry="8" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="118" cy="196" rx="14" ry="8" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
     </svg>
   );
 }
@@ -59,14 +84,18 @@ function RabbitSvg({ fed, className, style }: { fed: boolean; className?: string
 function CarrotSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 90 150" className={className} style={style} aria-hidden>
-      <ellipse cx="34" cy="14" rx="8" ry="16" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="4" transform="rotate(-24 34 14)" />
-      <ellipse cx="56" cy="14" rx="8" ry="16" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="4" transform="rotate(24 56 14)" />
-      <ellipse cx="45" cy="10" rx="7" ry="15" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="4" />
-      <path d="M45 30 L68 112 Q70 126 45 132 Q20 126 22 112 Z" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
-      <path d="M34 56 Q45 62 56 56" stroke="#E86A1C" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-      <path d="M32 78 Q45 84 58 78" stroke="#E86A1C" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-      <path d="M36 100 Q45 105 54 100" stroke="#E86A1C" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-      <path d="M38 42 Q34 60 36 76" stroke="#FAFAFA" strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.6" />
+      {/* fresh leafy top */}
+      <path d="M45 28 Q38 4 24 6 Q30 22 42 30" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M45 28 Q52 2 66 6 Q60 22 48 30" fill="#5DBB63" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M45 26 L45 3" stroke="#4CAF50" strokeWidth="6" strokeLinecap="round" />
+      {/* chunky tapered body */}
+      <path d="M45 26 Q62 28 64 48 Q66 82 52 122 Q48 132 45 132 Q42 132 38 122 Q24 82 26 48 Q28 28 45 26 Z" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="5" strokeLinejoin="round" />
+      {/* ridges */}
+      <path d="M32 56 Q45 61 58 56" stroke="#E86A1C" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+      <path d="M30 80 Q45 86 60 80" stroke="#E86A1C" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+      <path d="M34 102 Q45 107 56 102" stroke="#E86A1C" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+      {/* shine */}
+      <path d="M37 40 Q34 56 36 72" stroke="#FAFAFA" strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.6" />
     </svg>
   );
 }

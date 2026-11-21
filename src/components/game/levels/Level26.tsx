@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { LevelProps } from "@/lib/game/types";
 import { Pulse, Scene, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 26 — Let go!: tap the hand gripping the string so the helium  */
-/* balloon floats up and sticks to the ceiling.                        */
+/* Level 26 — Let go!: BOTH of the child's hands grip the string —      */
+/* open them one by one so the helium balloon floats up and sticks      */
+/* to the ceiling.                                                      */
 /* ------------------------------------------------------------------ */
 
 function BalloonSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
@@ -62,23 +63,64 @@ function Star({ className, style }: { className?: string; style?: React.CSSPrope
   );
 }
 
+function BirdSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 90 70" className={className} style={style} aria-hidden>
+      {/* tail */}
+      <path d="M14 40 L2 30 L10 48 Z" fill="#1EC8CF" stroke="#3B2E5A" strokeWidth="3.5" strokeLinejoin="round" />
+      {/* body */}
+      <circle cx="42" cy="38" r="22" fill="#1EC8CF" stroke="#3B2E5A" strokeWidth="4.5" />
+      <ellipse cx="48" cy="47" rx="11" ry="9" fill="#FAFAFA" />
+      {/* wing */}
+      <path d="M34 34 Q22 28 26 44 Q34 50 44 44 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3.5" strokeLinejoin="round" />
+      {/* eye + beak */}
+      <circle cx="56" cy="30" r="4" fill="#3B2E5A" />
+      <circle cx="57.4" cy="28.6" r="1.4" fill="#FAFAFA" />
+      <path d="M62 34 L76 38 L62 44 Z" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.5" strokeLinejoin="round" />
+      {/* feet */}
+      <path d="M38 60 L38 66 M48 60 L48 66" stroke="#3B2E5A" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function Level26({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
-  const [released, setReleased] = useState(false);
+  const [openTop, setOpenTop] = useState(false);
+  const [openBottom, setOpenBottom] = useState(false);
   const [stuck, setStuck] = useState(false);
   const [done, setDone] = useState(false);
   const finishRef = useRef(false);
 
-  const release = () => {
-    if (solved || done || released) return;
-    setReleased(true);
+  /* the balloon only flies once BOTH hands have let go of the string */
+  const flying = openTop && openBottom;
+
+  const openUpperHand = () => {
+    if (solved || done || openTop) return;
+    setOpenTop(true);
     sfx.pop();
-    sfx.whoosh();
+    if (!openBottom) onProgress(0.5);
   };
 
+  const release = () => {
+    if (solved || done || openBottom) return;
+    setOpenBottom(true);
+    sfx.pop();
+    if (!openTop) onProgress(0.5);
+  };
+
+  useEffect(() => {
+    if (openTop && openBottom && !done && !solved) sfx.whoosh();
+  }, [openTop, openBottom, done, solved]);
+
   const tapBalloon = () => {
-    if (solved || done || released) return;
+    if (solved || done || flying) return;
     sfx.boing();
     onMistake({ fa: "نخشو رها کن!", en: "Let go of the string!" });
+  };
+
+  const tapBird = () => {
+    if (solved || done) return;
+    sfx.boing();
+    onMistake({ fa: "پرنده فقط تماشا می‌کنه!", en: "The bird is just watching!" });
   };
 
   const arrived = () => {
@@ -110,21 +152,31 @@ export default function Level26({ lang, solved, onSolved, onMistake, onProgress,
         <div className="h-6 w-6 rounded border-[3px] border-[#3B2E5A] bg-[#FF6B81]" />
       </div>
 
-      {/* balloon + taut string reaching down into the hand */}
+      {/* decoy: a little bird watching from the ceiling */}
+      <button
+        type="button"
+        onClick={tapBird}
+        aria-label={lang === "fa" ? "پرنده" : "bird"}
+        className="absolute left-[20%] top-[1%] z-30 w-[10%] cursor-pointer"
+      >
+        <BirdSvg className="h-auto w-full" style={{ animation: "bob 1.6s ease-in-out infinite alternate" }} />
+      </button>
+
+      {/* balloon + taut string reaching down into the child's hands */}
       <motion.div
         className="absolute right-[17%] z-20 flex w-[20%] flex-col items-center"
-        animate={released ? { top: "3%", rotate: [0, 4, -4, 2, 0] } : { top: "20%", rotate: 0 }}
-        transition={released ? { duration: 2.2, ease: "easeInOut" } : { duration: 0.3 }}
-        onAnimationComplete={released ? arrived : undefined}
+        animate={flying ? { top: "3%", rotate: [0, 4, -4, 2, 0] } : { top: "20%", rotate: 0 }}
+        transition={flying ? { duration: 2.2, ease: "easeInOut" } : { duration: 0.3 }}
+        onAnimationComplete={flying ? arrived : undefined}
       >
-        <div className="flex w-full flex-col items-center" style={released ? undefined : { animation: "bob 1.15s ease-in-out infinite alternate" }}>
+        <div className="flex w-full flex-col items-center" style={flying ? undefined : { animation: "bob 1.15s ease-in-out infinite alternate" }}>
           <div
             onClick={tapBalloon}
-            className={`w-full ${released ? "" : "cursor-pointer"}`}
+            className={`w-full ${flying ? "" : "cursor-pointer"}`}
             style={
               stuck
                 ? { transform: "scaleY(0.93)", transformOrigin: "top center", transition: "transform 0.25s ease" }
-                : released
+                : flying
                   ? undefined
                   : { animation: "breathe 2.4s ease-in-out infinite" }
             }
@@ -132,7 +184,7 @@ export default function Level26({ lang, solved, onSolved, onMistake, onProgress,
             <BalloonSvg className="h-auto w-full" />
           </div>
           <svg viewBox="0 0 120 130" className="h-auto w-full" aria-hidden>
-            {released ? (
+            {flying ? (
               <path d="M60 2 Q48 26 60 44 Q72 62 60 84 Q52 102 60 122" stroke="#3B2E5A" strokeWidth="5" fill="none" strokeLinecap="round" />
             ) : (
               <line x1="60" y1="0" x2="60" y2="128" stroke="#3B2E5A" strokeWidth="5" strokeLinecap="round" />
@@ -141,11 +193,20 @@ export default function Level26({ lang, solved, onSolved, onMistake, onProgress,
         </div>
       </motion.div>
 
+      {/* the child's upper hand also gripping the string — both must open */}
+      <div className="absolute bottom-[21%] right-[13%] z-30 w-[21%] rotate-[7deg]">
+        <Pulse active={hintPulse > 0 && !openTop && !done}>
+          <button type="button" aria-label={lang === "fa" ? "دست دیگر" : "other hand"} onClick={openUpperHand} className="w-full cursor-pointer">
+            <HandSvg open={openTop} className="h-auto w-full" />
+          </button>
+        </Pulse>
+      </div>
+
       {/* the child's hand gripping the string */}
       <div className="absolute bottom-[9%] right-[12%] z-30 w-[24%]">
-        <Pulse active={hintPulse > 0 && !released && !done}>
+        <Pulse active={hintPulse > 0 && !openBottom && !done}>
           <button type="button" aria-label={lang === "fa" ? "دست" : "hand"} onClick={release} className="w-full cursor-pointer">
-            <HandSvg open={released} className="h-auto w-full" />
+            <HandSvg open={openBottom} className="h-auto w-full" />
           </button>
         </Pulse>
       </div>

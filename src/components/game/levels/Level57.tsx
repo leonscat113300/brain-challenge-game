@@ -7,8 +7,9 @@ import type { DragState } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 57 — Fix the broken glass in two steps:                       */
-/* 1) drag the three shards onto the dashed outline (they snap),       */
+/* 1) drag the three shards onto the dashed outline (tight pads),      */
 /* 2) then drag the glue tube over the cup -> seams heal, water fills. */
+/* A band-aid on the table is a decoy.                                 */
 /* ------------------------------------------------------------------ */
 
 type ShardId = "left" | "bottom" | "right";
@@ -53,6 +54,18 @@ function GlueSvg() {
   );
 }
 
+function BandAidSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 120 60" className={className} style={style} aria-hidden>
+      <rect x="8" y="18" width="104" height="26" rx="13" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
+      <rect x="44" y="14" width="32" height="34" rx="8" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
+      <circle cx="53" cy="26" r="2" fill="#3B2E5A" />
+      <circle cx="60" cy="31" r="2" fill="#3B2E5A" />
+      <circle cx="67" cy="26" r="2" fill="#3B2E5A" />
+    </svg>
+  );
+}
+
 function Shard({
   id,
   svg,
@@ -81,7 +94,7 @@ function Shard({
         if (locked || placed) return;
         const el = ref.current;
         const slot = slotRef.current;
-        if (el && slot && overElement(ref, slotRef, 26)) {
+        if (el && slot && overElement(ref, slotRef, 14)) {
           const a = el.getBoundingClientRect();
           const b = slot.getBoundingClientRect();
           api.setPos(
@@ -144,9 +157,10 @@ export default function Level57({ lang, solved, onSolved, onMistake, onProgress,
 
   const allPlaced = snapped.length === 3;
 
+  /* 4 steps total: 3 shards + glue -> 0.25 / 0.5 / 0.75 / 1 */
   useEffect(() => {
-    if (allPlaced) onProgress(0.55);
-  }, [allPlaced, onProgress]);
+    if (snapped.length > 0) onProgress(snapped.length / 4);
+  }, [snapped, onProgress]);
 
   const snapOne = useCallback(
     (id: ShardId) => {
@@ -165,13 +179,19 @@ export default function Level57({ lang, solved, onSolved, onMistake, onProgress,
     []
   );
 
+  const tapBandAid = () => {
+    if (solved || done || fixed) return;
+    sfx.pop();
+    onMistake({ fa: "چسب‌زخم آب رو نگه نمی‌داره!", en: "A band-aid won't hold water!" });
+  };
+
   /* glue step */
   const glueDrag = useDragMove(
     useCallback(
       (d: DragState, api: { reset: () => void; setPos: (x: number, y: number) => void }) => {
         if (solved || done || fixed) return;
         const cup = cupZoneRef.current;
-        if (cup && overElement(glueRef, cupZoneRef, 46)) {
+        if (cup && overElement(glueRef, cupZoneRef, 20)) {
           if (!allPlaced) {
             api.reset();
             onMistake({
@@ -352,6 +372,19 @@ export default function Level57({ lang, solved, onSolved, onMistake, onProgress,
             <GlueSvg />
           </div>
         </div>
+      </div>
+
+      {/* decoy: a band-aid can't fix broken glass */}
+      <div className="absolute bottom-[4%] end-[6%] w-[17%]">
+        <button
+          type="button"
+          onClick={tapBandAid}
+          aria-label={lang === "fa" ? "چسب‌زخم" : "band-aid"}
+          className="block w-full cursor-pointer border-0 bg-transparent p-0"
+          style={{ transform: "rotate(-10deg)" }}
+        >
+          <BandAidSvg className="h-auto w-full drop-shadow-[0_3px_0_rgba(59,46,90,0.15)]" />
+        </button>
       </div>
     </Scene>
   );

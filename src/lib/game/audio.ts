@@ -172,28 +172,63 @@ export const sfx = {
 
 export const animalSfx = {
   mouse() {
-    /* tiny high-pitched "squeak-squeak-squeak" — quick rising chirps */
+    /* real mouse squeak: three ultra-high chirps, each a fast rising whistle
+       with a faint second harmonic — "sqee-sqee-sqee" */
     for (let i = 0; i < 3; i++) {
-      const w = i * 0.13;
-      tone(1900, 0.1, { type: "triangle", freqEnd: 2700, vol: 0.15, when: w });
-      tone(2900, 0.07, { type: "sine", freqEnd: 3600, vol: 0.08, when: w + 0.035 });
+      const w = i * 0.15;
+      tone(2300, 0.1, { type: "sine", freqEnd: 3400, vol: 0.16, when: w });
+      tone(3450, 0.07, { type: "sine", freqEnd: 4100, vol: 0.06, when: w + 0.02 });
+      /* tiny breath tick at the end of each chirp */
+      noise(0.03, { vol: 0.04, filter: 4200, when: w + 0.07 });
     }
   },
   duck() {
-    /* classic double "quack-quack": nasal saw drop + breath noise */
+    /* real mallard quack: nasal honk — saw core with a strong pitch drop,
+       a square overtone one octave up for the nasal "waek" and a breathy attack */
     for (let i = 0; i < 2; i++) {
-      const w = i * 0.19;
-      tone(440, 0.17, { type: "sawtooth", freqEnd: 230, vol: 0.22, when: w });
-      tone(880, 0.11, { type: "square", freqEnd: 520, vol: 0.06, when: w + 0.02 });
-      noise(0.11, { vol: 0.08, filter: 1500, when: w + 0.01 });
+      const w = i * 0.22;
+      noise(0.045, { vol: 0.09, filter: 2000, when: w });
+      tone(440, 0.18, { type: "sawtooth", freqEnd: 205, vol: 0.26, when: w + 0.02 });
+      tone(1320, 0.15, { type: "square", freqEnd: 640, vol: 0.055, when: w + 0.02 });
+      tone(660, 0.1, { type: "triangle", freqEnd: 380, vol: 0.07, when: w + 0.04 });
     }
   },
   lion() {
-    /* big roar: growling low saw + sub rumble + breath, ~0.8s */
-    tone(170, 0.78, { type: "sawtooth", freqEnd: 68, vol: 0.3, attack: 0.07 });
-    tone(255, 0.72, { type: "square", freqEnd: 105, vol: 0.11, attack: 0.09, when: 0.02 });
-    tone(85, 0.72, { type: "sine", freqEnd: 52, vol: 0.24, when: 0.04 });
-    noise(0.62, { vol: 0.09, filter: 320, filterEnd: 110, when: 0.05 });
+    /* real lion roar: long low saw with growl (amplitude LFO), sub rumble,
+       harmonic layer and breath noise — about 1.2s of "rrrOOOarrr" */
+    const c = ac();
+    if (!c || !sfxOn()) return;
+    const t0 = c.currentTime;
+    const dur = 1.2;
+    /* main growl: low sawtooth, pitch falls, amplitude modulated by an LFO */
+    const osc = c.createOscillator();
+    const g = c.createGain();
+    const lfo = c.createOscillator();
+    const lfoG = c.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(185, t0);
+    osc.frequency.exponentialRampToValueAtTime(70, t0 + dur);
+    lfo.type = "sine";
+    lfo.frequency.setValueAtTime(25, t0);
+    lfo.frequency.exponentialRampToValueAtTime(13, t0 + dur);
+    lfoG.gain.setValueAtTime(0.16, t0);
+    lfoG.gain.exponentialRampToValueAtTime(0.03, t0 + dur);
+    lfo.connect(lfoG).connect(g.gain);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.linearRampToValueAtTime(0.3, t0 + 0.09);
+    g.gain.setValueAtTime(0.3, t0 + dur * 0.62);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g).connect(c.destination);
+    osc.start(t0);
+    lfo.start(t0);
+    osc.stop(t0 + dur + 0.05);
+    lfo.stop(t0 + dur + 0.05);
+    /* harmonic layer gives the throaty edge */
+    tone(278, dur - 0.06, { type: "square", freqEnd: 105, vol: 0.09, attack: 0.1, when: 0.03 });
+    /* sub rumble */
+    tone(88, dur - 0.04, { type: "sine", freqEnd: 50, vol: 0.24, when: 0.05 });
+    /* breath */
+    noise(dur * 0.6, { vol: 0.1, filter: 340, filterEnd: 110, when: 0.06 });
   },
   cat() {
     /* playful "mi-au": rising then falling formant slide */
@@ -202,6 +237,35 @@ export const animalSfx = {
     tone(1740, 0.18, { type: "sine", freqEnd: 1900, vol: 0.05, when: 0.02 });
   },
 };
+
+/** eerie warbling " Strange sound" from an unseen music toy (Level 96).
+    Two slightly detuned oscillators create beating — genuinely uncanny. */
+export function mysterySfx() {
+  const c = ac();
+  if (!c || !sfxOn()) return;
+  const t0 = c.currentTime;
+  const note = (f: number, detune: number, start: number, dur: number, vol: number) => {
+    for (const off of [0, detune]) {
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.type = "sine";
+      o.frequency.setValueAtTime(f + off, t0 + start);
+      o.frequency.linearRampToValueAtTime((f + off) * 1.22, t0 + start + dur * 0.6);
+      o.frequency.linearRampToValueAtTime((f + off) * 0.92, t0 + start + dur);
+      g.gain.setValueAtTime(0, t0 + start);
+      g.gain.linearRampToValueAtTime(vol, t0 + start + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + start + dur);
+      o.connect(g).connect(c.destination);
+      o.start(t0 + start);
+      o.stop(t0 + start + dur + 0.05);
+    }
+  };
+  /* little "la-la-leee" music-box phrase, detuned and wandering */
+  note(494, 6, 0, 0.34, 0.085);
+  note(659, 8, 0.36, 0.3, 0.08);
+  note(523, 5, 0.68, 0.26, 0.08);
+  note(784, 9, 0.96, 0.5, 0.09);
+}
 
 /* ------------------------- music loops ----------------------------- */
 

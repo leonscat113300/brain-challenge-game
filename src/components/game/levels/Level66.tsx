@@ -129,10 +129,7 @@ export default function Level66({ lang, solved, onSolved, onMistake, onProgress,
           </Pulse>
         </div>
 
-        {/* valve label */}
-        <div className="mt-0.5 text-center text-[10px] font-bold text-[#33205E]" aria-hidden>
-          {lang === "fa" ? "شیر اصلی" : "main valve"}
-        </div>
+        {/* NOTE: no label/sign here — it used to give the answer away */}
       </div>
 
       {/* success sparkle when stopped */}

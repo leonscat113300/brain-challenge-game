@@ -7,6 +7,8 @@ import { overElement, useDragMove, Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 18 — The cat can't pass the door: drag the key to the lock.   */
+/* Decoys (poster, mouse hole) punish random tapping; the keyhole pad  */
+/* is tight, so the key must be dropped precisely.                     */
 /* ------------------------------------------------------------------ */
 
 function KeySvg({ className }: { className?: string }) {
@@ -23,6 +25,40 @@ function KeySvg({ className }: { className?: string }) {
       <rect x="70" y="39" width="9" height="15" rx="3.5" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.5" />
       <rect x="86" y="39" width="9" height="11" rx="3.5" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.5" />
       <path d="M14 24 q8 -8 18 -6" stroke="#FAFAFA" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.85" />
+    </svg>
+  );
+}
+
+function PosterSvg({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 70 90" className={className} aria-hidden>
+      <rect x="4" y="4" width="62" height="82" rx="8" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4" />
+      <g stroke="#FF8A3C" strokeWidth="3.5" strokeLinecap="round">
+        <path d="M35 14 v6 M22 26 h6 M42 26 h6 M25 17 l4 4 M45 17 l-4 4" />
+      </g>
+      <circle cx="35" cy="24" r="7" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3" />
+      <rect x="24" y="44" width="22" height="32" rx="4" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="3" />
+      <circle cx="41" cy="61" r="2.5" fill="#FFD154" stroke="#3B2E5A" strokeWidth="2" />
+      <path d="M14 22 q3 14 0 46" stroke="#C7C2D8" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function MouseHoleSvg({ className, squeak }: { className?: string; squeak: boolean }) {
+  return (
+    <svg viewBox="0 0 60 46" className={className} aria-hidden>
+      <path d="M10 44 Q10 12 30 12 Q50 12 50 44 Z" fill="#33205E" stroke="#3B2E5A" strokeWidth="4" />
+      {squeak ? (
+        <>
+          <circle cx="24" cy="24" r="3" fill="#C7C2D8" stroke="#3B2E5A" strokeWidth="2" />
+          <circle cx="36" cy="24" r="3" fill="#C7C2D8" stroke="#3B2E5A" strokeWidth="2" />
+          <circle cx="30" cy="31" r="7" fill="#C7C2D8" stroke="#3B2E5A" strokeWidth="3" />
+          <circle cx="27.5" cy="29" r="1.5" fill="#3B2E5A" />
+          <circle cx="32.5" cy="29" r="1.5" fill="#3B2E5A" />
+        </>
+      ) : (
+        <path d="M22 38 q8 -6 16 0" stroke="#C7C2D8" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.5" />
+      )}
     </svg>
   );
 }
@@ -65,6 +101,8 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
   const [doorOpen, setDoorOpen] = useState(false);
   const [walking, setWalking] = useState(false);
   const [rattle, setRattle] = useState(false);
+  const [posterWob, setPosterWob] = useState(false);
+  const [holeSqueak, setHoleSqueak] = useState(false);
   const [done, setDone] = useState(false);
   const keyRef = useRef<HTMLDivElement>(null);
   const keyholeRef = useRef<HTMLDivElement>(null);
@@ -73,7 +111,7 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
     useCallback(
       (d, api) => {
         if (solved || done || inserted) return;
-        if (overElement(keyRef, keyholeRef, 25)) {
+        if (overElement(keyRef, keyholeRef, 12)) {
           api.reset();
           setInserted(true);
           sfx.unlock();
@@ -113,6 +151,22 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
     onMistake({ fa: "در قفله!", en: "The door is locked!" });
   };
 
+  const tapPoster = () => {
+    if (solved || done || inserted) return;
+    setPosterWob(true);
+    sfx.boing();
+    window.setTimeout(() => setPosterWob(false), 560);
+    onMistake({ fa: "این فقط یه پوستر هست!", en: "That's just a poster!" });
+  };
+
+  const tapMouseHole = () => {
+    if (solved || done || inserted) return;
+    setHoleSqueak(true);
+    sfx.pop();
+    window.setTimeout(() => setHoleSqueak(false), 560);
+    onMistake({ fa: "گربه از سوراخ موش رد نمی‌شه!", en: "The cat can't fit through a mouse hole!" });
+  };
+
   return (
     <Scene bg="linear-gradient(180deg,#F3EDFB 0%,#E6DAF5 100%)">
       {/* wooden floor */}
@@ -133,6 +187,28 @@ export default function Level18({ lang, solved, onSolved, onMistake, onProgress,
         <div className="absolute inset-x-0 top-1/2 h-1 bg-[#3B2E5A]" />
         <div className="absolute inset-y-0 left-1/2 w-1 bg-[#3B2E5A]" />
       </div>
+
+      {/* decoy: framed poster on the wall */}
+      <button
+        type="button"
+        onClick={tapPoster}
+        className="absolute z-[4] w-[13%]"
+        style={{ left: "31%", top: "9%", animation: posterWob ? "shake-hard 0.5s ease-in-out" : undefined }}
+        aria-label={lang === "fa" ? "پوستر روی دیوار" : "wall poster"}
+      >
+        <PosterSvg className="w-full h-auto drop-shadow-[0_3px_2px_rgba(59,46,90,0.15)]" />
+      </button>
+
+      {/* decoy: mouse hole in the skirting board */}
+      <button
+        type="button"
+        onClick={tapMouseHole}
+        className="absolute z-[4] w-[8%]"
+        style={{ left: "45%", bottom: "1%", animation: holeSqueak ? "shake-hard 0.5s ease-in-out" : undefined }}
+        aria-label={lang === "fa" ? "سوراخ موش" : "mouse hole"}
+      >
+        <MouseHoleSvg squeak={holeSqueak} className="w-full h-auto" />
+      </button>
 
       {/* wall hook */}
       <svg viewBox="0 0 40 44" className="absolute top-[1.5%] left-[6%] w-[5%]" aria-hidden>

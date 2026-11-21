@@ -50,6 +50,27 @@ function ThiefSvg() {
   );
 }
 
+/* decoy: a coat stand with a hat — a hat shape, but no shadow behind glass */
+function CoatStandSvg() {
+  return (
+    <svg viewBox="0 0 90 150" className="h-auto w-full" aria-hidden>
+      {/* fedora resting on top */}
+      <path d="M30 22 Q45 4 60 22 L60 26 Q45 32 30 26 Z" fill="#8FA6BD" stroke="#3B2E5A" strokeWidth="3.6" />
+      <rect x="35" y="16" width="20" height="5" rx="2.5" fill="#FF6B81" />
+      <ellipse cx="45" cy="26" rx="24" ry="6" fill="#8FA6BD" stroke="#3B2E5A" strokeWidth="3.4" />
+      {/* pole */}
+      <path d="M45 32 L45 128" stroke="#3B2E5A" strokeWidth="10" strokeLinecap="round" />
+      <path d="M45 32 L45 128" stroke="#C98A4B" strokeWidth="5" strokeLinecap="round" />
+      {/* hooks */}
+      <path d="M45 48 L30 60 M45 48 L60 60" stroke="#3B2E5A" strokeWidth="8" strokeLinecap="round" />
+      <path d="M45 48 L30 60 M45 48 L60 60" stroke="#C98A4B" strokeWidth="4" strokeLinecap="round" />
+      {/* tripod base */}
+      <path d="M45 126 L26 144 M45 126 L64 144 M45 126 L45 146" stroke="#3B2E5A" strokeWidth="9" strokeLinecap="round" />
+      <path d="M45 126 L26 144 M45 126 L64 144 M45 126 L45 146" stroke="#C98A4B" strokeWidth="4.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function Level90({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [revealed, setRevealed] = useState(false);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
@@ -73,6 +94,24 @@ export default function Level90({ lang, solved, onSolved, onMistake, onProgress,
     onMistake({
       fa: "این سایه فقط گلدانِ خانگی است؛ سایهٔ عجیب را پیدا کن!",
       en: "That shadow is just a houseplant; find the odd one!",
+    });
+  }, [solved, revealed, onMistake]);
+
+  const tapGlass = useCallback(() => {
+    if (solved || revealed) return;
+    sfx.fail();
+    onMistake({
+      fa: "دقیق روی سایهٔ عجیب بزن!",
+      en: "Tap right on the odd shadow!",
+    });
+  }, [solved, revealed, onMistake]);
+
+  const tapCoatStand = useCallback(() => {
+    if (solved || revealed) return;
+    sfx.boing();
+    onMistake({
+      fa: "این فقط رخت‌آویز با کلاه است؛ پشت پرده‌ها بگرد!",
+      en: "That's just a coat stand with a hat; check behind the curtains!",
     });
   }, [solved, revealed, onMistake]);
 
@@ -147,13 +186,24 @@ export default function Level90({ lang, solved, onSolved, onMistake, onProgress,
               </g>
             </svg>
           )}
-          {/* shadow hotspot */}
+          {/* off-target taps on the glass count as a miss */}
+          {!revealed && (
+            <button
+              type="button"
+              onClick={tapGlass}
+              aria-label={lang === "fa" ? "شیشهٔ پنجره" : "window glass"}
+              className="absolute inset-0 cursor-pointer"
+            >
+              <span className="sr-only">{lang === "fa" ? "شیشهٔ پنجره" : "window glass"}</span>
+            </button>
+          )}
+          {/* shadow hotspot: only the fedora area counts now */}
           {!revealed && (
             <button
               type="button"
               onClick={tapOddShadow}
               aria-label={lang === "fa" ? "سایهٔ مشکوک" : "suspicious shadow"}
-              className="absolute inset-0 cursor-pointer"
+              className="absolute left-[26%] top-[8%] h-[52%] w-[48%] cursor-pointer"
             >
               <span className="sr-only">{lang === "fa" ? "سایهٔ مشکوک" : "suspicious shadow"}</span>
             </button>
@@ -167,6 +217,17 @@ export default function Level90({ lang, solved, onSolved, onMistake, onProgress,
           <span className="sr-only">hint</span>
         </Pulse>
       </div>
+
+      {/* decoy: coat stand with a hat on the floor */}
+      <button
+        type="button"
+        onClick={tapCoatStand}
+        aria-label={lang === "fa" ? "رخت‌آویز" : "coat stand"}
+        className="absolute bottom-[1%] left-[32%] z-10 w-[10%] cursor-pointer transition-transform active:scale-90"
+        aria-hidden={revealed}
+      >
+        <CoatStandSvg />
+      </button>
 
       {/* floor lamp */}
       <div className="absolute bottom-[16%] left-[44%] w-[13%]" aria-hidden>

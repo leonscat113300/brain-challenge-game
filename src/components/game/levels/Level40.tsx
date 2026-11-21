@@ -6,7 +6,8 @@ import type { LevelProps } from "@/lib/game/types";
 import { Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
-/* Level 40 — Pipe maze: tap the chute the ball will really exit from. */
+/* Level 40 — Pipe maze: trace the winding pipes (mind the capped       */
+/* stub) and tap the chute the ball will really exit from.              */
 /* ------------------------------------------------------------------ */
 
 type Chute = "A" | "B" | "C";
@@ -15,9 +16,9 @@ const TRUTH: Chute = "B";
 const MISTAKE_MSG = { fa: "مسیر رو دنبال کن!", en: "Follow the pipes!" };
 const PIPES = [
   "M160 96 L160 150",
-  "M160 150 C110 165 80 190 80 240 L80 300",
-  "M160 150 L160 300",
-  "M160 150 C210 165 240 190 240 240 L240 300",
+  "M160 150 C118 160 88 180 92 220 C96 258 70 262 80 300",
+  "M160 150 C160 190 138 208 150 240 C160 264 170 268 160 300",
+  "M160 150 C204 160 236 182 230 220 C224 258 250 264 240 300",
 ];
 const CHUTES: Array<{ id: Chute; left: string }> = [
   { id: "A", left: "13%" },
@@ -30,6 +31,29 @@ const CONFETTI: Array<{ l: number; d: number; c: string }> = [
   { l: 78, d: 0.03, c: "#FFD154" }, { l: 90, d: 0.22, c: "#1EC8CF" }, { l: 12, d: 0.3, c: "#4CAF50" },
   { l: 84, d: 0.28, c: "#6C4AB6" },
 ];
+
+type BallPath = { cx: number[]; cy: number[]; times: number[]; dur: number };
+
+/* Ball routes: B winds through the only open pipe; A and C slam into
+   their blockers (gate / cork) instead of revealing the real exit. */
+const PATH_TRUTH: BallPath = {
+  cx: [160, 160, 160, 160, 146, 150, 163, 160, 160, 160, 160],
+  cy: [-14, 58, 128, 150, 208, 240, 268, 300, 348, 320, 344],
+  times: [0, 0.14, 0.3, 0.4, 0.55, 0.66, 0.76, 0.86, 0.93, 0.97, 1],
+  dur: 2.7,
+};
+const PATH_A: BallPath = {
+  cx: [160, 160, 160, 124, 102, 92, 90],
+  cy: [-14, 58, 128, 172, 196, 220, 238],
+  times: [0, 0.2, 0.38, 0.56, 0.7, 0.84, 1],
+  dur: 2,
+};
+const PATH_C: BallPath = {
+  cx: [160, 160, 160, 196, 218, 230, 228],
+  cy: [-14, 58, 128, 172, 194, 220, 240],
+  times: [0, 0.2, 0.38, 0.56, 0.7, 0.84, 1],
+  dur: 2,
+};
 
 export default function Level40({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [picked, setPicked] = useState<Chute | null>(null);
@@ -44,12 +68,8 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
   }, []);
   useEffect(() => () => timers.current.forEach((id) => window.clearTimeout(id)), []);
 
-  /* the ball always takes the open path through chute B */
-  const bounce = picked === TRUTH;
-  const baseCy = [-14, 58, 128, 220, 300, 348];
-  const cy = bounce ? [...baseCy, 320, 344] : baseCy;
-  const times = bounce ? [0, 0.18, 0.36, 0.56, 0.76, 0.88, 0.95, 1] : [0, 0.2, 0.38, 0.6, 0.82, 1];
-  const cxs = cy.map(() => 160);
+  /* the ball follows the pipe matching the picked chute; only B is open */
+  const path = picked === "A" ? PATH_A : picked === "C" ? PATH_C : PATH_TRUTH;
 
   const tapChute = (c: Chute) => {
     if (solved || done || picked !== null) return;
@@ -70,6 +90,7 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
       t(onSolved, 700);
     } else {
       setResult("wrong");
+      sfx.boing();
       onMistake(MISTAKE_MSG);
       t(() => {
         setPicked(null);
@@ -82,6 +103,12 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
   const tapBlocker = () => {
     if (solved || done) return;
     sfx.pop();
+  };
+
+  const tapStub = () => {
+    if (solved || done) return;
+    sfx.pop();
+    onMistake({ fa: "این یکی بن‌بسته!", en: "This one is a dead end!" });
   };
 
   return (
@@ -112,6 +139,13 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
               <rect x="212" y="224" width="56" height="30" rx="12" fill="#D99A5B" stroke="#3B2E5A" strokeWidth="4.5" />
               <path d="M224 233 H256 M224 244 H248" stroke="#A9713C" strokeWidth="3.5" strokeLinecap="round" />
             </g>
+            {/* capped decoy stub branching off the trunk — a dead end */}
+            <g onClick={tapStub} style={{ cursor: "pointer" }}>
+              <rect x="148" y="94" width="72" height="36" fill="transparent" />
+              <path d="M160 112 L196 112" fill="none" stroke="#3B2E5A" strokeWidth="26" strokeLinecap="round" />
+              <path d="M160 112 L196 112" fill="none" stroke="#E9E4F6" strokeWidth="15" strokeLinecap="round" />
+              <circle cx="202" cy="112" r="11" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="4.5" />
+            </g>
           </svg>
           {/* idle ball waiting above the funnel */}
           {!running && (
@@ -123,16 +157,16 @@ export default function Level40({ lang, solved, onSolved, onMistake, onProgress,
             />
           )}
           {/* ball travelling the real path */}
-          {running && (
+          {running && picked !== null && (
             <motion.div
               key={runId}
               className="absolute left-[50%] top-[-2%] z-[8] aspect-square h-[4.5%] -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#3B2E5A] bg-[#FF6B81]"
               initial={false}
               animate={{
-                left: cxs.map((x) => `${(x / 320) * 100}%`),
-                top: cy.map((y) => `${(y / 420) * 100}%`),
+                left: path.cx.map((x) => `${(x / 320) * 100}%`),
+                top: path.cy.map((y) => `${(y / 420) * 100}%`),
               }}
-              transition={{ duration: bounce ? 2.7 : 2.3, times, ease: "linear" }}
+              transition={{ duration: path.dur, times: path.times, ease: "linear" }}
               onAnimationComplete={onRunComplete}
               aria-hidden
             />

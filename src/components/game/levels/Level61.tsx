@@ -20,83 +20,101 @@ const ANIMALS: Array<{ id: AnimalId; bars: number; sound: () => void; fa: string
 
 function MouseSvg() {
   return (
-    <svg viewBox="0 0 120 110" className="h-auto w-full drop-shadow-[0_4px_3px_rgba(59,46,90,0.18)]" aria-hidden>
-      <path d="M22 88 Q2 84 8 64 Q14 74 26 76" fill="#A9A3B8" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
-      <circle cx="62" cy="52" r="14" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4" />
-      <circle cx="48" cy="30" r="13" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4" />
-      <circle cx="76" cy="30" r="13" fill="#FF9FB2" stroke="#3B2E5A" strokeWidth="4" />
-      <circle cx="62" cy="46" r="26" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4.5" />
-      <circle cx="53" cy="42" r="4" fill="#3B2E5A" />
-      <circle cx="71" cy="42" r="4" fill="#3B2E5A" />
-      <circle cx="54.5" cy="40.5" r="1.4" fill="#fff" />
-      <circle cx="72.5" cy="40.5" r="1.4" fill="#fff" />
-      <circle cx="62" cy="54" r="3.4" fill="#FF6B81" />
-      <path d="M56 62 Q62 67 68 62" stroke="#3B2E5A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <ellipse cx="40" cy="84" rx="20" ry="14" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4.5" />
+    <svg viewBox="0 0 150 110" className="h-auto w-full drop-shadow-[0_4px_3px_rgba(59,46,90,0.18)]" aria-hidden>
+      {/* long thin tail curling behind */}
+      <path d="M24 88 Q0 80 8 58 Q16 40 34 46" fill="none" stroke="#FFB3C6" strokeWidth="6" strokeLinecap="round" />
+      <path d="M24 88 Q0 80 8 58 Q16 40 34 46" fill="none" stroke="#3B2E5A" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
+      {/* back haunch */}
+      <ellipse cx="52" cy="80" rx="34" ry="26" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4.5" />
+      {/* body */}
+      <ellipse cx="88" cy="74" rx="40" ry="28" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4.5" />
+      {/* head */}
+      <circle cx="114" cy="54" r="23" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4.5" />
+      {/* ears */}
+      <circle cx="128" cy="36" r="10" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4" />
+      <circle cx="128" cy="36" r="4.5" fill="#FF9FB2" />
+      <circle cx="104" cy="32" r="13" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="4" />
+      <circle cx="104" cy="32" r="6.5" fill="#FF9FB2" />
+      {/* face */}
+      <circle cx="120" cy="52" r="4.4" fill="#3B2E5A" />
+      <circle cx="121.6" cy="50.4" r="1.5" fill="#FAFAFA" />
+      <circle cx="136" cy="58" r="4" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2" />
+      {/* whiskers */}
+      <path d="M130 60 L148 56 M130 64 L147 66" stroke="#3B2E5A" strokeWidth="2" strokeLinecap="round" />
+      {/* blush */}
+      <ellipse cx="126" cy="62" rx="4.6" ry="3" fill="#FF9FB2" opacity="0.85" />
+      {/* paws */}
+      <ellipse cx="106" cy="101" rx="10" ry="5" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="3.4" />
+      <ellipse cx="74" cy="103" rx="10" ry="5" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="3.4" />
     </svg>
   );
 }
 
 function DuckSvg() {
   return (
-    <svg viewBox="0 0 140 120" className="h-auto w-full drop-shadow-[0_4px_3px_rgba(59,46,90,0.18)]" aria-hidden>
-      <ellipse cx="70" cy="86" rx="44" ry="26" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
-      <path d="M40 96 L36 108 M52 100 L50 110" stroke="#FF6B81" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="92" cy="46" r="22" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
-      <circle cx="98" cy="40" r="3.6" fill="#3B2E5A" />
-      <circle cx="99.5" cy="38.5" r="1.3" fill="#fff" />
-      <path d="M112 46 L130 50 L112 56 Q108 51 112 46" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
-      <path d="M36 66 Q58 56 80 66" stroke="#3B2E5A" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.4" />
+    <svg viewBox="0 0 150 120" className="h-auto w-full drop-shadow-[0_4px_3px_rgba(59,46,90,0.18)]" aria-hidden>
+      {/* tail feathers */}
+      <path d="M30 64 Q14 54 18 40 Q32 48 42 54 Z" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
+      {/* body */}
+      <ellipse cx="72" cy="74" rx="42" ry="30" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
+      {/* wing */}
+      <path d="M50 72 Q66 56 94 64 Q86 86 60 86 Q50 82 50 72 Z" fill="#FFC93C" stroke="#3B2E5A" strokeWidth="3.6" strokeLinejoin="round" />
+      <path d="M62 72 Q76 66 88 70" stroke="#E8A81C" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.8" />
+      {/* neck + head */}
+      <path d="M98 58 Q106 44 102 28" fill="none" stroke="#FFD154" strokeWidth="16" strokeLinecap="round" />
+      <circle cx="103" cy="25" r="15" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
+      {/* bill */}
+      <path d="M113 22 L136 27 L113 34 Q109 28 113 22" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M115 28 L133 28" stroke="#3B2E5A" strokeWidth="1.6" opacity="0.5" />
+      {/* eye */}
+      <circle cx="106" cy="21" r="3.6" fill="#3B2E5A" />
+      <circle cx="107.3" cy="19.7" r="1.2" fill="#FAFAFA" />
+      {/* feet */}
+      <path d="M62 103 L58 112 M64 112 L50 112 M82 102 L80 112 M84 112 L70 112" stroke="#FF8A3C" strokeWidth="4" strokeLinecap="round" />
+      {/* water line */}
+      <path d="M14 114 Q36 108 58 114 Q82 120 104 114 Q124 109 142 112" stroke="#1EC8CF" strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.85" />
     </svg>
   );
 }
 
 function LionSvg({ crowned }: { crowned: boolean }) {
+  const maneAngles = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
   return (
-    <svg viewBox="0 0 180 160" className="h-auto w-full drop-shadow-[0_5px_4px_rgba(59,46,90,0.2)]" aria-hidden>
+    <svg viewBox="0 0 180 170" className="h-auto w-full drop-shadow-[0_5px_4px_rgba(59,46,90,0.2)]" aria-hidden>
       {/* tail */}
-      <path d="M124 128 Q158 122 154 96" stroke="#3B2E5A" strokeWidth="6" fill="none" strokeLinecap="round" />
-      <path d="M124 128 Q158 122 154 96" stroke="#FFD154" strokeWidth="12" fill="none" strokeLinecap="round" />
-      <circle cx="154" cy="90" r="7" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3" />
+      <path d="M126 132 Q160 126 156 98" stroke="#3B2E5A" strokeWidth="6" fill="none" strokeLinecap="round" />
+      <path d="M126 132 Q160 126 156 98" stroke="#FFD154" strokeWidth="11" fill="none" strokeLinecap="round" />
+      <circle cx="156" cy="92" r="7" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3" />
+      {/* back paws */}
+      <ellipse cx="62" cy="150" rx="12" ry="8" fill="#FFC93C" stroke="#3B2E5A" strokeWidth="3.6" />
+      <ellipse cx="114" cy="150" rx="12" ry="8" fill="#FFC93C" stroke="#3B2E5A" strokeWidth="3.6" />
       {/* body */}
-      <ellipse cx="88" cy="126" rx="36" ry="22" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
-      {/* front paws */}
-      <ellipse cx="66" cy="146" rx="11" ry="7" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="102" cy="146" rx="11" ry="7" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" />
-      {/* spiky mane */}
-      {Array.from({ length: 12 }).map((_, i) => {
-        const a = (i * 360) / 12;
-        return (
-          <path
-            key={i}
-            d="M-11 -46 L0 -62 L11 -46 Z"
-            fill="#FF6B81"
-            stroke="#3B2E5A"
-            strokeWidth="3.5"
-            strokeLinejoin="round"
-            transform={`translate(90 76) rotate(${a})`}
-          />
-        );
+      <ellipse cx="90" cy="128" rx="40" ry="26" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
+      {/* scalloped mane: overlapping circles around the head */}
+      {maneAngles.map((a) => {
+        const r = (a * Math.PI) / 180;
+        return <circle key={a} cx={92 + Math.cos(r) * 33} cy={70 + Math.sin(r) * 33} r="14" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3.4" />;
       })}
-      <circle cx="90" cy="76" r="42" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" />
+      <circle cx="92" cy="70" r="33" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="4" />
       {/* ears */}
-      <circle cx="60" cy="42" r="11" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" />
-      <circle cx="120" cy="42" r="11" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4" />
-      {/* head */}
-      <circle cx="90" cy="76" r="36" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
-      <circle cx="76" cy="70" r="5" fill="#3B2E5A" />
-      <circle cx="104" cy="70" r="5" fill="#3B2E5A" />
-      <circle cx="78" cy="68" r="1.8" fill="#fff" />
-      <circle cx="106" cy="68" r="1.8" fill="#fff" />
-      <ellipse cx="90" cy="84" rx="6" ry="4.4" fill="#3B2E5A" />
-      <path d="M80 94 Q90 102 100 94" stroke="#3B2E5A" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-      <ellipse cx="66" cy="84" rx="6" ry="3.6" fill="#FF9FB2" />
-      <ellipse cx="114" cy="84" rx="6" ry="3.6" fill="#FF9FB2" />
-      {/* whisker dots */}
-      <circle cx="72" cy="92" r="1.4" fill="#3B2E5A" />
-      <circle cx="108" cy="92" r="1.4" fill="#3B2E5A" />
+      <circle cx="66" cy="40" r="10" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.6" />
+      <circle cx="118" cy="40" r="10" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.6" />
+      {/* face */}
+      <circle cx="92" cy="72" r="28" fill="#FFD154" stroke="#3B2E5A" strokeWidth="4.5" />
+      <circle cx="82" cy="66" r="4.6" fill="#3B2E5A" />
+      <circle cx="102" cy="66" r="4.6" fill="#3B2E5A" />
+      <circle cx="83.6" cy="64.4" r="1.6" fill="#FAFAFA" />
+      <circle cx="103.6" cy="64.4" r="1.6" fill="#FAFAFA" />
+      <ellipse cx="92" cy="77" rx="5.5" ry="4" fill="#3B2E5A" />
+      <path d="M84 88 Q92 94 100 88" stroke="#3B2E5A" strokeWidth="3.4" fill="none" strokeLinecap="round" />
+      {/* muzzle dots */}
+      <circle cx="83" cy="81" r="1.3" fill="#3B2E5A" />
+      <circle cx="101" cy="81" r="1.3" fill="#3B2E5A" />
+      {/* blush */}
+      <ellipse cx="72" cy="76" rx="5" ry="3.4" fill="#FF9FB2" opacity="0.8" />
+      <ellipse cx="112" cy="76" rx="5" ry="3.4" fill="#FF9FB2" opacity="0.8" />
       {crowned && (
-        <g transform="translate(90 10)" style={{ animation: "star-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+        <g transform="translate(92 6)" style={{ animation: "star-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both" }}>
           <path d="M-22 12 L-22 -10 L-10 0 L0 -14 L10 0 L22 -10 L22 12 Z" fill="#FFD154" stroke="#3B2E5A" strokeWidth="3.5" strokeLinejoin="round" />
           <circle cx="0" cy="-16" r="3" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="2" />
         </g>

@@ -10,6 +10,8 @@ import { Scene, Pulse, sfx } from "./shared";
 /* ------------------------------------------------------------------ */
 
 const TURNS_NEEDED = 3;
+/** taps faster than this make the nut slip back (no spam allowed) */
+const SLIP_MS = 280;
 
 function NutSvg({ turns }: { turns: number }) {
   return (
@@ -56,9 +58,23 @@ function PipeSvg({ drips }: { drips: number }) {
   );
 }
 
+/* decoy: the main shut-off wheel — big and shiny, but not the problem */
+function ValveWheelSvg() {
+  return (
+    <svg viewBox="0 0 80 80" className="h-auto w-full" aria-hidden>
+      <circle cx="40" cy="40" r="30" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="4.5" />
+      <circle cx="40" cy="40" r="10" fill="#E3CFA4" stroke="#3B2E5A" strokeWidth="4" />
+      {[0, 45, 90, 135].map((a) => (
+        <line key={a} x1="40" y1="12" x2="40" y2="30" stroke="#3B2E5A" strokeWidth="4.5" strokeLinecap="round" transform={`rotate(${a} 40 40)`} />
+      ))}
+    </svg>
+  );
+}
+
 export default function Level89({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [turns, setTurns] = useState(0);
   const turnsRef = useRef(0);
+  const lastTapRef = useRef(0);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -67,6 +83,21 @@ export default function Level89({ lang, solved, onSolved, onMistake, onProgress,
 
   const tapNut = useCallback(() => {
     if (solved || turnsRef.current >= TURNS_NEEDED) return;
+    const now = Date.now();
+    if (turnsRef.current > 0 && now - lastTapRef.current < SLIP_MS) {
+      /* spam-tapping makes the nut slip back to loose */
+      lastTapRef.current = now;
+      turnsRef.current = 0;
+      setTurns(0);
+      sfx.boing();
+      onProgress(0);
+      onMistake({
+        fa: "مهره لیز خورد! آروم و حساب‌شده بچرخان.",
+        en: "The nut slipped! Turn it slowly, one at a time.",
+      });
+      return;
+    }
+    lastTapRef.current = now;
     const n = turnsRef.current + 1;
     turnsRef.current = n;
     setTurns(n);
@@ -78,7 +109,16 @@ export default function Level89({ lang, solved, onSolved, onMistake, onProgress,
       timers.current.push(setTimeout(() => sfx.cheer(), 1000));
       timers.current.push(setTimeout(onSolved, 1900));
     }
-  }, [solved, onProgress, onSolved]);
+  }, [solved, onMistake, onProgress, onSolved]);
+
+  const tapValve = useCallback(() => {
+    if (solved) return;
+    sfx.boing();
+    onMistake({
+      fa: "این شیر اصلی لوله است؛ مشکل از مهره است!",
+      en: "That's the pipe's main valve; the problem is the nut!",
+    });
+  }, [solved, onMistake]);
 
   /* drips counter chip */
   return (
@@ -93,8 +133,19 @@ export default function Level89({ lang, solved, onSolved, onMistake, onProgress,
         <PipeSvg drips={drips} />
       </div>
 
-      {/* loose nut at the joint (tappable) */}
-      <div className="absolute left-[63%] top-[42%] w-[16%]">
+      {/* decoy: main shut-off wheel on the wall of the cabinet */}
+      <button
+        type="button"
+        onClick={tapValve}
+        aria-label={lang === "fa" ? "شیر اصلی" : "main valve"}
+        className="absolute left-[19%] top-[30%] w-[13%] cursor-pointer transition-transform active:scale-90"
+        aria-hidden={drips === 0}
+      >
+        <ValveWheelSvg />
+      </button>
+
+      {/* loose nut at the joint (tappable, smaller target) */}
+      <div className="absolute left-[65%] top-[43%] w-[12%]">
         <Pulse active={hintPulse > 0 && drips > 0}>
           <button
             type="button"

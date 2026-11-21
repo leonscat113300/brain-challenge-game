@@ -1,0 +1,252 @@
+/home/z/my-project/src/app/globals.css:142:@keyframes pop-in {
+/home/z/my-project/src/app/globals.css:148:@keyframes wobble {
+/home/z/my-project/src/app/globals.css:155:@keyframes bob {
+/home/z/my-project/src/app/globals.css:160:@keyframes shake-hard {
+/home/z/my-project/src/app/globals.css:168:@keyframes pulse-ring {
+/home/z/my-project/src/app/globals.css:174:@keyframes float-up {
+/home/z/my-project/src/app/globals.css:179:@keyframes confetti-fall {
+/home/z/my-project/src/app/globals.css:184:@keyframes star-pop {
+/home/z/my-project/src/app/globals.css:190:@keyframes drop-fall {
+/home/z/my-project/src/app/globals.css:195:@keyframes glow {
+/home/z/my-project/src/app/globals.css:200:@keyframes slide-up {
+/home/z/my-project/src/app/globals.css:205:@keyframes walk-out-left {
+/home/z/my-project/src/app/globals.css:211:@keyframes breathe {
+/home/z/my-project/src/app/globals.css:216:@keyframes spin {
+/home/z/my-project/src/lib/game/levels.ts:415:      { fa: "زیر یکی از درها چیزی می‌درخشد...", en: "Something glows under one of the doors..." },
+/home/z/my-project/src/lib/game/levels.ts:1452:      { fa: "اگر کوچک را اول بگذاری، بزرگ تعادل ندارد!", en: "Put the small one first and the big one wobbles!" },
+/home/z/my-project/src/components/game/DefeatOverlay.tsx:45:        <Brain mood="sad" className="mx-auto mt-4 h-24 w-24" style={{ animation: "wobble 2.4s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/NameGate.tsx:48:        <Brain mood="wink" className="mx-auto h-20 w-20" style={{ animation: "bob 2.4s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/modals/StoreModal.tsx:93:                    style={{ animation: "pop-in 0.25s both" }}
+/home/z/my-project/src/components/game/modals/DailyModal.tsx:34:            style={{ animation: "breathe 2.4s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/screens/MainMenu.tsx:71:          <Brain mood="wink" className="w-full h-full" style={{ animation: "bob 2.4s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/GameApp.tsx:83:            <Brain mood="wink" className="w-44 h-44" style={{ animation: "bob 2.2s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/GameApp.tsx:85:            <div className="px-6 py-3 rounded-full bg-[#FFD154] text-[#33205E] font-extrabold text-lg btn-chunky" style={{ animation: "breathe 1.6s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level58.tsx:47:    <span className="absolute" style={{ left, top: "52%", width: 12, height: 16, animation: `drop-fall 0.95s ${delay}s ease-in forwards` }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level58.tsx:122:        <svg viewBox="0 0 60 60" className="h-auto w-full" style={{ animation: "breathe 3s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level58.tsx:150:            style={{ animation: done ? undefined : "bob 3s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/Level58.tsx:173:            <g style={{ animation: "pop-in 0.6s 0.4s both", transformBox: "fill-box", transformOrigin: "50% 100%" }}>
+/home/z/my-project/src/components/game/levels/Level37.tsx:143:  /* remember the tilt angle at the moment of the save (for the spring wobble) */
+/home/z/my-project/src/components/game/levels/Level37.tsx:201:          style={urgent ? { animation: "breathe 0.5s ease-in-out infinite" } : undefined}
+/home/z/my-project/src/components/game/levels/Level37.tsx:224:          <div style={fell ? { animation: "drop-fall 0.8s ease-in 0.1s both" } : undefined}>
+/home/z/my-project/src/components/game/levels/Level15.tsx:140:          style={{ left: `${x}%`, top: `${y}%`, opacity: 0.7, animation: `breathe 1.4s ease-in-out ${i * 0.3}s infinite` }}
+/home/z/my-project/src/components/game/levels/Level15.tsx:173:                      style={{ left: "calc(50% - 48px)", top: "calc(50% - 48px)", background: "radial-gradient(circle, rgba(255,209,84,0.5) 0%, transparent 70%)", animation: "breathe 1.3s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/Level15.tsx:193:                    <div className="h-full w-full" style={{ animation: out ? undefined : "breathe 0.9s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level70.tsx:28:      <g style={{ animation: "star-pop 0.6s 0.1s both" }}>
+/home/z/my-project/src/components/game/levels/Level70.tsx:127:          animation: taken ? "bob 0.5s ease-in-out" : undefined,
+/home/z/my-project/src/components/game/levels/Level60.tsx:100:  const [wobble, setWobble] = useState(false);
+/home/z/my-project/src/components/game/levels/Level60.tsx:103:  const wobbleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+/home/z/my-project/src/components/game/levels/Level60.tsx:109:      if (wobbleTimer.current) clearTimeout(wobbleTimer.current);
+/home/z/my-project/src/components/game/levels/Level60.tsx:113:  const wobbleEgg = useCallback(() => {
+/home/z/my-project/src/components/game/levels/Level60.tsx:115:    if (wobbleTimer.current) clearTimeout(wobbleTimer.current);
+/home/z/my-project/src/components/game/levels/Level60.tsx:116:    wobbleTimer.current = setTimeout(() => setWobble(false), 500);
+/home/z/my-project/src/components/game/levels/Level60.tsx:134:          wobbleEgg();
+/home/z/my-project/src/components/game/levels/Level60.tsx:144:      [solved, done, opened, topOff, onProgress, onMistake, wobbleEgg]
+/home/z/my-project/src/components/game/levels/Level60.tsx:163:          wobbleEgg();
+/home/z/my-project/src/components/game/levels/Level60.tsx:173:      [solved, done, opened, bottomOff, onProgress, onMistake, wobbleEgg]
+/home/z/my-project/src/components/game/levels/Level60.tsx:211:        style={{ animation: wobble ? "shake-hard 0.5s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level60.tsx:267:            <div className="pointer-events-none absolute -inset-2 animate-pulse-ring" style={{ border: "4px dashed #FFD154", borderRadius: 24 }} />
+/home/z/my-project/src/components/game/levels/Level56.tsx:160:          <path d={PATH_B} stroke="#FFD154" strokeWidth="16" fill="none" strokeLinecap="round" opacity="0.45" style={{ animation: "pulse-ring 1.4s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/levels/Level99.tsx:49:          <circle cx="74" cy="126" r="4" fill="#1EC8CF" style={{ animation: "drop-fall 0.7s linear infinite" }} />
+/home/z/my-project/src/components/game/levels/Level99.tsx:50:          <circle cx="72" cy="126" r="3" fill="#5FD4DD" style={{ animation: "drop-fall 0.85s 0.25s linear infinite" }} />
+/home/z/my-project/src/components/game/levels/Level99.tsx:216:            <svg key={k} viewBox="0 0 16 20" className="absolute w-full" style={{ left: k * 14 - 14, animation: `drop-fall 0.5s ${k * 0.14}s linear infinite` }}>
+/home/z/my-project/src/components/game/levels/Level99.tsx:256:        <div className="pointer-events-none absolute left-1/2 top-[16%] w-[46%] -translate-x-1/2" style={{ animation: "star-pop 0.6s ease-out both" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level27.tsx:154:      <div className="absolute end-[5%] top-[6%] h-12 w-12 rounded-full border-4 border-[#3B2E5A] bg-[#FFD154]" style={{ animation: "breathe 3.4s ease-in-out infinite" }} aria-hidden />
+/home/z/my-project/src/components/game/levels/Level27.tsx:168:              animation: i === shakes - 1 ? "pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1) both" : undefined,
+/home/z/my-project/src/components/game/levels/Level27.tsx:257:          <span key={i} className="pointer-events-none absolute z-40" style={{ left: s.l, top: s.t, animation: `star-pop 0.8s ease ${s.d} both` }}>
+/home/z/my-project/src/components/game/levels/Level94.tsx:148:                    <div className="w-[52%]" style={{ animation: "pop-in 0.35s ease-out both" }}>
+/home/z/my-project/src/components/game/levels/Level78.tsx:146:            <div key={shakeTick} style={{ animation: flipped && shakeTick > 0 ? "shake-hard 0.45s ease" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level78.tsx:178:        <div className="absolute bottom-[10%] left-[38%] w-[13%]" style={{ animation: "pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+/home/z/my-project/src/components/game/levels/Level31.tsx:148:            <div style={{ animation: heavyDrag.dragging ? "shake-hard 0.45s linear infinite" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level31.tsx:153:                <div style={{ animation: "star-pop 0.55s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+/home/z/my-project/src/components/game/levels/Level101.tsx:15:    <svg viewBox="0 0 110 120" className="h-auto w-full" aria-hidden style={hopping ? { animation: "bob 0.55s ease-in-out infinite" } : undefined}>
+/home/z/my-project/src/components/game/levels/Level101.tsx:47:    <svg viewBox="0 0 130 110" className="h-auto w-full" aria-hidden style={chasing ? { animation: "bob 0.4s ease-in-out infinite" } : undefined}>
+/home/z/my-project/src/components/game/levels/Level101.tsx:193:            <div className="absolute -left-[70%] bottom-2 w-[80%]" style={{ animation: "pop-in 0.5s ease-out both" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level36.tsx:130:    if (hidden) anims.push(`star-pop 0.55s cubic-bezier(0.34,1.56,0.64,1) ${popDelay}s both`);
+/home/z/my-project/src/components/game/levels/Level36.tsx:131:    if (celebrate) anims.push(`glow 0.45s ease ${(hidden ? popDelay + 0.6 : idx * 0.12).toFixed(2)}s 3`);
+/home/z/my-project/src/components/game/levels/Level36.tsx:132:    else anims.push(`glow 2.6s ease-in-out ${s.delay}s infinite alternate`);
+/home/z/my-project/src/components/game/levels/Level36.tsx:170:            style={{ animation: "pop-in 0.25s ease both" }}
+/home/z/my-project/src/components/game/levels/Level36.tsx:198:            style={wrongIdx === i ? { animation: "shake-hard 0.45s ease" } : undefined}
+/home/z/my-project/src/components/game/levels/Level73.tsx:174:    <svg viewBox="0 0 120 120" className="h-auto w-full" aria-hidden style={{ animation: "breathe 3s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level73.tsx:220:          <div key={id} className="absolute" style={{ left: SLOTS[id].left, top: SLOTS[id].top, width: SLOTS[id].w, transformOrigin: "top center", animation: "wobble 2.6s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level79.tsx:144:              <path d="M120 34 Q118 60 122 88 Q126 108 120 126" fill="none" stroke="#1EC8CF" strokeWidth="9" strokeLinecap="round" opacity="0.9" style={{ animation: "bob 0.5s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/levels/Level79.tsx:183:            <div className="absolute bottom-2 left-[38%] w-[22%]" style={{ animation: "bob 1.8s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level79.tsx:199:        <div className="absolute bottom-[13%] left-[30%] w-[36%]" style={{ animation: "pop-in 0.45s ease both" }}>
+/home/z/my-project/src/components/game/levels/Level79.tsx:228:        <div className="absolute bottom-[16%] right-[10%] w-[16%]" style={{ animation: "pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+/home/z/my-project/src/components/game/levels/Level20.tsx:174:        <div className="relative" style={{ animation: struggle ? "shake-hard 0.5s ease-in-out" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level24.tsx:175:      <div className="absolute end-[7%] top-[5%] h-14 w-14 rounded-full border-4 border-[#3B2E5A] bg-[#FFD154]" style={{ animation: "breathe 3s ease-in-out infinite" }} aria-hidden />
+/home/z/my-project/src/components/game/levels/Level5.tsx:266:            style={{ animation: "pop-in 0.25s both" }}
+/home/z/my-project/src/components/game/levels/Level97.tsx:129:              <div key={s} className={`absolute ${stackOffsets[s]} ${stackWidths[s]}`} style={{ animation: "pop-in 0.35s ease-out both" }}>
+/home/z/my-project/src/components/game/levels/Level47.tsx:212:              <div style={{ animation: catMode === "munch" ? "bob 0.45s ease-in-out infinite" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level47.tsx:236:          <div {...(fed || done || solved ? {} : cheeseDrag.bind)} className="min-w-[48px] min-h-[44px]" style={{ animation: wiggleKey > 0 && !distracted ? "wobble 0.45s ease" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level95.tsx:121:          <div key={i} className="pointer-events-none absolute top-0 w-[4%]" style={{ left: p.l, animation: `drop-fall 2.6s ${p.d}s linear infinite` }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level95.tsx:147:                <text x="70" y="26" fontSize="16" fontWeight="800" fill="#4CAF50" style={{ animation: "star-pop 0.5s ease-out both" }}>
+/home/z/my-project/src/components/game/levels/Level95.tsx:181:              <circle cx="75" cy="130" r="17" fill={heaterOn ? "#4CAF50" : "#FF6B81"} stroke="#3B2E5A" strokeWidth="4.5" style={heaterOn ? { animation: "glow 1.4s ease-in-out infinite" } : undefined} />
+/home/z/my-project/src/components/game/levels/Level95.tsx:196:          <div style={{ animation: warm ? "bob 1.6s ease-in-out infinite" : "wobble 0.5s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level4.tsx:125:        <div style={{ animation: moved ? "pop-in 0.5s both, wobble 0.7s 0.5s ease-in-out" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level4.tsx:141:            <div key={boingN} style={{ animation: boingN > 0 ? "wobble 0.55s ease-in-out" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level4.tsx:147:                style={{ animation: "pop-in 0.25s both" }}
+/home/z/my-project/src/components/game/levels/Level100.tsx:172:                      {keys === 3 && !doorOpen && <circle cx="45" cy="55" r="34" fill="none" stroke="#FF6B81" strokeWidth="3" opacity="0.7" style={{ animation: "pulse-ring 1.2s ease-in-out infinite" }} />}
+/home/z/my-project/src/components/game/levels/Level100.tsx:180:                  <div className="absolute left-1/2 top-[30%] w-[60%] -translate-x-1/2" style={{ animation: "glow 1.2s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level100.tsx:233:          <div className="absolute left-[13%] top-[24%] w-[14%]" style={{ animation: "pop-in 0.5s 0.25s ease-out both" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level100.tsx:256:                <g style={{ animation: "pop-in 0.4s 0.3s ease-out both" }}>
+/home/z/my-project/src/components/game/levels/Level100.tsx:298:          <div className="absolute bottom-[10%] left-[42%] w-[13%]" style={{ animation: "pop-in 0.5s 0.25s ease-out both" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level100.tsx:308:            <div key={i} className="w-10" style={{ animation: i < keys ? "pop-in 0.4s ease-out both" : "none", opacity: i < keys ? 1 : 0.25 }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level89.tsx:28:        <circle cx="40" cy="72" r="5" fill="#1EC8CF" stroke="#3B2E5A" strokeWidth="2.4" style={{ animation: `drop-fall 0.8s ${turns * 0.1}s linear infinite` }} />
+/home/z/my-project/src/components/game/levels/Level89.tsx:51:          <circle key={i} cx={i === 0 ? 120 : 82} cy="100" r="6" fill="#1EC8CF" stroke="#3B2E5A" strokeWidth="2.6" style={{ animation: `drop-fall 0.9s ${i * 0.25}s linear infinite` }} />
+/home/z/my-project/src/components/game/levels/Level89.tsx:117:        <div className="absolute right-[6%] top-[12%] w-[15%]" style={{ animation: "star-pop 0.6s ease both" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level50.tsx:113:            style={{ left: "34%", top: "-24%", width: "32%", opacity: flipped ? 0 : 1, transition: "opacity 0.15s", animation: wig > 0 ? "wobble 0.5s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level67.tsx:63:        <g style={{ animation: "pop-in 0.3s ease both" }}>
+/home/z/my-project/src/components/game/levels/Level67.tsx:168:      <div className="absolute end-[2%] top-[6%] w-[22%]" style={{ animation: deviceLit("fan") ? "bob 0.5s ease-in-out infinite" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level67.tsx:173:      <div className="absolute bottom-[16%] end-[1%] w-[27%]" style={{ animation: deviceLit("radio") ? "wobble 0.4s ease-in-out" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level67.tsx:197:      {/* lamp glow */}
+/home/z/my-project/src/components/game/levels/Level28.tsx:76:    <svg viewBox="0 0 24 24" className={className} style={{ animation: `star-pop 0.5s ${delay} ease-out both` }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level28.tsx:181:        <div key={rustle} className="h-full w-full" style={{ animation: rustle > 0 ? "wobble 0.45s ease-in-out" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level28.tsx:205:                animation: found ? "pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) both" : undefined,
+/home/z/my-project/src/components/game/levels/Level21.tsx:105:    <svg viewBox="0 0 60 60" className={className} style={{ animation: "wobble 1s ease-in-out infinite", animationDelay: delay }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level21.tsx:114:    <svg viewBox="0 0 60 70" className={className} style={{ animation: "breathe 1.6s ease-in-out infinite", animationDelay: delay }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level21.tsx:158:          style={{ background: "radial-gradient(circle, rgba(255,209,84,0.5), transparent 68%)", animation: "glow 1.8s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/Level21.tsx:190:              style={{ animation: shakeIdx === i ? "shake-hard 0.5s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level21.tsx:198:                    style={{ left: d.left, background: c.scoop, border: "2px solid #3B2E5A", animation: "drop-fall 1s ease-in infinite", animationDelay: d.delay }}
+/home/z/my-project/src/components/game/levels/Level52.tsx:143:      <div className="absolute start-[6%] top-[6%] w-[10%]" style={{ animation: "breathe 3s ease-in-out infinite" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level52.tsx:168:              animation: `breathe 1.6s ${i * 0.2}s ease-in-out infinite`,
+/home/z/my-project/src/components/game/levels/Level52.tsx:190:            style={{ animation: land ? undefined : "bob 1.9s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/Level52.tsx:218:            style={{ left: `${52 + (i % 2) * 10}%`, top: `${38 + i * 6}%`, width: 7, height: 7, background: "#FFD154", animation: `star-pop 0.5s ${i * 0.12}s both` }}
+/home/z/my-project/src/components/game/levels/Level69.tsx:259:        <div className="absolute bottom-[4%] right-[21%] w-[26%]" style={{ zIndex: 26, animation: "pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+/home/z/my-project/src/components/game/levels/Level18.tsx:171:            animation: rattle ? "shake-hard 0.5s ease-in-out" : undefined,
+/home/z/my-project/src/components/game/levels/Level18.tsx:193:      {/* the impatient cat: bobs, then walks through the open door */}
+/home/z/my-project/src/components/game/levels/Level18.tsx:201:        <div style={{ animation: walking ? "bob 0.4s ease-in-out infinite" : "bob 1.8s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level48.tsx:135:        style={{ animation: "bob 3.4s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/Level48.tsx:221:            style={{ left: u.left, bottom: "9%", width: "26%", zIndex: 10, animation: wobbing ? "wobble 0.6s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level48.tsx:237:          <svg viewBox="0 0 44 50" className="w-full h-auto" style={{ animation: "glow 1.6s ease-in-out infinite" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level48.tsx:256:              style={{ left: p.l, top: p.t, width: 7, height: 7, background: "#FFD154", animation: `star-pop 0.5s ${i * 0.1}s both` }}
+/home/z/my-project/src/components/game/levels/Level41.tsx:104:      <SunSvg className="absolute end-[6%] top-[4%] w-[14%]" style={{ animation: "breathe 3.4s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/levels/Level41.tsx:105:      <CloudSvg className="absolute start-[6%] top-[7%] w-[22%]" style={{ animation: "bob 4.2s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/levels/Level41.tsx:106:      <CloudSvg className="absolute start-[38%] top-[13%] w-[16%] opacity-90" style={{ animation: "bob 5.1s ease-in-out 0.6s infinite" }} />
+/home/z/my-project/src/components/game/levels/Level41.tsx:121:                style={{ animation: `bob ${2.6 + i * 0.25}s ease-in-out infinite` }}
+/home/z/my-project/src/components/game/levels/Level41.tsx:123:                <div key={wrong === i ? bump : "calm"} style={{ animation: wrong === i ? "shake-hard 0.45s ease-in-out" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level41.tsx:136:                    <SparkleSvg className="absolute -top-4 end-[-10px] w-6" style={{ animation: "star-pop 0.5s ease-out 0.05s both" }} />
+/home/z/my-project/src/components/game/levels/Level41.tsx:137:                    <SparkleSvg className="absolute -bottom-3 start-[-12px] w-5" style={{ animation: "star-pop 0.5s ease-out 0.22s both" }} />
+/home/z/my-project/src/components/game/levels/Level41.tsx:138:                    <SparkleSvg className="absolute end-[-18px] top-[30%] w-4" style={{ animation: "star-pop 0.5s ease-out 0.4s both" }} />
+/home/z/my-project/src/components/game/levels/Level17.tsx:195:            style={{ animation: ballFound ? "star-pop 0.55s ease both" : hatMoved ? "pop-in 0.45s cubic-bezier(0.34,1.56,0.64,1) both" : undefined }}
+/home/z/my-project/src/components/game/levels/Level17.tsx:200:                <svg key={s} viewBox="0 0 40 40" className="absolute h-6 w-6" style={{ left: `${[-26, 66, 36][s]}%`, top: `${[-18, -6, 74][s]}%`, animation: `pop-in 0.4s ${0.15 + s * 0.12}s both` }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level17.tsx:215:          style={{ animation: cookieWiggle > 0 ? "wobble 0.6s ease-in-out" : bookMoved ? "pop-in 0.45s cubic-bezier(0.34,1.56,0.64,1) both" : undefined }}
+/home/z/my-project/src/components/game/levels/Level98.tsx:160:                    <div key={i} className="absolute w-[9%]" style={{ left: `${34 + i * 26}%`, top: `${52 + i * 12}%`, animation: `bob ${1.6 + i * 0.4}s ease-in-out infinite` }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level98.tsx:168:                  <div className="absolute bottom-[6%] left-[16%] w-[36%]" style={{ animation: "bob 0.9s ease-in-out infinite" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level98.tsx:223:        <div className="absolute bottom-[8%] left-[4%] w-[20%]" style={{ animation: "pop-in 0.4s ease-out both" }}>
+/home/z/my-project/src/components/game/levels/Level98.tsx:234:            <div style={{ animation: "breathe 1.8s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level91.tsx:155:            <div className="absolute inset-0" style={{ animation: "pop-in 0.45s ease both" }}>
+/home/z/my-project/src/components/game/levels/Level91.tsx:202:        <div className="pointer-events-none absolute bottom-[16%] left-[38%] w-[10%]" style={{ animation: "star-pop 0.6s ease both" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level12.tsx:137:  const [wobbleKey, setWobbleKey] = useState(0);
+/home/z/my-project/src/components/game/levels/Level12.tsx:272:  const wobbleAnim = success
+/home/z/my-project/src/components/game/levels/Level12.tsx:273:    ? "bob 2.2s ease-in-out 0.7s infinite"
+/home/z/my-project/src/components/game/levels/Level12.tsx:275:      ? `wobble ${Math.max(0.45, 1.5 - size / 100).toFixed(2)}s ease-in-out infinite`
+/home/z/my-project/src/components/game/levels/Level12.tsx:276:      : wobbleKey > 0
+/home/z/my-project/src/components/game/levels/Level12.tsx:277:        ? "wobble 0.5s ease-in-out"
+/home/z/my-project/src/components/game/levels/Level12.tsx:336:            style={{ animation: "pop-in 0.25s both" }}
+/home/z/my-project/src/components/game/levels/Level12.tsx:376:            style={{ left: -(w * 0.7) / 2, top: -w * 0.55 - (w * 0.7) / 2, width: w * 0.7, height: w * 0.7, animation: "pop-in 0.3s both" }}
+/home/z/my-project/src/components/game/levels/Level12.tsx:385:              <div key={wobbleKey} style={{ animation: wobbleAnim, transformOrigin: "50% 100%" }}>
+/home/z/my-project/src/components/game/levels/Level10.tsx:273:              style={{ animation: keyTaken ? "pop-in 0.45s cubic-bezier(0.34,1.56,0.64,1) both" : undefined }}
+/home/z/my-project/src/components/game/levels/Level102.tsx:62:          <circle cx="28" cy="52" r="4" fill="#4CAF50" style={{ animation: "breathe 0.6s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/levels/Level102.tsx:217:            <svg viewBox="0 0 30 40" className="w-6" style={{ animation: "drop-fall 1.1s ease-in infinite" }}>
+/home/z/my-project/src/components/game/levels/Level102.tsx:232:          <div style={{ animation: eating ? "breathe 0.9s ease-in-out infinite" : "breathe 2.6s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level32.tsx:11:/* turn day into night, then tap the glowing crescent moon.            */
+/home/z/my-project/src/components/game/levels/Level32.tsx:217:            <div style={{ animation: "breathe 2.2s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level32.tsx:223:      {/* glowing crescent moon */}
+/home/z/my-project/src/components/game/levels/Level32.tsx:237:          <div style={{ animation: night ? "glow 2.4s ease-in-out infinite" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level32.tsx:243:            <StarTwinkle className="absolute -top-3 -start-4 w-5 h-5" style={{ animation: "star-pop 0.5s ease-out both" }} />
+/home/z/my-project/src/components/game/levels/Level32.tsx:244:            <StarTwinkle className="absolute top-8 -end-5 w-4 h-4" style={{ animation: "star-pop 0.5s 0.15s ease-out both" }} />
+/home/z/my-project/src/components/game/levels/Level64.tsx:39:      <path d="M30 6 Q42 26 44 40 Q44 56 30 62 Q16 56 16 40 Q18 26 30 6 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3.5" strokeLinejoin="round" style={{ transformOrigin: "30px 40px", animation: "bob 0.5s ease-in-out infinite alternate" }} />
+/home/z/my-project/src/components/game/levels/Level64.tsx:144:          <div className="absolute bottom-[74%] left-1/2 h-[26%] w-[18%] -translate-x-1/2" style={{ animation: "pop-in 0.3s ease both" }}>
+/home/z/my-project/src/components/game/levels/Level64.tsx:183:              <div className="absolute -top-8 left-1/2 -translate-x-1/2" style={{ animation: "bob 1.4s ease-in-out infinite" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level11.tsx:204:  const shakeAnim = shakeKey > 0 && !appleDown ? "wobble 0.6s ease-in-out" : undefined;
+/home/z/my-project/src/components/game/levels/Level11.tsx:205:  const appleAnim = shakeKey > 0 && !falling ? "wobble 0.6s ease-in-out" : undefined;
+/home/z/my-project/src/components/game/levels/Level11.tsx:214:      <div className="absolute left-[6%] top-[6%] w-[13%]" style={{ animation: "breathe 3s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level11.tsx:238:        <div className="absolute left-1/2 top-[11%] z-30 -translate-x-1/2" style={{ animation: "pop-in 0.25s both" }}>
+/home/z/my-project/src/components/game/levels/Level11.tsx:284:            <LeafSvg className="absolute left-[28%] top-0 w-[9%]" style={{ animation: "drop-fall 1s ease-in 0s both" }} />
+/home/z/my-project/src/components/game/levels/Level11.tsx:285:            <LeafSvg className="absolute left-[52%] top-[2%] w-[8%]" style={{ animation: "drop-fall 1.1s ease-in 0.12s both" }} />
+/home/z/my-project/src/components/game/levels/Level11.tsx:286:            <LeafSvg className="absolute left-[70%] top-[1%] w-[7%]" style={{ animation: "drop-fall 0.95s ease-in 0.22s both" }} />
+/home/z/my-project/src/components/game/levels/Level11.tsx:329:          <div className="absolute z-30" style={{ left: "38%", top: "80%", animation: "pop-in 0.4s 0.1s both" }}>
+/home/z/my-project/src/components/game/levels/Level11.tsx:332:          <div className="absolute z-30" style={{ left: "58%", top: "76%", animation: "pop-in 0.4s 0.25s both" }}>
+/home/z/my-project/src/components/game/levels/Level55.tsx:165:          style={{ animation: woke ? undefined : "breathe 2.6s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/Level55.tsx:227:              style={{ animation: woke ? "wobble 0.5s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level84.tsx:160:              <div className={keyShake ? "rounded-xl" : "rounded-xl"} style={{ animation: keyShake ? "shake-hard 0.5s ease" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level84.tsx:217:            <div key={i} className="pointer-events-none absolute" style={{ left: p.l, top: p.t, animation: `star-pop 0.7s ${i * 0.2}s ease both` }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level34.tsx:162:                    animation: rattleIdx === i ? "shake-hard 0.45s ease" : undefined,
+/home/z/my-project/src/components/game/levels/Level74.tsx:197:        <div className="absolute left-[47%] top-[7%] w-[26%]" style={{ transformOrigin: "top center", animation: "pop-in 0.55s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+/home/z/my-project/src/components/game/levels/Level74.tsx:198:          <div style={{ transformOrigin: "top center", animation: done ? "wobble 2.4s ease-in-out infinite" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level74.tsx:223:              <svg viewBox="0 0 40 40" style={{ animation: "star-pop 0.6s ease both" }}>
+/home/z/my-project/src/components/game/levels/Level63.tsx:46:        <g style={{ animation: "star-pop 0.5s 0.1s both" }}>
+/home/z/my-project/src/components/game/levels/Level63.tsx:138:        <button type="button" onClick={tapMan} aria-label={lang === "fa" ? "صاحب‌خانه" : "owner"} className="block w-full cursor-pointer border-0 bg-transparent p-0" style={{ animation: awake ? "bob 0.8s ease-in-out" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level49.tsx:91:        animation: "pop-in 0.4s both",
+/home/z/my-project/src/components/game/levels/Level49.tsx:98:          style={{ background: "radial-gradient(circle, rgba(255,209,84,0.55) 0%, transparent 70%)", animation: "glow 1.7s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/Level49.tsx:153:          style={{ left: `${p.l}%`, top: `${p.t}%`, width: 6, height: 6, opacity: 0.65, animation: `breathe ${2 + i * 0.3}s ease-in-out infinite` }}
+/home/z/my-project/src/components/game/levels/Level49.tsx:170:              <svg key={i} viewBox="0 0 24 24" className="h-9 w-9" style={{ animation: `star-pop 0.55s ${i * 0.13}s both` }}>
+/home/z/my-project/src/components/game/levels/Level62.tsx:138:        style={{ animation: locked || placedIn !== null ? undefined : "bob 2.6s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/Level62.tsx:239:        style={{ animation: gateShaking ? "shake-hard 0.5s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level62.tsx:280:                <div className="absolute inset-1" style={{ animation: "pop-in 0.3s ease both" }}>
+/home/z/my-project/src/components/game/levels/Level62.tsx:295:          <div className="pointer-events-none absolute inset-x-[10%] top-[16%] h-[42%] animate-pulse-ring rounded-2xl" style={{ border: "4px dashed #FFD154" }} />
+/home/z/my-project/src/components/game/levels/Level62.tsx:349:              animation: `star-pop 0.5s ${i * 0.15}s both`,
+/home/z/my-project/src/components/game/levels/Level72.tsx:143:                <g transform="translate(60 100)" style={{ animation: "pop-in 0.4s 0.5s both" }}>
+/home/z/my-project/src/components/game/levels/Level72.tsx:176:        <div className="absolute end-[8%] top-[8%] w-[16%]" style={{ animation: "bob 1.6s ease-in-out infinite" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level72.tsx:186:          <span key={i} className="absolute z-30" style={{ left: `${16 + i * 8}%`, top: `${18 + (i % 2) * 10}%`, width: 22, height: 22, animation: `star-pop 0.5s ${i * 0.15}s both` }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level61.tsx:117:        <g transform="translate(92 6)" style={{ animation: "star-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+/home/z/my-project/src/components/game/levels/Level61.tsx:193:          style={{ animation: meterFor("mouse") ? "wobble 0.4s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level61.tsx:207:          style={{ animation: meterFor("duck") ? "wobble 0.4s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level61.tsx:222:            style={{ animation: meterFor("lion") || win ? "wobble 0.5s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level61.tsx:254:      style={{ animation: "pop-in 0.25s ease both" }}
+/home/z/my-project/src/components/game/levels/Level46.tsx:156:          <div key={boingKey} style={{ animation: boingKey > 0 && !done ? "wobble 0.55s ease" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level46.tsx:183:              style={{ animation: !revealed && !mountainDrag.dragging ? "breathe 4s ease-in-out infinite" : undefined }}
+/home/z/my-project/src/components/game/levels/Level46.tsx:200:                animation: `star-pop 0.6s ${0.15 + i * 0.12}s both`,
+/home/z/my-project/src/components/game/levels/Level65.tsx:127:          animation: open ? "bob 1s ease-in-out infinite" : undefined,
+/home/z/my-project/src/components/game/levels/Level23.tsx:100:            animation: "glow 2.2s ease-in-out infinite",
+/home/z/my-project/src/components/game/levels/Level23.tsx:178:            <Door warm open={exitOpen} peek={false} onTap={tapExit} label={lang === "fa" ? "در روشن" : "the glowing door"} />
+/home/z/my-project/src/components/game/levels/Level23.tsx:187:              <div style={{ animation: "bob 0.45s ease-in-out infinite alternate" }}>
+/home/z/my-project/src/components/game/levels/Level45.tsx:158:      <TaggedObject n={3} lang={lang} used={entered.includes(3)} hintActive={hintFor(2)} anim="bob 3s ease-in-out infinite" pos="top-[5%] start-[6%] w-[19%]" label={lang === "fa" ? "خورشید، عدد ۳" : "sun, number 3"} onPick={() => tapTag(3)}>
+/home/z/my-project/src/components/game/levels/Level45.tsx:161:      <TaggedObject n={1} lang={lang} used={entered.includes(1)} hintActive={hintFor(0)} anim="wobble 3.4s ease-in-out infinite" pos="top-[6%] end-[7%] w-[19%]" label={lang === "fa" ? "توپ، عدد ۱" : "ball, number 1"} onPick={() => tapTag(1)}>
+/home/z/my-project/src/components/game/levels/Level45.tsx:164:      <TaggedObject n={4} lang={lang} used={entered.includes(4)} hintActive={hintFor(3)} anim="breathe 3.2s ease-in-out infinite" pos="top-[38%] start-[10%] w-[19%]" label={lang === "fa" ? "کلاه، عدد ۴" : "hat, number 4"} onPick={() => tapTag(4)}>
+/home/z/my-project/src/components/game/levels/Level45.tsx:167:      <TaggedObject n={2} lang={lang} used={entered.includes(2)} hintActive={hintFor(1)} anim="bob 2.8s ease-in-out infinite" pos="top-[40%] end-[9%] w-[20%]" label={lang === "fa" ? "لیوان، عدد ۲" : "cup, number 2"} onPick={() => tapTag(2)}>
+/home/z/my-project/src/components/game/levels/Level45.tsx:191:              animation: shakeKey > 0 && !open ? "shake-hard 0.5s ease" : undefined,
+/home/z/my-project/src/components/game/levels/Level45.tsx:202:                    animation: v !== null ? "pop-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both" : undefined,
+/home/z/my-project/src/components/game/levels/Level45.tsx:212:          {/* treasure glow when open */}
+/home/z/my-project/src/components/game/levels/Level45.tsx:215:              <div className="absolute inset-x-0 bottom-0 h-full" style={{ background: "radial-gradient(ellipse at bottom, rgba(255,209,84,0.85), transparent 70%)", animation: "glow 1.4s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/levels/Level45.tsx:216:              <StarBurst className="absolute start-[18%] top-1 w-7 h-7" style={{ animation: "star-pop 0.5s 0.1s both" }} />
+/home/z/my-project/src/components/game/levels/Level45.tsx:217:              <StarBurst className="absolute start-[46%] top-0 w-8 h-8" style={{ animation: "star-pop 0.5s 0.25s both" }} />
+/home/z/my-project/src/components/game/levels/Level45.tsx:218:              <StarBurst className="absolute end-[18%] top-1 w-6 h-6" style={{ animation: "star-pop 0.5s 0.4s both" }} />
+/home/z/my-project/src/components/game/levels/Level8.tsx:184:                    style={{ background: lit ? "#FFD154" : "#4E4A5E", animation: lit ? "glow 1.6s ease-in-out infinite" : undefined, transition: "background 0.5s ease" }}
+/home/z/my-project/src/components/game/levels/Level8.tsx:195:            <StarSvg className="absolute z-[11] w-6 h-6" style={{ left: "36%", top: "17%", animation: "pop-in 0.4s 0.15s both" }} />
+/home/z/my-project/src/components/game/levels/Level8.tsx:196:            <StarSvg className="absolute z-[11] w-5 h-5" style={{ left: "56%", top: "24%", animation: "pop-in 0.4s 0.3s both" }} />
+/home/z/my-project/src/components/game/levels/Level8.tsx:197:            <StarSvg className="absolute z-[11] w-7 h-7" style={{ left: "70%", top: "12%", animation: "pop-in 0.4s 0.45s both" }} />
+/home/z/my-project/src/components/game/levels/Level29.tsx:177:        <div key={nudge} style={{ animation: nudge > 0 ? "wobble 0.4s ease-in-out" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level7.tsx:170:            style={{ animation: correct ? "bob 0.55s ease-in-out 2" : undefined }}
+/home/z/my-project/src/components/game/levels/Level7.tsx:175:                <StarSvg className="absolute -top-3 -start-4 w-7 h-7" style={{ animation: "pop-in 0.4s 0.05s both" }} />
+/home/z/my-project/src/components/game/levels/Level7.tsx:176:                <StarSvg className="absolute top-4 -end-5 w-6 h-6" style={{ animation: "pop-in 0.4s 0.2s both" }} />
+/home/z/my-project/src/components/game/levels/Level7.tsx:177:                <StarSvg className="absolute -bottom-2 start-1/2 w-5 h-5" style={{ animation: "pop-in 0.4s 0.35s both" }} />
+/home/z/my-project/src/components/game/levels/Level7.tsx:188:          <div key={wrongCount} style={{ animation: wrongCount > 0 ? "shake-hard 0.5s ease" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level7.tsx:198:          style={{ animation: "pop-in 0.3s both", direction: lang === "fa" ? "rtl" : "ltr" }}
+/home/z/my-project/src/components/game/levels/Level92.tsx:46:        <path d="M70 98 Q76 94 70 90" stroke="#8FA6BD" strokeWidth="3" fill="none" strokeLinecap="round" style={{ animation: "breathe 1.4s ease-in-out infinite" }} />
+/home/z/my-project/src/components/game/levels/Level92.tsx:82:          <circle cx="14" cy="66" r="4" fill="#C98A4B" style={{ animation: "drop-fall 0.5s linear infinite" }} />
+/home/z/my-project/src/components/game/levels/Level92.tsx:83:          <circle cx="20" cy="84" r="3.4" fill="#A96F35" style={{ animation: "drop-fall 0.6s 0.15s linear infinite" }} />
+/home/z/my-project/src/components/game/levels/Level92.tsx:202:        <div style={{ transformOrigin: "bottom center", animation: eating ? "breathe 1s ease-in-out infinite" : "wobble 2.6s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level92.tsx:247:            <svg key={i} viewBox="0 0 16 20" className="absolute w-full" style={{ left: i * 12, animation: `drop-fall 0.6s ${i * 0.15}s linear infinite` }}>
+/home/z/my-project/src/components/game/levels/Level68.tsx:27:        <g style={{ animation: "bob 1.4s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level68.tsx:140:                    <div className="absolute left-1/2 top-1/2 w-[92%] -translate-x-1/2 -translate-y-1/2" style={{ animation: heating && !done ? "wobble 0.7s ease-in-out infinite" : done ? "pop-in 0.3s ease both" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level19.tsx:125:                  style={{ animation: shakeIdx === i ? "shake-hard 0.5s ease-in-out" : undefined }}
+/home/z/my-project/src/components/game/levels/Level19.tsx:136:                    <span className="absolute -top-4 -end-4" style={{ animation: "star-pop 0.7s ease-out both" }} aria-hidden>
+/home/z/my-project/src/components/game/levels/Level54.tsx:116:          style={{ animation: scored || drag.dragging ? undefined : "bob 2.4s ease-in-out infinite" }}
+/home/z/my-project/src/components/game/levels/shared.tsx:178:          className="pointer-events-none absolute -inset-2 animate-pulse-ring"
+/home/z/my-project/src/components/game/levels/Level26.tsx:120:        <div className="flex w-full flex-col items-center" style={released ? undefined : { animation: "bob 1.15s ease-in-out infinite alternate" }}>
+/home/z/my-project/src/components/game/levels/Level26.tsx:129:                  : { animation: "breathe 2.4s ease-in-out infinite" }
+/home/z/my-project/src/components/game/levels/Level26.tsx:160:          <span key={i} className="pointer-events-none absolute z-40" style={{ right: s.r, top: s.t, animation: `star-pop 0.8s ease ${s.d} both` }}>
+/home/z/my-project/src/components/game/levels/Level9.tsx:164:            className="pointer-events-none absolute w-12 h-12 -translate-x-1/2 -translate-y-1/2 rounded-full animate-pulse-ring"
+/home/z/my-project/src/components/game/levels/Level9.tsx:174:          style={{ top: s.top, left: s.left, background: "#FAFAFA", border: "4px solid #4CAF50", animation: "pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}
+/home/z/my-project/src/components/game/levels/Level82.tsx:187:        <svg viewBox="0 0 50 90" style={{ animation: "bob 2.6s ease-in-out infinite" }}>
+/home/z/my-project/src/components/game/levels/Level82.tsx:198:            <div className="absolute -top-[26%] left-1/2 w-[54%] -translate-x-1/2" style={{ animation: chairPlaced && !gotToy ? "bob 1.2s ease-in-out infinite" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level82.tsx:205:                  style={{ animation: wrongShake ? "shake-hard 0.5s ease" : undefined }}
+/home/z/my-project/src/components/game/levels/Level82.tsx:218:        <div className="pointer-events-none absolute bottom-[22%] left-[64%] w-[14%]" style={{ animation: "pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+/home/z/my-project/src/components/game/levels/Level82.tsx:225:      <div className={`pointer-events-none absolute ${chairPlaced ? "bottom-[30%] left-[60%] w-[19%]" : "bottom-[8%] left-[12%] w-[20%]"}`} style={{ transition: "bottom 0.9s cubic-bezier(0.5,0,0.3,1), left 0.9s cubic-bezier(0.5,0,0.3,1)", animation: chairPlaced ? "pop-in 0.5s ease both" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level82.tsx:226:        <div style={{ animation: chairPlaced && !gotToy ? "breathe 1.4s ease-in-out infinite" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level13.tsx:164:        <div key={flashKey(0, "valve")} className="relative aspect-square" style={{ animation: flashing(0) ? "shake-hard 0.55s ease" : undefined }}>
+/home/z/my-project/src/components/game/levels/Level13.tsx:166:          {flashing(0) && <div className="absolute -inset-2 rounded-full border-4 border-[#FF3B30]" style={{ animation: "pulse-ring 0.55s ease" }} aria-hidden />}
+/home/z/my-project/src/components/game/levels/Level13.tsx:172:        <div key={flashKey(1, "pinch")} className="relative aspect-square" style={{ animation: flashing(1) ? "shake-hard 0.55s ease" : undefined }}>
+
+[Showing results with pagination = limit: 250]

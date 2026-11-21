@@ -2,7 +2,8 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { LevelProps } from "@/lib/game/types";
-import { Scene, Pulse, sfx } from "./shared";
+import { useDragMove, Scene, Pulse, sfx } from "./shared";
+import { mysterySfx } from "@/lib/game/audio";
 
 /* ------------------------------------------------------------------ */
 /* Level 96 — A strange sound comes from the closet: push the three    */
@@ -88,6 +89,7 @@ const CLOTH_POS = [
 
 export default function Level96({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [moved, setMoved] = useState([false, false, false]);
+  const movedRef = useRef([false, false, false]);
   const [toyTap, setToyTap] = useState(false);
   const [dancing, setDancing] = useState(false);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
@@ -97,19 +99,43 @@ export default function Level96({ lang, solved, onSolved, onMistake, onProgress,
   const count = moved.filter(Boolean).length;
   const allMoved = count === 3;
 
+  /* FIX: the level's premise is "a strange sound comes from the closet" —
+     actually PLAY that eerie sound in a loop until the toy is found */
+  const stopMystery = useRef(false);
+  useEffect(() => {
+    if (allMoved || dancing) {
+      stopMystery.current = true;
+      return;
+    }
+    stopMystery.current = false;
+    let t: ReturnType<typeof setTimeout> | null = null;
+    const loop = () => {
+      if (stopMystery.current) return;
+      mysterySfx();
+      t = setTimeout(loop, 4200);
+    };
+    t = setTimeout(loop, 700);
+    return () => {
+      stopMystery.current = true;
+      if (t) clearTimeout(t);
+    };
+  }, [allMoved, dancing]);
+
   const tapCloth = useCallback(
     (i: ClothKind) => {
-      if (solved || moved[i]) return;
+      if (solved || movedRef.current[i]) return;
       sfx.whoosh();
-      const next = moved.slice();
+      /* ref mirror keeps rapid taps from overwriting each other's state */
+      const next = movedRef.current.slice();
       next[i] = true;
+      movedRef.current = next;
       setMoved(next);
       onProgress((next.filter(Boolean).length / 3) * 0.75);
       if (next.filter(Boolean).length === 3) {
         timers.current.push(setTimeout(() => sfx.sparkle(), 350));
       }
     },
-    [solved, moved, onProgress]
+    [solved, onProgress]
   );
 
   const tapCloset = useCallback(() => {

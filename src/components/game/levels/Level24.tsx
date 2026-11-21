@@ -17,39 +17,53 @@ function DogSvg({ happy, className, style }: { happy: boolean; className?: strin
       <motion.g
         animate={happy ? { rotate: 0 } : { rotate: [-10, 10] }}
         transition={happy ? { duration: 0.2 } : { duration: 0.4, repeat: Infinity, repeatType: "mirror" }}
-        style={{ transformOrigin: "48px 98px" }}
+        style={{ transformOrigin: "48px 92px" }}
       >
-        <path d="M52 100 Q20 88 24 58" stroke="#3B2E5A" strokeWidth="12" fill="none" strokeLinecap="round" />
-        <path d="M52 100 Q22 89 26 62" stroke="#C98A4B" strokeWidth="6" fill="none" strokeLinecap="round" />
+        <path d="M52 96 Q22 84 28 52" stroke="#3B2E5A" strokeWidth="13" fill="none" strokeLinecap="round" />
+        <path d="M52 96 Q24 85 30 56" stroke="#C98A4B" strokeWidth="7" fill="none" strokeLinecap="round" />
       </motion.g>
-      {/* body + legs */}
-      <ellipse cx="98" cy="106" rx="52" ry="36" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" />
-      <rect x="66" y="124" width="15" height="28" rx="7" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="4" />
-      <rect x="116" y="124" width="15" height="28" rx="7" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="4" />
-      {/* head faces the fence */}
-      <circle cx="158" cy="64" r="38" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" />
-      <path d="M186 40 Q200 24 202 48 Q200 70 180 72 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="4.5" strokeLinejoin="round" />
+      {/* back leg */}
+      <rect x="58" y="118" width="15" height="34" rx="7" fill="#B87B3F" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="66" cy="152" rx="13" ry="6" fill="#B87B3F" stroke="#3B2E5A" strokeWidth="3.4" />
+      {/* body */}
+      <ellipse cx="102" cy="102" rx="52" ry="34" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" />
+      {/* belly patch */}
+      <ellipse cx="106" cy="114" rx="34" ry="17" fill="#E3B57E" />
+      {/* front legs */}
+      <rect x="116" y="122" width="15" height="30" rx="7" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="4" />
+      <rect x="140" y="120" width="15" height="32" rx="7" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="124" cy="152" rx="13" ry="6" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="3.4" />
+      <ellipse cx="148" cy="152" rx="13" ry="6" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="3.4" />
+      {/* head */}
+      <circle cx="160" cy="60" r="36" fill="#C98A4B" stroke="#3B2E5A" strokeWidth="5" />
+      {/* floppy ear */}
+      <path d="M148 28 Q128 32 132 64 Q140 84 156 74 Q162 52 156 30 Z" fill="#8B5E3C" stroke="#3B2E5A" strokeWidth="4" strokeLinejoin="round" />
+      {/* snout */}
+      <ellipse cx="184" cy="72" rx="19" ry="13" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4" />
+      <ellipse cx="196" cy="66" rx="6" ry="4.6" fill="#3B2E5A" />
+      {/* face */}
       {happy ? (
         <>
-          <path d="M138 56 Q144 49 150 56" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
-          <path d="M164 56 Q170 49 176 56" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
+          <path d="M144 50 Q150 44 156 50" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
+          <path d="M164 50 Q170 44 176 50" stroke="#3B2E5A" strokeWidth="4" fill="none" strokeLinecap="round" />
+          <path d="M176 76 Q184 82 192 75" stroke="#3B2E5A" strokeWidth="3.4" fill="none" strokeLinecap="round" />
         </>
       ) : (
         <>
-          <circle cx="144" cy="56" r="7" fill="#3B2E5A" />
-          <circle cx="170" cy="56" r="7" fill="#3B2E5A" />
-          <circle cx="146.5" cy="53.5" r="2.4" fill="#fff" />
-          <circle cx="172.5" cy="53.5" r="2.4" fill="#fff" />
+          <circle cx="148" cy="52" r="7" fill="#3B2E5A" />
+          <circle cx="170" cy="52" r="7" fill="#3B2E5A" />
+          <circle cx="150.5" cy="49.5" r="2.4" fill="#FAFAFA" />
+          <circle cx="172.5" cy="49.5" r="2.4" fill="#FAFAFA" />
+          <path d="M178 76 Q184 80 190 76" stroke="#3B2E5A" strokeWidth="3.4" fill="none" strokeLinecap="round" />
+          {/* panting tongue */}
+          <path d="M180 82 Q180 100 187 100 Q194 100 193 82 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+          <path d="M186 88 L186 96" stroke="#E14B60" strokeWidth="2.4" strokeLinecap="round" />
         </>
       )}
-      {/* snout, nose, panting tongue */}
-      <ellipse cx="158" cy="78" rx="17" ry="12" fill="#FFE0B3" stroke="#3B2E5A" strokeWidth="4" />
-      <ellipse cx="158" cy="73" rx="5" ry="4" fill="#3B2E5A" />
-      {!happy && <path d="M152 86 Q152 102 158 102 Q164 102 164 86 Z" fill="#FF6B81" stroke="#3B2E5A" strokeWidth="3.5" strokeLinejoin="round" />}
-      {/* cheeks + collar */}
-      <ellipse cx="130" cy="70" rx="6" ry="4" fill="#FF9FB2" />
-      <ellipse cx="184" cy="68" rx="6" ry="4" fill="#FF9FB2" />
-      <path d="M130 92 Q158 104 186 94" stroke="#FF6B81" strokeWidth="7" fill="none" strokeLinecap="round" />
+      {/* blush + collar with tag */}
+      <ellipse cx="146" cy="66" rx="6" ry="4" fill="#FF9FB2" opacity="0.85" />
+      <path d="M134 86 Q158 100 180 88" stroke="#FF6B81" strokeWidth="7" fill="none" strokeLinecap="round" />
+      <circle cx="157" cy="96" r="5.5" fill="#FFD154" stroke="#3B2E5A" strokeWidth="2.5" />
     </svg>
   );
 }

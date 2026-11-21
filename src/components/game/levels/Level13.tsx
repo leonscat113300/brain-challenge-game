@@ -62,6 +62,17 @@ function CorkSvg({ className, style }: { className?: string; style?: React.CSSPr
   );
 }
 
+/** decoy: a plain pipe coupling — looks like the hardware on the other
+    pipes but is NOT a blockage (no handle, no clamp, no cork) */
+function CouplingSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} style={style} aria-hidden>
+      <circle cx="32" cy="32" r="18" fill="#FAFAFA" stroke="#3B2E5A" strokeWidth="4.5" />
+      <circle cx="32" cy="32" r="7" fill="#C9C4D8" stroke="#3B2E5A" strokeWidth="3.5" />
+    </svg>
+  );
+}
+
 export default function Level13({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [filled, setFilled] = useState(false);
   const [done, setDone] = useState(false);
@@ -148,8 +159,8 @@ export default function Level13({ lang, solved, onSolved, onMistake, onProgress,
         />
       </svg>
 
-      {/* blockage A: closed valve */}
-      <div className="absolute z-10 w-[9%]" style={{ left: "17.5%", top: "43%", transform: "translate(-50%,-50%)" }}>
+      {/* blockage A: closed valve — smaller, needs a closer look */}
+      <div className="absolute z-10 w-[7%]" style={{ left: "17.5%", top: "44%", transform: "translate(-50%,-50%)" }}>
         <div key={flashKey(0, "valve")} className="relative aspect-square" style={{ animation: flashing(0) ? "shake-hard 0.55s ease" : undefined }}>
           <ValveSvg className="h-full w-full" />
           {flashing(0) && <div className="absolute -inset-2 rounded-full border-4 border-[#FF3B30]" style={{ animation: "pulse-ring 0.55s ease" }} aria-hidden />}
@@ -157,7 +168,7 @@ export default function Level13({ lang, solved, onSolved, onMistake, onProgress,
       </div>
 
       {/* blockage B: pinched pipe */}
-      <div className="absolute z-10 w-[8%]" style={{ left: "38.75%", top: "47%", transform: "translate(-50%,-50%)" }}>
+      <div className="absolute z-10 w-[6.5%]" style={{ left: "38.75%", top: "47%", transform: "translate(-50%,-50%)" }}>
         <div key={flashKey(1, "pinch")} className="relative aspect-square" style={{ animation: flashing(1) ? "shake-hard 0.55s ease" : undefined }}>
           <PinchSvg className="h-full w-full" />
           {flashing(1) && <div className="absolute -inset-2 rounded-xl border-4 border-[#FF3B30]" style={{ animation: "pulse-ring 0.55s ease" }} aria-hidden />}
@@ -165,11 +176,16 @@ export default function Level13({ lang, solved, onSolved, onMistake, onProgress,
       </div>
 
       {/* blockage C: cork plug */}
-      <div className="absolute z-10 w-[12%]" style={{ left: "61.5%", top: "49%", transform: "translate(-50%,-50%)" }}>
+      <div className="absolute z-10 w-[9%]" style={{ left: "61.5%", top: "49%", transform: "translate(-50%,-50%)" }}>
         <div key={flashKey(2, "cork")} className="relative aspect-[76/56]" style={{ animation: flashing(2) ? "shake-hard 0.55s ease" : undefined }}>
           <CorkSvg className="h-full w-full" />
           {flashing(2) && <div className="absolute -inset-2 rounded-xl border-4 border-[#FF3B30]" style={{ animation: "pulse-ring 0.55s ease" }} aria-hidden />}
         </div>
+      </div>
+
+      {/* decoy coupling on D's pipe — open hardware, not a blockage */}
+      <div className="absolute z-10 w-[6%]" style={{ left: "71.5%", top: "36%", transform: "translate(-50%,-50%)" }} aria-hidden>
+        <CouplingSvg className="h-full w-full opacity-90" />
       </div>
 
       {/* juice droplets racing down D's pipe */}

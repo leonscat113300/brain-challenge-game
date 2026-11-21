@@ -7,8 +7,9 @@ import { useDragMove, Scene, Pulse, sfx } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Level 52 — Inverted drag: the bee is stuck hovering, so the player  */
-/* drags the FLOWER POT toward it. Drop within ~110px of the bee and   */
-/* it lands on the bloom. Dragging the bee only makes it dodge.        */
+/* drags the FLOWER POT toward it. Drop within ~72px of the bee and    */
+/* it lands on the bloom. Dragging the bee only makes it dodge, and a  */
+/* wildflower + the sun are decoys.                                    */
 /* ------------------------------------------------------------------ */
 
 function BeeSvg({ landed, className, style }: { landed: boolean; className?: string; style?: React.CSSProperties }) {
@@ -75,6 +76,24 @@ function HeartSvg({ className, style }: { className?: string; style?: React.CSSP
   );
 }
 
+function DecoyFlowerSvg({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 100 100" className={className} style={style} aria-hidden>
+      <path d="M50 92 Q46 70 50 54" stroke="#4CAF50" strokeWidth="6" fill="none" strokeLinecap="round" />
+      <path d="M49 76 Q34 70 30 80 Q40 86 49 80 Z" fill="#4CAF50" stroke="#3B2E5A" strokeWidth="3" strokeLinejoin="round" />
+      <g transform="translate(50 40)">
+        {[0, 72, 144, 216, 288].map((a) => (
+          <ellipse key={a} cx="0" cy="-12" rx="7" ry="12" fill="#FF8A3C" stroke="#3B2E5A" strokeWidth="3.5" transform={`rotate(${a})`} />
+        ))}
+        <circle cx="0" cy="0" r="9" fill="#6C4AB6" stroke="#3B2E5A" strokeWidth="3.5" />
+        <circle cx="-2.5" cy="-1.5" r="1.4" fill="#fff" />
+        <circle cx="2.5" cy="-1.5" r="1.4" fill="#fff" />
+        <path d="M-2 3.5 Q0 5.5 2 3.5" stroke="#3B2E5A" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+
 export default function Level52({ lang, solved, onSolved, onMistake, onProgress, hintPulse }: LevelProps) {
   const [done, setDone] = useState(false);
   const [land, setLand] = useState<{ x: number; y: number } | null>(null);
@@ -96,7 +115,7 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
             a.left + a.width / 2 - (b.left + b.width / 2),
             a.top + a.height / 2 - (b.top + b.height / 2)
           );
-          if (dist <= 110) {
+          if (dist <= 72) {
             setLand({
               x: b.left + b.width / 2 - (a.left + a.width / 2),
               y: b.top + b.height / 2 - (a.top + a.height / 2) - 14,
@@ -113,7 +132,7 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
           sfx.pop();
           return;
         }
-        if (Math.hypot(d.x, d.y) > 60) {
+        if (Math.hypot(d.x, d.y) > 45) {
           onMistake({ fa: "نزدیک‌ترش کن!", en: "Bring it closer!" });
         }
         /* pot stays exactly where it was dropped */
@@ -125,6 +144,18 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
   const startDragProgress = () => {
     if (solved || done) return;
     onProgress(0.5);
+  };
+
+  const tapSun = () => {
+    if (solved || done) return;
+    sfx.pop();
+    onMistake({ fa: "خورشید به کار زنبور نمیاد!", en: "The sun is no use to the bee!" });
+  };
+
+  const tapDecoyFlower = () => {
+    if (solved || done) return;
+    sfx.boing();
+    onMistake({ fa: "زنبور این گل رو دوست نداره!", en: "The bee doesn't like this flower!" });
   };
 
   const tapBee = () => {
@@ -139,8 +170,14 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
       {/* ground strip */}
       <div className="absolute inset-x-0 bottom-0 h-[16%] border-t-4 border-[#3B2E5A] bg-[#DFF0D8]" aria-hidden />
 
-      {/* little sun */}
-      <div className="absolute start-[6%] top-[6%] w-[10%]" style={{ animation: "breathe 3s ease-in-out infinite" }} aria-hidden>
+      {/* little sun (decoy: tapping it teaches it's no help) */}
+      <button
+        type="button"
+        onClick={tapSun}
+        aria-label={lang === "fa" ? "خورشید" : "sun"}
+        className="absolute start-[6%] top-[6%] w-[10%] cursor-pointer border-0 bg-transparent p-0"
+        style={{ animation: "breathe 3s ease-in-out infinite" }}
+      >
         <svg viewBox="0 0 60 60" className="h-auto w-full">
           {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
             <line key={a} x1="30" y1="8" x2="30" y2="13" stroke="#3B2E5A" strokeWidth="3" strokeLinecap="round" transform={`rotate(${a} 30 30)`} />
@@ -150,7 +187,7 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
           <circle cx="36" cy="27" r="2" fill="#3B2E5A" />
           <path d="M26 34 Q30 37 34 34" stroke="#3B2E5A" strokeWidth="2" fill="none" strokeLinecap="round" />
         </svg>
-      </div>
+      </button>
 
       {/* dotted flight trail (mid-air between the two) */}
       {!land &&
@@ -170,6 +207,19 @@ export default function Level52({ lang, solved, onSolved, onMistake, onProgress,
             aria-hidden
           />
         ))}
+
+      {/* decoy: a wildflower the bee ignores */}
+      <div className="absolute bottom-[12%] start-[16%] w-[13%]" style={{ zIndex: 8 }}>
+        <button
+          type="button"
+          onClick={tapDecoyFlower}
+          aria-label={lang === "fa" ? "گل وحشی" : "wildflower"}
+          className="block w-full cursor-pointer border-0 bg-transparent p-0"
+          style={{ animation: "breathe 4s ease-in-out infinite" }}
+        >
+          <DecoyFlowerSvg className="h-auto w-full drop-shadow-[0_3px_0_rgba(59,46,90,0.12)]" />
+        </button>
+      </div>
 
       {/* the hovering bee (dodges when tapped, lands on the flower) */}
       <div
