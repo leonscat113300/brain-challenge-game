@@ -12,7 +12,7 @@ export interface LevelMeta {
   world: number;
   name: BiText;
   question: BiText;
-  hints: [BiText, BiText, BiText];
+  hints: BiText[];
   solution: BiText;
   difficulty: Difficulty;
   mechanic: string;

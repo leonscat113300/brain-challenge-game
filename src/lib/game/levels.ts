@@ -1,4 +1,5 @@
 import type { LevelMeta, WorldMeta } from "./types";
+import { GENERIC_METAS } from "./levels2";
 
 export const WORLDS: WorldMeta[] = [
   {
@@ -87,7 +88,7 @@ export const WORLDS: WorldMeta[] = [
   },
 ];
 
-export const LEVELS: LevelMeta[] = [
+export const BASE_LEVELS: LevelMeta[] = [
   {
     id: 1,
     world: 1,
@@ -1527,6 +1528,9 @@ export const LEVELS: LevelMeta[] = [
     mechanic: "Drag",
   },
 ];
+
+/* Full catalogue: levels 1-102 (hand-crafted components) + 103-600 (data-driven engine). */
+export const LEVELS: LevelMeta[] = [...BASE_LEVELS, ...GENERIC_METAS];
 
 export function getLevel(id: number): LevelMeta {
   return LEVELS.find((l) => l.id === id) ?? LEVELS[0];

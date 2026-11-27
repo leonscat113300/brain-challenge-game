@@ -15,11 +15,11 @@ WORK=$BUILD/work-$VARIANT
 if [ "$VARIANT" = "fa" ]; then
   PKG="com.leon.brainchallenge"
   APPNAME="مغزتو به چالش بکش!"
-  OUT="$BUILD/مغزتو به چالش بکش - Brain Challenge v1.4 (FA).apk"
+  OUT="$BUILD/مغزتو به چالش بکش - Brain Challenge v1.5 (FA).apk"
 else
   PKG="com.leon.brainchallenge.en"
   APPNAME="Brain Challenge!"
-  OUT="$BUILD/Brain Challenge v1.4 (EN).apk"
+  OUT="$BUILD/Brain Challenge v1.5 (EN).apk"
 fi
 
 rm -rf "$WORK" && mkdir -p "$WORK/gen" "$WORK/classes" "$WORK/dex" "$WORK/res/values"
@@ -51,7 +51,7 @@ EOF
 $BT/aapt2 compile --dir "$WORK/res" -o "$WORK/res.flata"
 $BT/aapt2 link -o "$WORK/base.apk" -I $PLATFORM --manifest "$WORK/AndroidManifest.xml" \
   -A "$BUILD/assets-$VARIANT" \
-  --min-sdk-version 24 --target-sdk-version 34 --version-code 5 --version-name 1.4 \
+  --min-sdk-version 24 --target-sdk-version 34 --version-code 6 --version-name 1.5 \
   --auto-add-overlay "$WORK/res.flata"
 
 echo "== [$VARIANT] javac + d8 =="

@@ -139,8 +139,8 @@ interface GameState {
   setAdOpen: (v: boolean) => void;
 }
 
-export const TOTAL_LEVELS = 102;
-export const BRANDED_TOTAL = 600;
+export const TOTAL_LEVELS = 600;
+export const BRANDED_TOTAL = TOTAL_LEVELS;
 export const SKIP_COST = 50;
 export const HINT_COSTS = { 1: 25, 2: 50, 3: 100 } as const;
 
@@ -351,9 +351,9 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: "brain-challenge-save-r2",
-      /* v6: all levels unlocked — old v5 saves are migrated so every level is open,
-         while coins, progress, stars and stats are fully preserved */
-      version: 6,
+      /* v7: 600 levels — old saves are migrated so every level of the expanded
+         catalogue is open, while coins, progress, stars and stats are preserved */
+      version: 7,
       migrate: (persisted) => {
         const p = (persisted ?? {}) as Partial<GameState>;
         return {

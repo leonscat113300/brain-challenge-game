@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { LevelProps } from "@/lib/game/types";
+import { GENERIC_COMPONENTS } from "@/lib/game/levels2";
 import Level1 from "./Level1";
 import Level2 from "./Level2";
 import Level3 from "./Level3";
@@ -208,4 +209,6 @@ export const LEVEL_COMPONENTS: Record<number, React.ComponentType<LevelProps>> =
   100: Level100,
   101: Level101,
   102: Level102,
+  /* levels 103-600 are rendered by the generic data-driven engine */
+  ...GENERIC_COMPONENTS,
 };

@@ -101,8 +101,8 @@ export const STR = {
   shakeEnable: { fa: "فعال‌سازی سنسور لرزش", en: "Enable motion sensor" },
   tryAgain: { fa: "دوباره تلاش کن!", en: "Try again!" },
   lastLevelDone: {
-    fa: "همهٔ ۵۲ مرحلهٔ این نسخه را حل کردی! منتظر ۶۰۰ مرحلهٔ کامل باش!",
-    en: "You solved all 52 levels of this build! Wait for the full 600!",
+    fa: "همهٔ ۶۰۰ مرحله را حل کردی! استاد بزرگ معماها شدی!",
+    en: "You solved all 600 levels! You are the Puzzle Grand Master!",
   },
   allStars: { fa: "همه ستاره‌ها", en: "All stars" },
   newBadge: { fa: "نشان جدید!", en: "New badge!" },
