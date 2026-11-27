@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.parseColor("#7E2FAE"));
+        window.setStatusBarColor(Color.parseColor("#030206"));
         window.setNavigationBarColor(Color.parseColor("#33205E"));
 
         webView = new WebView(this);
@@ -113,8 +113,8 @@ public class MainActivity extends Activity {
 
         ImageView splash = new ImageView(this);
         splash.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        splash.setBackgroundColor(Color.parseColor("#7E2FAE"));
-        int pad = (int) (48 * getResources().getDisplayMetrics().density);
+        splash.setBackgroundColor(Color.parseColor("#030206"));
+        int pad = (int) (32 * getResources().getDisplayMetrics().density);
         splash.setPadding(pad, pad, pad, pad);
         try {
             splash.setImageBitmap(BitmapFactory.decodeStream(getAssets().open("candy-team-logo.png")));
